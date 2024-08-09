@@ -1,5 +1,25 @@
 ﻿@page "/"
+@using automated_electrical_schedule.Components.Popups
+@using CommunityToolkit.Maui.Core
+@using CommunityToolkit.Maui.Views
+@inject IPopupService PopupService
 
-<h1>Hello, guy!</h1>
+<main class="home">
+    <h1>Automated Electrical Schedule of Loads</h1>
 
-Welcome to your new app.
+    <div class="home-buttons">
+        <button class="btn-primary" @onclick="OpenNewProject">Create new project</button>
+        <button class="btn-primary">Open project</button>
+        <button class="btn-primary">About us</button>
+    </div>
+</main>
+
+@code {
+
+    private void OpenNewProject()
+    {
+        var newProjectPopup = new NewProjectPopup();
+        Application.Current.MainPage.ShowPopup(newProjectPopup);
+    }
+
+}
