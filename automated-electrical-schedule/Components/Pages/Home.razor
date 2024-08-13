@@ -36,121 +36,15 @@
     </div>
 </main>
 
-@if (_isCreateProjectModalOpen)
-{
-    <div class="modal-wrapper" @onclick="CloseModal">
-        <div class="modal create-project-modal" @onclick:stopPropagation="true">
-            <h2>Create Project</h2>
-
-            <div class="create-project-modal-fields">
-                <div class="create-project-modal-field">
-                    <label>Project Name</label>
-                    <input/>
-                </div>
-
-                <div class="create-project-modal-field">
-                    <label>Distribution Board Name</label>
-                    <input/>
-                </div>
-
-                <div class="create-project-modal-field">
-                    <label>Phase</label>
-                    <select @onchange="SelectPhase">
-                        @foreach (var phase in _phases)
-                        {
-                            <option value="@phase.Key">@phase.Value</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="create-project-modal-field">
-                    <label>Voltage</label>
-                    <select @onchange="SelectVoltage">
-                        @if (_selectedPhase == "single")
-                        {
-                            <option value="230">230 volts</option>
-                        }
-                        else
-                        {
-                            @foreach (var voltage in _voltages)
-                            {
-                                <option value="@voltage.Key">@voltage.Value</option>
-                            }
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <div class="create-project-modal-btns">
-                <button
-                    class="create-project-modal-cancel-btn"
-                    @onclick="CloseModal">
-                    Cancel
-                </button>
-
-                <button
-                    class="create-project-modal-create-btn btn-primary">
-                    Create
-                </button>
-            </div>
-        </div>
-    </div>
-}
+<CreateProjectModal @bind-IsOpen="@_isCreateProjectModalOpen"/>
 
 @code {
     readonly List<string> projectList = []; // TODO: Fetch projects from API
     private bool _isCreateProjectModalOpen;
 
-    private readonly Dictionary<string, string> _phases = new()
-    {
-        { "single", "Single Phase" },
-        { "delta", "Three Phase - DELTA" },
-        { "wye", "Three Phase - WYE" }
-    };
-
-    private readonly Dictionary<string, string> _voltages = new()
-    {
-        { "230", "230 volts" },
-        { "400", "400 volts" },
-        { "460", "460 volts" },
-        { "575", "575 volts" }
-    };
-
-    private string _selectedPhase = "single";
-    private string _selectedVoltage = "230";
-
-
-    private void OpenModal()
+    void OpenModal()
     {
         _isCreateProjectModalOpen = true;
-    }
-
-    private void CloseModal()
-    {
-        _isCreateProjectModalOpen = false;
-    }
-
-    private void SelectPhase(ChangeEventArgs e)
-    {
-        var newPhase = e.Value?.ToString() ?? "single";
-        _selectedPhase = newPhase;
-
-        if (newPhase == "single")
-        {
-            _selectedVoltage = "230";
-        }
-
-        StateHasChanged();
-    }
-
-    private void SelectVoltage(ChangeEventArgs e)
-    {
-        _selectedVoltage = e.Value?.ToString() ?? "230";
-        StateHasChanged();
-    }
-
-    private void GoToAboutUs()
-    {
     }
 
 }

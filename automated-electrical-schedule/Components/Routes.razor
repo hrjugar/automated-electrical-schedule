@@ -1,6 +1,6 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
+﻿@using automated_electrical_schedule.Components.Layout
+<Router AppAssembly="@typeof(MauiProgram).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
     </Found>
 </Router>

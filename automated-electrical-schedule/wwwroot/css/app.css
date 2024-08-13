@@ -80,10 +80,6 @@ select {
     color: #fff;
 }
 
-h1:focus {
-    outline: none;
-}
-
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
@@ -143,8 +139,18 @@ h1:focus {
 }
 
 .modal {
+    min-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 2rem;
     background-color: var(--clr-neutral-50);
     border: 1px solid var(--clr-neutral-300);
     border-radius: var(--radius-default);
     padding: 1rem 1.5rem;
+}
+
+.red-asterisk {
+    color: red;
 }

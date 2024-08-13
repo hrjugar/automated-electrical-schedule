@@ -1,0 +1,87 @@
+@inject NavigationManager Navigation
+
+@if (IsOpen)
+{
+    <div class="modal-wrapper">
+        <EditForm
+            class="modal create-project-modal"
+            @onclick:stopPropagation="true"
+            Model=@_formData
+            OnValidSubmit=@OnFormSubmit>
+            <h2>Create Project</h2>
+
+            <div class="create-project-modal-fields">
+                <DataAnnotationsValidator/>
+
+                <div class="create-project-modal-field">
+                    <label>Project Name <span class="red-asterisk">*</span></label>
+                    <InputText @bind-Value="_formData.ProjectName"/>
+                    <ValidationMessage For=@(() => _formData.ProjectName)/>
+                </div>
+
+                <div class="create-project-modal-field">
+                    <label>Distribution Board Name <span class="red-asterisk">*</span></label>
+                    <InputText @bind-Value="_formData.DistributionBoardName"/>
+                    <ValidationMessage For=@(() => _formData.DistributionBoardName)/>
+                </div>
+
+                <div class="create-project-modal-field">
+                    <label>Phase</label>
+                    <InputSelect @bind-Value=_formData.Phase>
+                        <option value="SinglePhase">Single Phase</option>
+                        <option value="ThreePhaseDelta">Three Phase - DELTA</option>
+                        <option value="ThreePhaseWye">Three Phase - WYE</option>
+                    </InputSelect>
+                </div>
+
+                <div class="create-project-modal-field">
+                    <label>Voltage</label>
+                    <InputSelect @bind-Value=_formData.Voltage>
+                        <option value="V230">230 Volts</option>
+                        @if (_formData.Phase != ProjectPhase.SinglePhase)
+                        {
+                            <option value="V400">400 Volts</option>
+                            <option value="V460">460 Volts</option>
+                            <option value="V575">575 Volts</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="create-project-modal-btns">
+                <button
+                    class="create-project-modal-cancel-btn"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="create-project-modal-create-btn btn-primary"
+                    type="submit">
+                    Create
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    Project _formData = new();
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task OnFormSubmit()
+    {
+        // TODO: Handle database data
+        await CloseModal();
+        Navigation.NavigateTo("/about-us");
+    }
+
+}
