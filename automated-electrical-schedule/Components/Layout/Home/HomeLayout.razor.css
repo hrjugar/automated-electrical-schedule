@@ -1,0 +1,18 @@
+.home-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    background-color: var(--clr-neutral-100);
+
+    .page {
+        flex-grow: 1;
+        padding: 0.5rem;
+
+        main {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--clr-neutral-200);
+        }
+    }
+}

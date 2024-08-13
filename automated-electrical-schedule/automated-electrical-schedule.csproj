@@ -73,4 +73,8 @@
         <UpToDateCheckInput Remove="Components\Popups\NewProjectPopup.razor"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="wwwroot\css\"/>
+    </ItemGroup>
+
 </Project>

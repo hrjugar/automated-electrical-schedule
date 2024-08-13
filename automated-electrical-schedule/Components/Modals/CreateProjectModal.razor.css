@@ -1,24 +1,24 @@
-.create-project-modal .create-project-modal-fields {
+.create-project-modal-fields {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     gap: 1rem;
+
+    .create-project-modal-field {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0.25rem;
+
+        label {
+            color: var(--clr-neutral-500);
+        }
+    }
 }
 
-.create-project-modal .create-project-modal-field {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 0.25rem;
-}
-
-.create-project-modal .create-project-modal-field label {
-    color: var(--clr-neutral-500);
-}
-
-.create-project-modal .create-project-modal-btns {
+.create-project-modal-btns {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;

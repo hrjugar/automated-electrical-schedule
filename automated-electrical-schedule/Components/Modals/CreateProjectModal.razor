@@ -2,7 +2,7 @@
 
 @if (IsOpen)
 {
-    <div class="modal-wrapper">
+    <div class="modal-wrapper" @onclick="CloseModal">
         <EditForm
             class="modal create-project-modal"
             @onclick:stopPropagation="true"
