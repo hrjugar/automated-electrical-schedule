@@ -4,17 +4,23 @@ namespace automated_electrical_schedule.Models;
 
 public enum ProjectPhase
 {
-    SinglePhase,
+    [Display(Name = "Single Phase")] SinglePhase,
+
+    [Display(Name = "Three Phase - Delta")]
     ThreePhaseDelta,
-    ThreePhaseWye
+
+    [Display(Name = "Three Phase - WYE")] ThreePhaseWye
 }
 
 public enum ProjectVoltage
 {
-    V230,
-    V400,
-    V460,
-    V575
+    [Display(Name = "230 Volts")] V230,
+
+    [Display(Name = "400 Volts")] V400,
+
+    [Display(Name = "460 Volts")] V460,
+
+    [Display(Name = "575 Volts")] V575
 }
 
 public class Project

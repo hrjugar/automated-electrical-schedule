@@ -41,6 +41,7 @@ main {
     flex: 1;
     background-color: var(--clr-neutral-50);
     height: 100%;
+    padding: 1rem 1.5rem;
 }
 
 a, .btn-link {

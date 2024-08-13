@@ -28,21 +28,24 @@
                 <div class="create-project-modal-field">
                     <label>Phase</label>
                     <InputSelect @bind-Value=_formData.Phase>
-                        <option value="SinglePhase">Single Phase</option>
-                        <option value="ThreePhaseDelta">Three Phase - DELTA</option>
-                        <option value="ThreePhaseWye">Three Phase - WYE</option>
+                        @foreach (ProjectPhase phase in Enum.GetValues(typeof(ProjectPhase)))
+                        {
+                            <option value="@phase">@phase.GetDisplayName()</option>
+                        }
                     </InputSelect>
                 </div>
 
                 <div class="create-project-modal-field">
                     <label>Voltage</label>
                     <InputSelect @bind-Value=_formData.Voltage>
-                        <option value="V230">230 Volts</option>
-                        @if (_formData.Phase != ProjectPhase.SinglePhase)
+                        @foreach (ProjectVoltage voltage in Enum.GetValues(typeof(ProjectVoltage)))
                         {
-                            <option value="V400">400 Volts</option>
-                            <option value="V460">460 Volts</option>
-                            <option value="V575">575 Volts</option>
+                            @if (_formData.Phase == ProjectPhase.SinglePhase && voltage != ProjectVoltage.V230)
+                            {
+                                continue;
+                            }
+
+                            <option value="@voltage">@voltage.GetDisplayName()</option>
                         }
                     </InputSelect>
                 </div>
@@ -81,7 +84,7 @@
     {
         // TODO: Handle database data
         await CloseModal();
-        Navigation.NavigateTo("/about-us");
+        Navigation.NavigateTo("/project/1"); //TODO: Update to navigate to the new project
     }
 
 }

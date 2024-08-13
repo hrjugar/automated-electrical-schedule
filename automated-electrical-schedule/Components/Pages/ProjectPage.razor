@@ -1,0 +1,13 @@
+@page "/project/{ProjectId}"
+@layout HomeLayout
+
+<main class="project-page">
+    <header>
+        <p>Projects > Bedroom Elec. SQL > Bedroom Main PB</p>
+        <h1>Bedroom Main PB</h1>
+    </header>
+</main>
+
+@code {
+    [Parameter] public string? ProjectId { get; set; }
+}
