@@ -34,6 +34,7 @@ html, body {
 
 .layout {
     height: 100vh;
+    overflow: auto;
 }
 
 main {
@@ -51,6 +52,7 @@ button, input, select {
     padding-inline: 1rem;
     font-size: 1rem;
     border-radius: var(--radius-default);
+    white-space: nowrap;
 }
 
 button {

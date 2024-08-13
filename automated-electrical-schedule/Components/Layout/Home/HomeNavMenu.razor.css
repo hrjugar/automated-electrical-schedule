@@ -9,6 +9,7 @@ nav {
 
     h1 {
         font-size: 2rem;
+        text-wrap: balance;
     }
 
     .home-nav-links {

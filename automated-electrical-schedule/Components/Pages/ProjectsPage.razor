@@ -1,15 +1,15 @@
 ﻿@page "/"
 @layout HomeLayout
 
-<main class="project-page">
+<main class="projects-page">
     <header>
-        <div class="project-controls">
+        <div class="projects-controls">
             <input placeholder="Search project..."/>
-            <button class="btn-primary" @onclick="OpenModal">Create New Project</button>
+            <button class="btn-primary" @onclick="OpenModal">Add New Project</button>
         </div>
     </header>
 
-    <div class="project-list">
+    <div class="projects-list">
         @if (projectList.Any())
         {
             @foreach (var project in projectList)
@@ -22,16 +22,10 @@
         }
         else
         {
-            <div class="project-list-empty">
+            <div class="projects-list-empty">
                 <p>No projects found.</p>
             </div>
         }
-    </div>
-
-    <div class="about-us-container">
-        <NavLink href="about-us">
-            <span>About Us</span>
-        </NavLink>
     </div>
 </main>
 
