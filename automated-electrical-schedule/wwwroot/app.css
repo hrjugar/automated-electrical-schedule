@@ -75,7 +75,15 @@ input::placeholder {
 }
 
 select {
+    position: relative;
     -webkit-appearance: initial;
+
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' version='1.1' height='10px' width='15px'%3E%3Ctext x='0' y='10' fill='gray'%3E%E2%96%BE%3C/text%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: right 1rem top 50%;
+    background-clip: border-box;
+    -webkit-background-clip: border-box;
 }
 
 .btn-primary {
@@ -143,29 +151,50 @@ select {
 .modal-wrapper {
     z-index: 100;
     position: fixed;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     top: 0;
     left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
     background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: hidden;
+
+    .modal {
+        min-width: 30rem;
+        max-height: calc(100vh - 4rem);
+        flex-basis: 1px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        background-color: var(--clr-neutral-50);
+        border: 1px solid var(--clr-neutral-300);
+        border-radius: var(--radius-default);
+        overflow-y: hidden;
+
+        .modal-header,
+        .modal-content,
+        .modal-footer {
+            padding-inline: 2rem;
+            padding-block: 1rem;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--clr-neutral-300);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--clr-neutral-300);
+        }
+
+        .modal-content {
+            overflow-y: auto;
+        }
+    }
 }
 
-.modal {
-    min-width: 30rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 2rem;
-    background-color: var(--clr-neutral-50);
-    border: 1px solid var(--clr-neutral-300);
-    border-radius: var(--radius-default);
-    padding: 1rem 1.5rem;
-}
 
 .red-asterisk {
     color: red;

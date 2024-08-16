@@ -8,9 +8,11 @@
             @onclick:stopPropagation="true"
             Model=@_formData
             OnValidSubmit=@OnFormSubmit>
-            <h2>Create Project</h2>
+            <div class="modal-header">
+                <h2>Create Project</h2>
+            </div>
 
-            <div class="create-project-modal-fields">
+            <div class="modal-content create-project-modal-fields">
                 <DataAnnotationsValidator/>
 
                 <div class="create-project-modal-field">
@@ -20,15 +22,15 @@
                 </div>
 
                 <div class="create-project-modal-field">
-                    <label>Distribution Board Name <span class="red-asterisk">*</span></label>
-                    <InputText @bind-Value="_formData.DistributionBoardName"/>
-                    <ValidationMessage For=@(() => _formData.DistributionBoardName)/>
+                    <label>Main Distribution Board Name <span class="red-asterisk">*</span></label>
+                    <InputText @bind-Value="_formData.MainDistributionBoard.BoardName"/>
+                    <ValidationMessage For=@(() => _formData.MainDistributionBoard.BoardName)/>
                 </div>
 
                 <div class="create-project-modal-field">
                     <label>Phase</label>
-                    <InputSelect @bind-Value=_formData.Phase>
-                        @foreach (ProjectPhase phase in Enum.GetValues(typeof(ProjectPhase)))
+                    <InputSelect @bind-Value=_formData.MainDistributionBoard.Phase>
+                        @foreach (Phase phase in Enum.GetValues(typeof(Phase)))
                         {
                             <option value="@phase">@phase.GetDisplayName()</option>
                         }
@@ -37,10 +39,10 @@
 
                 <div class="create-project-modal-field">
                     <label>Voltage</label>
-                    <InputSelect @bind-Value=_formData.Voltage>
-                        @foreach (ProjectVoltage voltage in Enum.GetValues(typeof(ProjectVoltage)))
+                    <InputSelect @bind-Value=_formData.MainDistributionBoard.Voltage>
+                        @foreach (Voltage voltage in Enum.GetValues(typeof(Voltage)))
                         {
-                            @if (_formData.Phase == ProjectPhase.SinglePhase && voltage != ProjectVoltage.V230)
+                            @if (_formData.MainDistributionBoard.Phase == Phase.SinglePhase && voltage != Voltage.V230)
                             {
                                 continue;
                             }
@@ -49,9 +51,49 @@
                         }
                     </InputSelect>
                 </div>
+
+                <div class="create-project-modal-field">
+                    <label>Sets</label>
+                    <InputNumber @bind-Value="_formData.MainDistributionBoard.SetCount"/>
+                    <ValidationMessage For=@(() => _formData.MainDistributionBoard.SetCount)/>
+                </div>
+
+
+                <div class="create-project-modal-field-row">
+                    <div class="create-project-modal-field">
+                        <label>Conductor Type</label>
+                        <InputSelect @bind-Value=_formData.MainDistributionBoard.ConductorType>
+                            @foreach (var conductorType in ConductorType.All)
+                            {
+                                <option value="@conductorType">@conductorType.ToString()</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="create-project-modal-field">
+                        <label>Grounding</label>
+                        <InputSelect @bind-Value=_formData.MainDistributionBoard.Grounding>
+                            @foreach (var conductorType in ConductorType.All)
+                            {
+                                <option value="@conductorType">@conductorType.ToString()</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+
+
+                <div class="create-project-modal-field">
+                    <label>Raceway Type</label>
+                    <InputSelect @bind-Value=_formData.MainDistributionBoard.RacewayType>
+                        @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                        {
+                            <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                </div>
             </div>
 
-            <div class="create-project-modal-btns">
+            <div class="modal-footer create-project-modal-btns">
                 <button
                     class="create-project-modal-cancel-btn"
                     @onclick="CloseModal">

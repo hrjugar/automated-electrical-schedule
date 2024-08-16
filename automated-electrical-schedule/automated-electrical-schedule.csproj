@@ -71,10 +71,7 @@
     <ItemGroup>
         <UpToDateCheckInput Remove="Components\Pages\NewProject\NewProjectHome.razor"/>
         <UpToDateCheckInput Remove="Components\Popups\NewProjectPopup.razor"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="wwwroot\css\"/>
+        <UpToDateCheckInput Remove="Components\Controls\CustomInputSelect.razor"/>
     </ItemGroup>
 
 </Project>
