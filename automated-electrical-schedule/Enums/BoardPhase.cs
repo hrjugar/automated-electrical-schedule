@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace automated_electrical_schedule.Models;
+namespace automated_electrical_schedule.Enums;
 
-public enum Phase
+public enum BoardPhase
 {
     [Display(Name = "Single Phase")] SinglePhase,
 

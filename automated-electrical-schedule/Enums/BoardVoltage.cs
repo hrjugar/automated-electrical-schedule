@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace automated_electrical_schedule.Models;
+namespace automated_electrical_schedule.Enums;
 
-public enum Voltage
+public enum BoardVoltage
 {
     [Display(Name = "230 Volts")] V230 = 230,
 

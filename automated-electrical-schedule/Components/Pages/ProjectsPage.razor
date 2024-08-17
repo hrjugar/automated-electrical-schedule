@@ -1,5 +1,8 @@
 ﻿@page "/"
+@using automated_electrical_schedule.Data
+@using Microsoft.EntityFrameworkCore
 @layout HomeLayout
+@inject DatabaseContext DatabaseContext
 
 <main class="projects-page">
     <header>
@@ -7,37 +10,68 @@
             <input placeholder="Search project..."/>
             <button class="btn-primary" @onclick="OpenModal">Add New Project</button>
         </div>
+
     </header>
 
     <div class="projects-list">
-        @if (projectList.Any())
+        <p>File path: @DatabaseContext.DbPath</p>
+        @* @if (projectList.Any()) *@
+        @* { *@
+        @*     @foreach (var project in projectList) *@
+        @*     { *@
+        @*         <div class="project"> *@
+        @*             <h2>@project</h2> *@
+        @*             <p>Project description</p> *@
+        @*         </div> *@
+        @*     } *@
+        @* } *@
+        @* else *@
+        @* { *@
+        @*     <div class="projects-list-empty"> *@
+        @*         <p>No projects found.</p> *@
+        @*         <p>File path: @FileSystem.AppDataDirectory</p> *@
+        @*     </div> *@
+        @* } *@
+        @if (_conductorTypes.Count > 0)
         {
-            @foreach (var project in projectList)
+            @foreach (var conductorType in _conductorTypes)
             {
                 <div class="project">
-                    <h2>@project</h2>
-                    <p>Project description</p>
+                    <h2>@conductorType.Id</h2>
+                    <p>@conductorType.WireType</p>
+                    <p>@conductorType.Material</p>
+                    <p>@conductorType.TemperatureRating</p>
                 </div>
             }
         }
         else
         {
             <div class="projects-list-empty">
-                <p>No projects found.</p>
+                <p>No conductor types found.</p>
             </div>
         }
     </div>
 </main>
 
-<CreateProjectModal @bind-IsOpen="@_isCreateProjectModalOpen"/>
+@if (_isCreateProjectModalOpen)
+{
+    <CreateProjectModal @bind-IsOpen="@_isCreateProjectModalOpen"/>
+}
+
 
 @code {
     readonly List<string> projectList = []; // TODO: Fetch projects from API
+    List<ConductorType> _conductorTypes = [];
     private bool _isCreateProjectModalOpen;
 
     void OpenModal()
     {
         _isCreateProjectModalOpen = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
     }
 
 }

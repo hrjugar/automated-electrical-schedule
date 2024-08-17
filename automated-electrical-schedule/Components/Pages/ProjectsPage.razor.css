@@ -37,6 +37,7 @@
         gap: 1rem;
         user-select: none;
         -webkit-user-select: none;
+        overflow-y: auto;
 
         .projects-list-empty {
             width: 100%;

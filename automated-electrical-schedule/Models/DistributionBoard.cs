@@ -1,52 +1,65 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using automated_electrical_schedule.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace automated_electrical_schedule.Models;
 
-public class DistributionBoard(
-    string boardName,
-    DistributionBoard? parentDistributionBoard,
-    Phase phase,
-    Voltage voltage,
-    int setCount,
-    ConductorType conductorType,
-    ConductorType grounding,
-    RacewayType racewayType
-)
+[Table(TableName)]
+public class DistributionBoard
 {
-    public DistributionBoard() : this(
-        "",
-        null,
-        Phase.SinglePhase,
-        Voltage.V230,
-        1,
-        ConductorType.ThhnCu90,
-        ConductorType.TwCu60,
-        RacewayType.Pvc
-    )
-    {
-    }
+    private const string TableName = "distribution_boards";
+
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("id")]
+    public int Id { get; set; }
 
     [Required]
     [Display(Name = "board name")]
-    public string BoardName { get; set; } = boardName;
+    [Column("name")]
+    [MaxLength(255)]
+    public string BoardName { get; set; } = string.Empty;
 
-    public DistributionBoard? ParentDistributionBoard { get; set; } = parentDistributionBoard;
+    [Column("parent_distribution_board_id")]
+    public int? ParentDistributionBoardId { get; set; }
 
-    [Required] [Display(Name = "phase")] public Phase Phase { get; set; } = phase;
+    // TODO: Check later if cascade delete works as intended
+    [ForeignKey(nameof(ParentDistributionBoardId))]
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public DistributionBoard? ParentDistributionBoard { get; set; }
 
-    [Required] [Display(Name = "voltage")] public Voltage Voltage { get; set; } = voltage;
+    [Required]
+    [Display(Name = "phase")]
+    [Column("phase")]
+    public BoardPhase Phase { get; set; }
 
-    [Required] [Display(Name = "sets")] public int SetCount { get; set; } = setCount;
+    [Required]
+    [Display(Name = "voltage")]
+    [Column("voltage")]
+    public BoardVoltage Voltage { get; set; }
+
+    [Required]
+    [Display(Name = "sets")]
+    [Column("set_count")]
+    public int SetCount { get; set; }
 
     [Required]
     [Display(Name = "conductor type")]
-    public ConductorType ConductorType { get; set; } = conductorType;
+    [Column("conductor_type_id")]
+    public int ConductorTypeId { get; set; }
+
+    [ForeignKey(nameof(ConductorTypeId))] public ConductorType ConductorType { get; set; } = null!;
 
     [Required]
     [Display(Name = "grounding")]
-    public ConductorType Grounding { get; set; } = grounding;
+    [Column("grounding_id")]
+    public int GroundingId { get; set; }
+
+    [ForeignKey(nameof(GroundingId))] public ConductorType Grounding { get; set; } = null!;
 
     [Required]
     [Display(Name = "raceway type")]
-    public RacewayType RacewayType { get; set; } = racewayType;
+    [Column("raceway_type")]
+    public RacewayType RacewayType { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using automated_electrical_schedule.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace automated_electrical_schedule;
 
@@ -12,12 +14,21 @@ public static class MauiProgram
             .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlite($"Data Source={DatabaseContext.DbPath}"));
+
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        dbContext.Database.EnsureCreated();
+
+        return app;
     }
 }
