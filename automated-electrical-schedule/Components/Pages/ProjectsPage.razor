@@ -14,40 +14,20 @@
     </header>
 
     <div class="projects-list">
-        <p>File path: @DatabaseContext.DbPath</p>
-        @* @if (projectList.Any()) *@
-        @* { *@
-        @*     @foreach (var project in projectList) *@
-        @*     { *@
-        @*         <div class="project"> *@
-        @*             <h2>@project</h2> *@
-        @*             <p>Project description</p> *@
-        @*         </div> *@
-        @*     } *@
-        @* } *@
-        @* else *@
-        @* { *@
-        @*     <div class="projects-list-empty"> *@
-        @*         <p>No projects found.</p> *@
-        @*         <p>File path: @FileSystem.AppDataDirectory</p> *@
-        @*     </div> *@
-        @* } *@
-        @if (_conductorTypes.Count > 0)
+        @if (_projects.Count > 0)
         {
-            @foreach (var conductorType in _conductorTypes)
+            @foreach (var project in _projects)
             {
                 <div class="project">
-                    <h2>@conductorType.Id</h2>
-                    <p>@conductorType.WireType</p>
-                    <p>@conductorType.Material</p>
-                    <p>@conductorType.TemperatureRating</p>
+                    <h2>@project</h2>
+                    <p>Project description</p>
                 </div>
             }
         }
         else
         {
             <div class="projects-list-empty">
-                <p>No conductor types found.</p>
+                <p>No projects found.</p>
             </div>
         }
     </div>
@@ -60,7 +40,7 @@
 
 
 @code {
-    readonly List<string> projectList = []; // TODO: Fetch projects from API
+    private List<Project> _projects = [];
     List<ConductorType> _conductorTypes = [];
     private bool _isCreateProjectModalOpen;
 
@@ -71,7 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
+        _projects = await DatabaseContext.Projects.ToListAsync();
     }
 
 }

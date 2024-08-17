@@ -9,6 +9,15 @@ public class Project
 {
     private const string TableName = "projects";
 
+    public Project()
+    {
+    }
+
+    public Project(DistributionBoard mainDistributionBoard)
+    {
+        MainDistributionBoard = mainDistributionBoard;
+    }
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
@@ -18,8 +27,10 @@ public class Project
     [Column("main_distribution_board_id")]
     public int MainDistributionBoardId { get; set; }
 
+    [Required]
     [ForeignKey(nameof(MainDistributionBoardId))]
     [DeleteBehavior(DeleteBehavior.Cascade)]
+    [ValidateComplexType]
     public DistributionBoard MainDistributionBoard { get; set; } = null!;
 
     [Required]

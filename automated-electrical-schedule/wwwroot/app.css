@@ -61,6 +61,11 @@ button {
     border: none;
 }
 
+button[disabled=disabled], button:disabled {
+    cursor: not-allowed;
+    opacity: 0.25;
+}
+
 input, select {
     background: #fff;
     border: 1px solid var(--clr-neutral-300);
@@ -84,6 +89,10 @@ select {
     background-position: right 1rem top 50%;
     background-clip: border-box;
     -webkit-background-clip: border-box;
+}
+
+li {
+    list-style-position: inside;
 }
 
 .btn-primary {
