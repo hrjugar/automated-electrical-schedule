@@ -10,7 +10,7 @@
             class="modal create-project-modal"
             @onclick:stopPropagation="true"
             EditContext=@_editContext
-            OnValidSubmit=@OnFormSubmit>
+            OnValidSubmit=@HandleValidFormSubmit>
 
             <ObjectGraphDataAnnotationsValidator/>
 
@@ -157,11 +157,12 @@
         await IsOpenChanged.InvokeAsync(IsOpen);
     }
 
-    async Task OnFormSubmit()
+    async Task HandleValidFormSubmit()
     {
-        // TODO: Handle database data
+        await DatabaseContext.Projects.AddAsync(_newProject);
+        await DatabaseContext.SaveChangesAsync();
         await CloseModal();
-        Navigation.NavigateTo("/project/1"); //TODO: Update to navigate to the new project
+        Navigation.NavigateTo($"/project/{_newProject.Id}");
     }
 
 }
