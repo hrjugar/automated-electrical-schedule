@@ -7,21 +7,22 @@
 <main class="projects-page">
     <header>
         <div class="projects-controls">
-            <input placeholder="Search project..."/>
+            <form @onsubmit="SearchProjects">
+                <input placeholder="Search project..." @bind="_searchText"/>
+            </form>
             <button class="btn-primary" @onclick="OpenModal">Add New Project</button>
         </div>
-
     </header>
 
     <div class="projects-list">
-        @if (_projects.Count > 0)
+        @if (_filteredProjects.Count > 0)
         {
-            @foreach (var project in _projects)
+            @foreach (var project in _filteredProjects)
             {
-                <div class="project">
+                <a href="/project/@project.Id" class="project">
                     <h2>@project.ProjectName</h2>
-                    <p>@project.</p>
-                </div>
+                    <p>Last created @project.DateCreated.ToRelativeDateString()</p>
+                </a>
             }
         }
         else
@@ -40,8 +41,11 @@
 
 
 @code {
-    private List<Project> _projects = [];
-    List<ConductorType> _conductorTypes = [];
+    List<Project> _projects = [];
+
+    string _searchText = "";
+    List<Project> _filteredProjects = [];
+
     private bool _isCreateProjectModalOpen;
 
     void OpenModal()
@@ -52,6 +56,14 @@
     protected override async Task OnInitializedAsync()
     {
         _projects = await DatabaseContext.Projects.ToListAsync();
+        _projects.Reverse();
+
+        _filteredProjects = _projects;
+    }
+
+    void SearchProjects()
+    {
+        _filteredProjects = _projects.Where(p => p.ProjectName.Contains(_searchText)).ToList();
     }
 
 }

@@ -21,8 +21,12 @@
             align-items: center;
             gap: 1rem;
 
-            input {
+            form {
                 flex-grow: 1;
+
+                input {
+                    width: 100%;
+                }
             }
         }
     }
@@ -33,11 +37,24 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: stretch;
         user-select: none;
         -webkit-user-select: none;
         overflow-y: auto;
+
+        .project {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-default);
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--clr-neutral-200);
+            }
+        }
 
         .projects-list-empty {
             width: 100%;

@@ -159,6 +159,7 @@
 
     async Task HandleValidFormSubmit()
     {
+        _newProject.DateCreated = DateTime.Now.ToDatabaseString();
         await DatabaseContext.Projects.AddAsync(_newProject);
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();

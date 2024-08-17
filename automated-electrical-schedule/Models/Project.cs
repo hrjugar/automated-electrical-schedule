@@ -38,4 +38,8 @@ public class Project
     [Column("project_name")]
     [MaxLength(255)]
     public string ProjectName { get; set; } = string.Empty;
+
+    [Column("date_created")]
+    [MaxLength(255)]
+    public string DateCreated { get; set; } = string.Empty;
 }
