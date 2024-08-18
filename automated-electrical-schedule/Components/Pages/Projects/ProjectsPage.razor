@@ -1,14 +1,12 @@
 ﻿@page "/"
 @using Microsoft.EntityFrameworkCore
-@layout HomeLayout
+@layout MainLayout
 @inject DatabaseContext DatabaseContext
 
 <main class="projects-page">
     <header>
         <div class="projects-controls">
-            <form @onsubmit="SearchProjects">
-                <input placeholder="Search project..." @bind="_searchText"/>
-            </form>
+            <ProjectsSearch Search="SearchProjects"/>
             <button class="btn-primary" @onclick="OpenModal">Add New Project</button>
         </div>
     </header>
@@ -41,7 +39,6 @@
 
 @code {
     List<Project> _projects = [];
-    string _searchText = "";
 
     private bool _isCreateProjectModalOpen;
 
@@ -56,11 +53,11 @@
         _projects.Reverse();
     }
 
-    async Task SearchProjects()
+    async Task SearchProjects(string searchText)
     {
         _projects = await
             DatabaseContext.Projects
-                .Where(p => p.ProjectName.Contains(_searchText))
+                .Where(p => p.ProjectName.Contains(searchText))
                 .ToListAsync();
     }
 

@@ -17,6 +17,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: transparent;
     color: var(--clr-neutral-950);
     text-decoration: none;
     user-select: none;
@@ -48,12 +49,20 @@ a, .btn-link {
     color: #006bb7;
 }
 
-button, input, select {
-    padding-block: 1.25rem;
+button:not(.btn-icon),
+input:not(.input-search-wrapper input),
+.input-search-wrapper,
+select {
     padding-inline: 1rem;
     font-size: 1rem;
     border-radius: var(--radius-default);
     white-space: nowrap;
+}
+
+button:not(.btn-icon),
+input:not(.input-search-wrapper input),
+select {
+    padding-block: 1.25rem;
 }
 
 button {
@@ -66,7 +75,31 @@ button[disabled=disabled], button:disabled {
     opacity: 0.25;
 }
 
-input, select {
+.input-search-wrapper {
+    padding-block: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+
+    .btn-icon {
+        .icon {
+            path {
+                fill: var(--clr-neutral-500);
+            }
+        }
+    }
+
+    input {
+        flex-grow: 1;
+        font-size: 1rem;
+        border: none;
+        border-radius: 0;
+    }
+}
+
+input:not(.input-search-wrapper input), .input-search-wrapper, select {
     background: #fff;
     border: 1px solid var(--clr-neutral-300);
 }
@@ -93,6 +126,11 @@ select {
 
 li {
     list-style-position: inside;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .btn-primary {

@@ -1,0 +1,33 @@
+@page "/project/{ProjectId:int}/{BoardId:int?}"
+@using Microsoft.EntityFrameworkCore
+@layout MainLayout
+@inject NavigationManager Navigation
+@inject DatabaseContext DatabaseContext
+
+@if (_project is not null)
+{
+    <main class="project-page">
+        <header>
+            <p>@_project.ProjectName</p>
+            <p>Projects > @_project.ProjectName > @_project.MainDistributionBoard.BoardName</p>
+            <h1>@_project.MainDistributionBoard.BoardName</h1>
+        </header>
+    </main>
+}
+
+@code {
+    [Parameter] public int ProjectId { get; set; }
+    [Parameter] public int? BoardId { get; set; }
+    Project? _project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // var foundProject = await DatabaseContext.Projects.SingleAsync(p => p.Id == Id);
+        // foundProject.MainDistributionBoard = await DatabaseContext.DistributionBoards.SingleAsync(db => db.Id == foundProject.MainDistributionBoardId);
+        var foundProject = await DatabaseContext.Projects
+            .Include(p => p.MainDistributionBoard)
+            .SingleAsync(p => p.Id == ProjectId);
+        _project = foundProject;
+    }
+
+}
