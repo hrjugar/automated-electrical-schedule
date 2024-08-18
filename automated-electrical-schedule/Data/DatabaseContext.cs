@@ -1,4 +1,5 @@
-using automated_electrical_schedule.Models;
+using automated_electrical_schedule.Data.Models;
+using automated_electrical_schedule.Data.Seeds;
 using Microsoft.EntityFrameworkCore;
 
 namespace automated_electrical_schedule.Data;

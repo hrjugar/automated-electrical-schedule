@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace automated_electrical_schedule.Models;
+namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
 public class Project

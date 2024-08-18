@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using automated_electrical_schedule.Enums;
+using automated_electrical_schedule.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace automated_electrical_schedule.Models;
+namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
 public class DistributionBoard
@@ -83,4 +83,6 @@ public class DistributionBoard
     [Display(Name = "raceway type")]
     [Column("raceway_type")]
     public RacewayType RacewayType { get; set; }
+
+    public List<DistributionBoard> ChildDistributionBoards { get; set; } = [];
 }

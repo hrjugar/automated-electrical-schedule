@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace automated_electrical_schedule.Enums;
+namespace automated_electrical_schedule.Data.Enums;
 
 public enum ConductorMaterial
 {

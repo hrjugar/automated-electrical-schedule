@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using automated_electrical_schedule.Enums;
+using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Utils;
 
-namespace automated_electrical_schedule.Models;
+namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
 public class ConductorType

@@ -1,7 +1,7 @@
-using automated_electrical_schedule.Enums;
-using automated_electrical_schedule.Models;
+using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
 
-namespace automated_electrical_schedule.Data;
+namespace automated_electrical_schedule.Data.Seeds;
 
 public static class ConductorTypeSeed
 {
