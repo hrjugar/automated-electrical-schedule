@@ -13,26 +13,20 @@ public static class DateExtensions
     {
         var dateTime = DateTime.ParseExact(databaseDateTimeString, DatabaseDateTimeStringFormat, null);
         var diff = DateTime.Now - dateTime;
-        var diffSeconds = diff.Seconds;
 
-        const int minuteSeconds = 60;
-        const int hourSeconds = minuteSeconds * 60;
-        const int daySeconds = hourSeconds * 24;
-        const int monthSeconds = daySeconds * 30;
-
-        switch (diffSeconds)
+        switch (diff.Days)
         {
-            case < minuteSeconds:
-                return $"{diffSeconds} second{(diffSeconds == 1 ? "" : "s")} ago";
-            case < hourSeconds:
-                return $"{diff.Minutes} minute{(diff.Minutes == 1 ? "" : "s")} ago";
-            case < daySeconds:
-                return $"{diff.Hours} hour{(diff.Hours == 1 ? "" : "s")} ago";
-            case < monthSeconds:
+            case > 30:
+                var diffMonths = diff.Days / 30;
+                return $"{diffMonths} month{(diffMonths == 1 ? "" : "s")} ago";
+            case > 0:
                 return $"{diff.Days} day{(diff.Days == 1 ? "" : "s")} ago";
-            default:
-                var diffDays = diff.Days / 30;
-                return $"{diffDays} month{(diffDays == 1 ? "" : "s")} ago";
         }
+
+        if (diff.Hours > 0) return $"{diff.Hours} hour{(diff.Hours == 1 ? "" : "s")} ago";
+
+        return diff.Minutes > 0
+            ? $"{diff.Minutes} minute{(diff.Minutes == 1 ? "" : "s")} ago"
+            : $"{diff.Seconds} second{(diff.Seconds == 1 ? "" : "s")} ago";
     }
 }
