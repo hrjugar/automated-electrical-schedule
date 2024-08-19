@@ -4,6 +4,7 @@
     justify-content: start;
     align-items: start;
     gap: 2rem;
+    padding: 1rem 1.5rem;
 
     header {
         width: 100%;

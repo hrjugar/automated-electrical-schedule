@@ -1,0 +1,50 @@
+.board-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        padding: 1rem 1.5rem;
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+
+    .board-content {
+        flex-grow: 1;
+        min-height: 25rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+
+        .board-content-metadata {
+            min-width: 20rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 1rem;
+        }
+    }
+}

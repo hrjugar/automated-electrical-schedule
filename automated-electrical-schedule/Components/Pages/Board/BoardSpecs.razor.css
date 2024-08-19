@@ -1,0 +1,28 @@
+.board-specs {
+    gap: 2rem;
+
+    .board-specs-list {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 1rem;
+
+        .board-spec {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+
+            label {
+                color: var(--clr-neutral-400);
+            }
+
+            p {
+                color: var(--clr-neutral-700);
+                font-size: 1.125rem;
+                font-weight: 500;
+            }
+        }
+    }
+}

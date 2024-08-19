@@ -1,0 +1,10 @@
+.board-size-card {
+    .board-size-card-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .board-size-card-value {
+        color: var(--clr-neutral-700);
+    }
+}

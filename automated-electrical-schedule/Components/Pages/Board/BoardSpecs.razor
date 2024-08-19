@@ -1,0 +1,44 @@
+<div class="card board-specs">
+    <h2>Board Specifications</h2>
+
+    <div class="board-specs-list">
+        <div class="board-spec">
+            <label>Phase</label>
+            <p>@DistributionBoard.Phase.GetDisplayName()</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Voltage</label>
+            <p>@DistributionBoard.Voltage.GetDisplayName()</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Circuit Protection</label>
+            <p>@DistributionBoard.CircuitProtection.GetDisplayName()</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Number of Sets</label>
+            <p>@DistributionBoard.SetCount</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Conductor Type</label>
+            <p>@DistributionBoard.ConductorType.ToString()</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Grounding</label>
+            <p>@DistributionBoard.Grounding.ToString()</p>
+        </div>
+
+        <div class="board-spec">
+            <label>Raceway Type</label>
+            <p>@DistributionBoard.RacewayType.GetDisplayName()</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+}

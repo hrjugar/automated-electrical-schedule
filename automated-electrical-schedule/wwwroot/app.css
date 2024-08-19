@@ -10,6 +10,7 @@
     --clr-neutral-800: #292524;
     --clr-neutral-900: #1c1917;
     --clr-neutral-950: #0c0a09;
+    --clr-destructive: #d62222;
     --radius-default: 6px;
 }
 
@@ -19,6 +20,7 @@
     box-sizing: border-box;
     background-color: transparent;
     color: var(--clr-neutral-950);
+    overscroll-behavior: none;
     text-decoration: none;
     user-select: none;
     -webkit-user-select: none;
@@ -42,7 +44,6 @@ main {
     flex: 1;
     background-color: var(--clr-neutral-50);
     height: 100%;
-    padding: 1rem 1.5rem;
 }
 
 a, .btn-link {
@@ -136,6 +137,30 @@ li {
 .btn-primary {
     color: #fff;
     background-color: var(--clr-neutral-950);
+}
+
+.btn-secondary {
+    background-color: white;
+    box-shadow: inset 0 0 0 1px var(--clr-neutral-400);
+    color: black;
+
+    svg path {
+        fill: black;
+    }
+}
+
+.btn-destructive {
+    background-color: var(--clr-destructive);
+    color: #fff;
+
+    svg path {
+        fill: #fff;
+    }
+}
+
+.btn-icon.btn-icon-alone {
+    padding: 1rem;
+    border-radius: var(--radius-default);
 }
 
 .link-primary {
@@ -242,7 +267,16 @@ li {
     }
 }
 
-
 .red-asterisk {
     color: red;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--clr-neutral-300);
+    border-radius: var(--radius-default);
 }

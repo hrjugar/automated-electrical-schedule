@@ -1,0 +1,9 @@
+<div class="card board-size-card">
+    <p class="board-size-card-name">@Name</p>
+    <p class="board-size-card-value">@Value</p>
+</div>
+
+@code {
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+}

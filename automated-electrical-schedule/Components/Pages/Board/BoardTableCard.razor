@@ -1,0 +1,64 @@
+<div class="card board-table-card">
+    <div class="board-table-card-header">
+        <h1>Circuits</h1>
+
+        <div class="board-table-stats">
+            <div class="board-table-stat">
+                <p>12</p>
+                <label>Items</label>
+            </div>
+
+            <div class="separator-vertical"></div>
+
+            <div class="board-table-stat">
+                <p>1480</p>
+                <label>VA</label>
+            </div>
+
+            <div class="separator-vertical"></div>
+
+            <div class="board-table-stat">
+                <p>6.4835</p>
+                <label>Ampere Load</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="board-table-wrapper">
+        <table class="board-table">
+            <thead>
+            <tr class="board-table-header-top">
+                <th class="th-display cell-sticky cell-sticky-left" rowspan="2">No.</th>
+                <th colspan="6">General</th>
+                <th colspan="7">Circuit Protection</th>
+                <th colspan="4">Conductor Size</th>
+                <th class="th-display cell-sticky cell-sticky-right" rowspan="2"></th>
+            </tr>
+
+            <tr class="board-table-header-bottom">
+                <th class="th-group-start">Load Description</th>
+                <th>Qty</th>
+                <th>VA</th>
+                <th>Voltage</th>
+                <th>D.F.</th>
+                <th class="th-group-end">Ampere Load</th>
+                <th class="th-group-start">AT</th>
+                <th>AF (or more)</th>
+                <th>Phase</th>
+                <th>Pole</th>
+                <th>Length</th>
+                <th>Voltage Drop</th>
+                <th class="th-group-end">Type</th>
+                <th class="th-group-start">Sets</th>
+                <th>Phase+Neutral</th>
+                <th>Ground</th>
+                <th class="th-group-end">Raceway</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+}

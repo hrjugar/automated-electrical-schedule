@@ -73,6 +73,7 @@
     <ItemGroup>
         <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css"/>
         <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map"/>
+        <_ContentIncludedByDefault Remove="wwwroot\icons\search.svg" />
     </ItemGroup>
 
     <ItemGroup>
@@ -84,7 +85,7 @@
     <ItemGroup>
         <AdditionalFiles Include="Components\Pages\AboutUs\AboutUsPage.razor"/>
         <AdditionalFiles Include="Components\Pages\Projects\ProjectsPage.razor"/>
-        <AdditionalFiles Include="Components\Pages\Project\ProjectPage.razor"/>
+        <AdditionalFiles Include="Components\Pages\Board\ProjectPage.razor"/>
     </ItemGroup>
 
 </Project>
