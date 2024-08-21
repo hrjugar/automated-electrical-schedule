@@ -1,17 +1,24 @@
-﻿:root {
-    --clr-neutral-50: #fafaf9;
-    --clr-neutral-100: #f5f5f4;
-    --clr-neutral-200: #e7e5e4;
-    --clr-neutral-300: #d6d3d1;
-    --clr-neutral-400: #a8a29e;
-    --clr-neutral-500: #78716c;
-    --clr-neutral-600: #57534e;
-    --clr-neutral-700: #44403c;
-    --clr-neutral-800: #292524;
-    --clr-neutral-900: #1c1917;
-    --clr-neutral-950: #0c0a09;
-    --clr-destructive: #d62222;
+﻿@font-face {
+    font-family: Heebo;
+    src: url("./Heebo.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 100 900;
+}
+
+:root {
+    --clr-neutral-50: #F8FAFC;
+    --clr-neutral-100: #F1F5F9;
+    --clr-neutral-200: #E2E8F0;
+    --clr-neutral-300: #CBD5E1;
+    --clr-neutral-400: #94A3B8;
+    --clr-neutral-500: #64748B;
+    --clr-neutral-600: #475569;
+    --clr-neutral-700: #334155;
+    --clr-neutral-800: #1E293B;
+    --clr-neutral-900: #0F172A;
+    --clr-destructive: #DC2626;
     --radius-default: 6px;
+    --shadow-md: 0 4px 8px rgba(203, 213, 225, 0.5);
 }
 
 * {
@@ -19,20 +26,17 @@
     padding: 0;
     box-sizing: border-box;
     background-color: transparent;
-    color: var(--clr-neutral-950);
+    color: var(--clr-neutral-900);
     overscroll-behavior: none;
     text-decoration: none;
     user-select: none;
     -webkit-user-select: none;
     -webkit-user-drag: none;
+    font-family: Heebo, sans-serif;
 }
 
 *:focus {
     outline: none;
-}
-
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .layout {
@@ -42,8 +46,50 @@ html, body {
 
 main {
     flex: 1;
-    background-color: var(--clr-neutral-50);
+    background-color: white;
     height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.0;
+}
+
+h1 {
+    font-size: 3rem;
+    letter-spacing: -0.15rem;
+}
+
+h2 {
+    font-size: 2.5rem;
+    letter-spacing: -0.125rem;
+}
+
+h3 {
+    font-size: 2rem;
+    letter-spacing: -0.1rem;
+}
+
+h4 {
+    font-size: 1.75rem;
+    letter-spacing: -0.075rem;
+}
+
+h5 {
+    font-size: 1.5rem;
+    letter-spacing: -0.05rem;
+}
+
+h6 {
+    font-size: 1.25rem;
+    letter-spacing: -0.025rem;
+}
+
+.text-sm {
+    font-size: 0.8125rem;
+}
+
+.text-xs {
+    font-size: 0.6875rem;
 }
 
 a, .btn-link {
@@ -83,6 +129,7 @@ button[disabled=disabled], button:disabled {
     justify-content: flex-start;
     align-items: center;
     gap: 1rem;
+    box-shadow: var(--shadow-md);
 
     .btn-icon {
         .icon {
@@ -129,6 +176,7 @@ li {
     list-style-position: inside;
 }
 
+
 .icon {
     width: 1.5rem;
     height: 1.5rem;
@@ -136,7 +184,7 @@ li {
 
 .btn-primary {
     color: #fff;
-    background-color: var(--clr-neutral-950);
+    background-color: var(--clr-neutral-900);
 }
 
 .btn-secondary {
@@ -168,7 +216,7 @@ li {
     font-size: 1rem;
     border-radius: var(--radius-default);
     color: #fff;
-    background-color: var(--clr-neutral-950);
+    background-color: var(--clr-neutral-900);
 }
 
 .link-primary span {
@@ -269,14 +317,4 @@ li {
 
 .red-asterisk {
     color: red;
-}
-
-.card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--clr-neutral-300);
-    border-radius: var(--radius-default);
 }

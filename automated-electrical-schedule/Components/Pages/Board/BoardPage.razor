@@ -9,13 +9,11 @@
         <header>
             <div class="header-text">
                 <BoardBreadcrumbs DistributionBoard="_distributionBoard"/>
-                <h1>@_distributionBoard.BoardName</h1>
+                <h2>@_distributionBoard.BoardName</h2>
             </div>
 
             @* TODO: Implement functionality for buttons *@
             <div class="header-controls">
-                <button class="btn-primary">Add Circuit</button>
-
                 <button class="btn-icon btn-secondary btn-icon-alone">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                         <path
@@ -35,16 +33,7 @@
         </header>
 
         <div class="board-content">
-            <div class="board-content-metadata">
-                <BoardSpecs DistributionBoard="_distributionBoard"/>
-                <BoardSizeCard
-                    Name="Size of Circuit Protection"
-                    Value="Use 20 Ampere-Trip, 30 Ampere Frame, 2-Pole, Molded-Case Circuit Breaker"/>
-                <BoardSizeCard
-                    Name="Size of Wire"
-                    Value="Use 1 set of 2-3.5mm2 THHN Cu, 1-3.5mm2 TW Cu Grounding Wire, and 20mm ø PVC"/>
-            </div>
-
+            <BoardSpecs DistributionBoard="_distributionBoard"/>
             <BoardTableCard DistributionBoard="_distributionBoard"/>
         </div>
     </main>

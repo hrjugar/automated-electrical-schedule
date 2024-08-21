@@ -17,7 +17,7 @@
             @foreach (var project in _projects)
             {
                 <a href="/board/@project.MainDistributionBoardId" class="project">
-                    <h2>@project.ProjectName</h2>
+                    <h5>@project.ProjectName</h5>
                     <p>Last created @project.DateCreated.ToRelativeDateString()</p>
                 </a>
             }

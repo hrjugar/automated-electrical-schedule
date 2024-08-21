@@ -1,28 +1,24 @@
 .board-specs {
-    gap: 2rem;
+    min-width: 15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 1.5rem;
 
-    .board-specs-list {
+    .board-spec {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         align-items: stretch;
-        gap: 1rem;
 
-        .board-spec {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: stretch;
+        label {
+            color: var(--clr-neutral-500);
+        }
 
-            label {
-                color: var(--clr-neutral-400);
-            }
-
-            p {
-                color: var(--clr-neutral-700);
-                font-size: 1.125rem;
-                font-weight: 500;
-            }
+        h5 {
+            color: var(--clr-neutral-700);
+            font-weight: 400;
         }
     }
 }

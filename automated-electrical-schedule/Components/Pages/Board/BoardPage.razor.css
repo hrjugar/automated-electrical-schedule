@@ -39,7 +39,7 @@
         padding: 1rem 1.5rem;
 
         .board-content-metadata {
-            min-width: 20rem;
+            min-width: 15rem;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;

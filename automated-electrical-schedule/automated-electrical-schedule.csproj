@@ -40,6 +40,7 @@
 
     <ItemGroup>
         <!-- App Icon -->
+        <MauiFont Include="wwwroot\Heebo.ttf"/>
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
 
         <!-- Splash Screen -->
@@ -73,7 +74,7 @@
     <ItemGroup>
         <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css"/>
         <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map"/>
-        <_ContentIncludedByDefault Remove="wwwroot\icons\search.svg" />
+        <_ContentIncludedByDefault Remove="wwwroot\icons\search.svg"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,13 +1,13 @@
 @inherits LayoutComponentBase
 
 <div class="layout home-layout">
-    <MainNavMenu/>
+    <MainNavMenu @bind-IsNavMenuMinimized="_isNavMenuMinimized"/>
 
-    <div class="page">
+    <div class="page @(_isNavMenuMinimized ? "page-full" : "")">
         @Body
     </div>
 </div>
 
 @code {
-
+    private bool _isNavMenuMinimized;
 }

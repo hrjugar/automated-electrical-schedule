@@ -48,12 +48,20 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            padding: 1rem 1.5rem;
+            padding: 1.5rem 1rem;
             border-radius: var(--radius-default);
             cursor: pointer;
 
+            h5 {
+                font-weight: 500;
+            }
+
             &:hover {
-                background-color: var(--clr-neutral-200);
+                background-color: var(--clr-neutral-100);
+            }
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--clr-neutral-300);
             }
         }
 

@@ -11,7 +11,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
+            .ConfigureFonts(fonts => { fonts.AddFont("Heebo.ttf", "Heebo"); });
 
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddDbContext<DatabaseContext>(options =>
