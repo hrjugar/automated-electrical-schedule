@@ -176,6 +176,10 @@ li {
     list-style-position: inside;
 }
 
+.icon-sm {
+    width: 1rem;
+    height: 1rem;
+}
 
 .icon {
     width: 1.5rem;
@@ -195,6 +199,16 @@ li {
     svg path {
         fill: black;
     }
+
+    &.btn-stroke {
+        background-color: transparent;
+        box-shadow: none;
+        color: var(--clr-neutral-400);
+
+        svg path {
+            fill: var(--clr-neutral-400);
+        }
+    }
 }
 
 .btn-destructive {
@@ -204,11 +218,27 @@ li {
     svg path {
         fill: #fff;
     }
+
+    &.btn-stroke {
+        background-color: transparent;
+        box-shadow: none;
+        color: var(--clr-destructive);
+
+        svg path {
+            fill: var(--clr-destructive);
+        }
+    }
 }
 
 .btn-icon.btn-icon-alone {
     padding: 1rem;
     border-radius: var(--radius-default);
+}
+
+.btn-icon-alone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .link-primary {
