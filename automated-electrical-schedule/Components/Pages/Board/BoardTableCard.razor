@@ -1,8 +1,8 @@
 <div class="board-table-card">
-    <div class="board-table-card-header">
-        <h6>Circuits</h6>
-        <button class="btn-primary text-sm">Add</button>
-    </div>
+    @* <div class="board-table-card-header"> *@
+    @*     <h6>Circuits</h6> *@
+    @*     <button class="btn-primary text-sm">Add</button> *@
+    @* </div> *@
 
     <div class="board-table">
         <div class="board-table-head">
@@ -48,47 +48,57 @@
             <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
         </div>
 
-        <div class="board-table-rows">
-            @for (var i = 1; i <= 20; i++)
-            {
-                <div class="board-table-row">
-                    <p class="cell cell--text cell--sticky cell--sticky--left">@i</p>
-                    <p class="cell cell--text">Bedroom Lighting</p>
-                    <p class="cell cell--text">10</p>
-                    <p class="cell cell--text">1300</p>
-                    <p class="cell cell--text">230</p>
-                    <p class="cell cell--text">100%</p>
-                    <p class="cell cell--text">5.6522</p>
+        @if (_circuitList.Count == 0)
+        {
+            <div class="board-table-empty">
+                <p class="board-table-empty-text">This board has no circuits.</p>
+            </div>
+        }
+        else
+        {
+            <div class="board-table-rows">
+                @for (var i = 1; i <= 20; i++)
+                {
+                    <div class="board-table-row">
+                        <p class="cell cell--text cell--sticky cell--sticky--left">@i</p>
+                        <p class="cell cell--text">Bedroom Lighting</p>
+                        <p class="cell cell--text">10</p>
+                        <p class="cell cell--text">1300</p>
+                        <p class="cell cell--text">230</p>
+                        <p class="cell cell--text">100%</p>
+                        <p class="cell cell--text">5.6522</p>
 
-                    <div class="cell cell--separator"></div>
+                        <div class="cell cell--separator"></div>
 
-                    <p class="cell cell--text">15</p>
-                    <p class="cell cell--text">50</p>
-                    <p class="cell cell--text">1</p>
-                    <p class="cell cell--text">2</p>
-                    <p class="cell cell--text">50</p>
-                    <p class="cell cell--text">1.24%</p>
-                    <p class="cell cell--text">MCB</p>
+                        <p class="cell cell--text">15</p>
+                        <p class="cell cell--text">50</p>
+                        <p class="cell cell--text">1</p>
+                        <p class="cell cell--text">2</p>
+                        <p class="cell cell--text">50</p>
+                        <p class="cell cell--text">1.24%</p>
+                        <p class="cell cell--text">MCB</p>
 
-                    <div class="cell cell--separator"></div>
+                        <div class="cell cell--separator"></div>
 
-                    <p class="cell cell--text">1</p>
-                    <p class="cell cell--text">2-2.0mm^2 THHN Cu</p>
-                    <p class="cell cell--text">1-3.5mm^2 TW Cu</p>
-                    <p class="cell cell--text">20mm PVC</p>
+                        <p class="cell cell--text">1</p>
+                        <p class="cell cell--text">2-2.0mm^2 THHN Cu</p>
+                        <p class="cell cell--text">1-3.5mm^2 TW Cu</p>
+                        <p class="cell cell--text">20mm PVC</p>
 
-                    <div class="cell cell--separator"></div>
+                        <div class="cell cell--separator"></div>
 
-                    <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
-                        <button class="btn-secondary text-sm">
-                            Edit
-                        </button>
+                        <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
+                            <button class="btn-secondary text-sm">
+                                Edit
+                            </button>
 
-                        <button class="btn-destructive text-sm">Delete</button>
+                            <button class="btn-destructive text-sm">Delete</button>
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+
 
         <div class="board-table-footer">
             <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
@@ -125,4 +135,6 @@
 
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+
+    List<string> _circuitList = ["Aye"];
 }

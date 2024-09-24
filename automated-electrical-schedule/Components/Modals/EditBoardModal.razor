@@ -1,12 +1,12 @@
 @using Microsoft.EntityFrameworkCore
-@inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
+
 
 @if (IsOpen && _editContext != null)
 {
-    <div class="modal-wrapper" @onclick="CloseModal">
+    <div class="modal-wrapper" @onclick="@CloseModal">
         <EditForm
-            class="modal create-project-modal"
+            class="modal edit-board-modal"
             @onclick:stopPropagation="true"
             EditContext=@_editContext
             OnValidSubmit=@HandleValidFormSubmit>
@@ -14,39 +14,34 @@
             <ObjectGraphDataAnnotationsValidator/>
 
             <div class="modal-header">
-                <h5>Create Project</h5>
+                <h5>Edit Board</h5>
             </div>
 
-            <div class="modal-content create-project-modal-fields">
-                <div class="create-project-modal-field">
-                    <label>Project Name <span class="red-asterisk">*</span></label>
-                    <InputText class="input-primary" @bind-Value="_newProject.ProjectName" placeholder="Bedroom Elec. SOL"/>
-                    <ValidationMessage For=@(() => _newProject.ProjectName)/>
+            <div class="modal-content edit-board-modal-fields">
+                <!-- TODO -->
+                <div class="edit-board-modal-field">
+                    <label>Board Name <span class="red-asterisk">*</span></label>
+                    <InputText class="input-primary" @bind-Value="DistributionBoard.BoardName" placeholder="Bedroom Main PB"/>
+                    <ValidationMessage For=@(() => DistributionBoard.BoardName)/>
                 </div>
 
-                <div class="create-project-modal-field">
-                    <label>Main Distribution Board Name <span class="red-asterisk">*</span></label>
-                    <InputText class="input-primary" @bind-Value="_newProject.MainDistributionBoard.BoardName" placeholder="Bedroom Main PB"/>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.BoardName)/>
-                </div>
-
-                <div class="create-project-modal-field">
+                <div class="edit-board-modal-field">
                     <label>Phase <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.Phase>
+                    <InputSelect @bind-Value=DistributionBoard.Phase>
                         @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
                         {
                             <option value="@phase">@phase.GetDisplayName()</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.Phase)/>
+                    <ValidationMessage For=@(() => DistributionBoard.Phase)/>
                 </div>
 
-                <div class="create-project-modal-field">
+                <div class="edit-board-modal-field">
                     <label>Voltage <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.Voltage>
+                    <InputSelect @bind-Value=DistributionBoard.Voltage>
                         @foreach (BoardVoltage voltage in Enum.GetValues(typeof(BoardVoltage)))
                         {
-                            @if (_newProject.MainDistributionBoard.Phase == BoardPhase.SinglePhase && voltage != BoardVoltage.V230)
+                            @if (DistributionBoard.Phase == BoardPhase.SinglePhase && voltage != BoardVoltage.V230)
                             {
                                 continue;
                             }
@@ -54,78 +49,78 @@
                             <option value="@voltage">@voltage.GetDisplayName()</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.Voltage)/>
+                    <ValidationMessage For=@(() => DistributionBoard.Voltage)/>
                 </div>
 
-                <div class="create-project-modal-field">
+                <div class="edit-board-modal-field">
                     <label>Circuit Protection <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.CircuitProtection>
+                    <InputSelect @bind-Value=DistributionBoard.CircuitProtection>
                         @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
                         {
                             <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.CircuitProtection)/>
+                    <ValidationMessage For=@(() => DistributionBoard.CircuitProtection)/>
                 </div>
 
-                <div class="create-project-modal-field">
+                <div class="edit-board-modal-field">
                     <label>Sets <span class="red-asterisk">*</span></label>
-                    <InputNumber class="input-primary" @bind-Value="_newProject.MainDistributionBoard.SetCount"/>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.SetCount)/>
+                    <InputNumber class="input-primary" @bind-Value="DistributionBoard.SetCount"/>
+                    <ValidationMessage For=@(() => DistributionBoard.SetCount)/>
                 </div>
 
-                <div class="create-project-modal-field-row">
-                    <div class="create-project-modal-field">
+                <div class="edit-board-modal-field-row">
+                    <div class="edit-board-modal-field">
                         <label>Conductor Type <span class="red-asterisk">*</span></label>
 
-                        <InputSelect @bind-Value="_newProject.MainDistributionBoard.ConductorTypeId">
+                        <InputSelect @bind-Value="DistributionBoard.ConductorTypeId">
                             @foreach (var conductorType in _conductorTypes)
                             {
                                 <option value="@conductorType.Id">@conductorType.ToString()</option>
                                 @* <option value="@conductorType.Name">@conductorType.Name</option> *@
                             }
                         </InputSelect>
-                        <ValidationMessage For=@(() => _newProject.MainDistributionBoard.ConductorTypeId)/>
+                        <ValidationMessage For=@(() => DistributionBoard.ConductorTypeId)/>
                     </div>
 
-                    <div class="create-project-modal-field">
+                    <div class="edit-board-modal-field">
                         <label>Grounding <span class="red-asterisk">*</span></label>
 
-                        <InputSelect @bind-Value="_newProject.MainDistributionBoard.GroundingId">
+                        <InputSelect @bind-Value="DistributionBoard.GroundingId">
                             @foreach (var conductorType in _conductorTypes)
                             {
                                 <option value="@conductorType.Id">@conductorType.ToString()</option>
                                 @* <option value="@conductorType.Name">@conductorType.Name</option> *@
                             }
                         </InputSelect>
-                        <ValidationMessage For=@(() => _newProject.MainDistributionBoard.GroundingId)/>
+                        <ValidationMessage For=@(() => DistributionBoard.GroundingId)/>
                     </div>
                 </div>
 
-                <div class="create-project-modal-field">
+                <div class="edit-board-modal-field">
                     <label>Raceway Type <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.RacewayType>
+                    <InputSelect @bind-Value=DistributionBoard.RacewayType>
                         @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
                         {
                             <option value="@racewayType">@racewayType.GetDisplayName()</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.RacewayType)/>
+                    <ValidationMessage For=@(() => DistributionBoard.RacewayType)/>
                 </div>
             </div>
 
             <div class="modal-footer modal-footer-btns">
                 <button
-                    class="btn-text create-project-modal-cancel-btn"
+                    class="btn-text edit-board-modal-cancel-btn"
                     @onclick="CloseModal">
                     Cancel
                 </button>
 
                 <button
-                    class="btn-text create-project-modal-create-btn btn-primary"
+                    class="btn-text edit-board-modal-edit-btn btn-primary"
                     type="submit"
-                    disabled="@(!_editContext.Validate() || !_editContext.IsModified())">
-                    Create
+                    disabled="@(!_editContext.Validate())">
+                    Edit
                 </button>
             </div>
         </EditForm>
@@ -136,8 +131,8 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    Project _newProject = new() { MainDistributionBoard = new DistributionBoard() };
-    EditContext? _editContext = null;
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+    EditContext? _editContext;
 
     List<ConductorType> _conductorTypes = [];
 
@@ -145,10 +140,7 @@
     {
         _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
 
-        _newProject.MainDistributionBoard.ConductorTypeId = _conductorTypes[0].Id;
-        _newProject.MainDistributionBoard.GroundingId = _conductorTypes[0].Id;
-
-        _editContext = new EditContext(_newProject);
+        _editContext = new EditContext(DistributionBoard);
     }
 
     async Task CloseModal()
@@ -159,13 +151,10 @@
 
     async Task HandleValidFormSubmit()
     {
-        _newProject.DateCreated = DateTime.Now.ToDatabaseString();
-        await DatabaseContext.Projects.AddAsync(_newProject);
+        // TODO: Handle board edit in database
+        DatabaseContext.Update(DistributionBoard);
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();
-
-        // TODO: Update route to /board instead
-        Navigation.NavigateTo($"/project/{_newProject.Id}");
     }
 
 }

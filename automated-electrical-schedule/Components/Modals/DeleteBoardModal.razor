@@ -1,0 +1,82 @@
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject DatabaseContext DatabaseContext
+
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div class="modal delete-board-modal">
+            <div class="modal-header">
+                <h5>Delete distribution board?</h5>
+            </div>
+
+            <div class="modal-content delete-board-modal-content">
+                <p class="delete-confirmation">Are you sure you want to delete <em>@DistributionBoard.BoardName</em> and its circuits? This action cannot be undone.</p>
+
+                @if (_parentProject is not null)
+                {
+                    <div class="delete-note">
+                        <p class="delete-note-header">Warning</p>
+                        <p class="delete-note-content">This is the main distribution board of <em>@_parentProject.ProjectName</em>. Deleting this board will also be deleting <em>@_parentProject.ProjectName</em>.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text edit-board-modal-cancel-btn"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn-text edit-board-modal-edit-btn btn-destructive"
+                    @onclick="DeleteBoard">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+
+    Project? _parentProject;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (DistributionBoard.ParentDistributionBoard is null)
+        {
+            _parentProject = await DatabaseContext.Projects.SingleAsync(p => p.MainDistributionBoardId == DistributionBoard.Id);
+        }
+    }
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task DeleteBoard()
+    {
+        DatabaseContext.DistributionBoards.Remove(DistributionBoard);
+
+        if (_parentProject is not null)
+        {
+            DatabaseContext.Projects.Remove(_parentProject);
+        }
+
+        await DatabaseContext.SaveChangesAsync();
+        await CloseModal();
+
+        Navigation.NavigateTo(
+            _parentProject is null ? $"/board/{DistributionBoard.ParentDistributionBoardId}" : "/"
+        );
+    }
+
+}
