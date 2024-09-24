@@ -164,8 +164,7 @@
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();
 
-        // TODO: Update route to /board instead
-        Navigation.NavigateTo($"/project/{_newProject.Id}");
+        Navigation.NavigateTo($"/board/{_newProject.MainDistributionBoardId}");
     }
 
 }
