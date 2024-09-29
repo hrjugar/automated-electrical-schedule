@@ -86,7 +86,6 @@
     <ItemGroup>
         <AdditionalFiles Include="Components\Pages\AboutUs\AboutUsPage.razor"/>
         <AdditionalFiles Include="Components\Pages\Projects\ProjectsPage.razor"/>
-        <AdditionalFiles Include="Components\Pages\Board\ProjectPage.razor"/>
     </ItemGroup>
 
 </Project>

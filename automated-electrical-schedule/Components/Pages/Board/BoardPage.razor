@@ -14,7 +14,7 @@
 
             @* TODO: Implement functionality for buttons *@
             <div class="header-controls">
-                <button class="btn-text btn-primary">
+                <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
 
@@ -53,12 +53,18 @@
     <DeleteBoardModal @bind-IsOpen="@_isDeleteBoardModalOpen" DistributionBoard="@_distributionBoard"/>
 }
 
+@if (_isCreateCircuitModalOpen)
+{
+    <CreateCircuitModal @bind-IsOpen="@_isCreateCircuitModalOpen" DistributionBoard="@_distributionBoard"/>
+}
+
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
 
     private bool _isEditBoardModalOpen;
     private bool _isDeleteBoardModalOpen;
+    private bool _isCreateCircuitModalOpen;
 
     void OpenEditBoardModal()
     {
@@ -68,6 +74,11 @@
     void OpenDeleteBoardModal()
     {
         _isDeleteBoardModalOpen = true;
+    }
+
+    void OpenCreateCircuitModal()
+    {
+        _isCreateCircuitModalOpen = true;
     }
 
     protected override async Task OnInitializedAsync()

@@ -1,0 +1,31 @@
+.create-circuit-modal-fields {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 1rem;
+
+    .create-circuit-modal-field-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1rem;
+
+        & > * {
+            flex-grow: 1;
+        }
+    }
+
+    .create-circuit-modal-field {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0.25rem;
+
+        label {
+            color: var(--clr-neutral-500);
+        }
+    }
+}

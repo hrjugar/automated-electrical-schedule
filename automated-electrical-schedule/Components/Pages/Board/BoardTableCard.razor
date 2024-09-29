@@ -1,3 +1,6 @@
+@using Microsoft.EntityFrameworkCore
+@inject DatabaseContext DatabaseContext
+
 <div class="board-table-card">
     @* <div class="board-table-card-header"> *@
     @*     <h6>Circuits</h6> *@
@@ -48,7 +51,7 @@
             <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
         </div>
 
-        @if (_circuitList.Count == 0)
+        @if (_circuits.Count == 0)
         {
             <div class="board-table-empty">
                 <p class="board-table-empty-text">This board has no circuits.</p>
@@ -57,10 +60,11 @@
         else
         {
             <div class="board-table-rows">
-                @for (var i = 1; i <= 20; i++)
+                @for (var i = 0; i <= _circuits.Count; i++)
                 {
+                    @* TODO: Update values here *@
                     <div class="board-table-row">
-                        <p class="cell cell--text cell--sticky cell--sticky--left">@i</p>
+                        <p class="cell cell--text cell--sticky cell--sticky--left">@(i + 1)</p>
                         <p class="cell cell--text">Bedroom Lighting</p>
                         <p class="cell cell--text">10</p>
                         <p class="cell cell--text">1300</p>
@@ -136,5 +140,11 @@
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
-    List<string> _circuitList = ["Aye"];
+    List<Circuit> _circuits = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _circuits = await DatabaseContext.Circuits.ToListAsync();
+    }
+
 }
