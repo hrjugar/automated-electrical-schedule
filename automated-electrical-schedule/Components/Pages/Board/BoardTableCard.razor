@@ -1,4 +1,3 @@
-@using Microsoft.EntityFrameworkCore
 @inject DatabaseContext DatabaseContext
 
 <div class="board-table-card">
@@ -51,59 +50,82 @@
             <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
         </div>
 
-        @if (_circuits.Count == 0)
-        {
-            <div class="board-table-empty">
-                <p class="board-table-empty-text">This board has no circuits.</p>
-            </div>
-        }
-        else
+        @if (Circuits.Count > 0)
         {
             <div class="board-table-rows">
-                @for (var i = 0; i <= _circuits.Count; i++)
+                @foreach (var circuit in Circuits)
                 {
-                    @* TODO: Update values here *@
+                    var loadDescription = string.Empty;
+
+                    switch (circuit)
+                    {
+                        case LightingOutletCircuit lightingOutletCircuit:
+                            loadDescription = lightingOutletCircuit.Description;
+                            break;
+                        case MotorOutletCircuit motorOutletCircuit:
+                            loadDescription = motorOutletCircuit.Description;
+                            break;
+                        case ConvenienceOutletCircuit convenienceOutletCircuit:
+                            loadDescription = convenienceOutletCircuit.OutletType.GetDisplayName();
+                            break;
+                        case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
+                            loadDescription = applianceEquipmentOutletCircuit.Description;
+                            break;
+                    }
+
                     <div class="board-table-row">
-                        <p class="cell cell--text cell--sticky cell--sticky--left">@(i + 1)</p>
-                        <p class="cell cell--text">Bedroom Lighting</p>
-                        <p class="cell cell--text">10</p>
-                        <p class="cell cell--text">1300</p>
-                        <p class="cell cell--text">230</p>
-                        <p class="cell cell--text">100%</p>
-                        <p class="cell cell--text">5.6522</p>
+                        <p class="cell cell--text cell--sticky cell--sticky--left">1</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@loadDescription</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@circuit.Quantity</p>
+                        <p class="cell cell--text">1300</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">230</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">100%</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">5.6522</p> @* TODO: Update this value *@
 
                         <div class="cell cell--separator"></div>
 
-                        <p class="cell cell--text">15</p>
-                        <p class="cell cell--text">50</p>
-                        <p class="cell cell--text">1</p>
-                        <p class="cell cell--text">2</p>
-                        <p class="cell cell--text">50</p>
-                        <p class="cell cell--text">1.24%</p>
-                        <p class="cell cell--text">MCB</p>
+                        <p class="cell cell--text">15</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">50</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
+                        <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 2 : 3)</p> @* TODO: Update pole value if not single phase *@
+                        <p class="cell cell--text">@circuit.WireLength</p>
+                        <p class="cell cell--text">1.24%</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
 
                         <div class="cell cell--separator"></div>
 
-                        <p class="cell cell--text">1</p>
-                        <p class="cell cell--text">2-2.0mm^2 THHN Cu</p>
-                        <p class="cell cell--text">1-3.5mm^2 TW Cu</p>
-                        <p class="cell cell--text">20mm PVC</p>
+                        <p class="cell cell--text">@circuit.SetCount</p>
+                        <p class="cell cell--text">2-2.0mm^2 AA BB</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">1-3.5mm^2 AA Bb</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">20mm @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
 
                         <div class="cell cell--separator"></div>
 
                         <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
-                            <button class="btn-secondary text-sm">
+                            <button
+                                class="btn-secondary text-sm"
+                                @onclick="@(() => OpenEditCircuitModal(circuit))">
                                 Edit
                             </button>
 
-                            <button class="btn-destructive text-sm">Delete</button>
+                            <button
+                                class="btn-destructive text-sm"
+                                @onclick="@(() => OpenDeleteCircuitModal(circuit))">
+                                Delete
+                            </button>
                         </div>
                     </div>
                 }
             </div>
         }
+        else
+        {
+            <div class="board-table-empty">
+                <p class="board-table-empty-text">This board has no circuits.</p>
+            </div>
+        }
 
-
+        @* TODO: Update footer values *@
         <div class="board-table-footer">
             <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
             <div class="cell cell--empty"></div>
@@ -137,14 +159,43 @@
     </div>
 </div>
 
+@if (_isDeleteCircuitModalOpen)
+{
+    <DeleteCircuitModal @bind-IsOpen="_isDeleteCircuitModalOpen" Circuit="_circuitToDelete" OnCircuitDelete="OnCircuitChange"/>
+}
+
+@if (_isEditCircuitModalOpen)
+{
+    <CreateOrEditCircuitModal
+        @bind-IsOpen="@_isEditCircuitModalOpen"
+        DistributionBoard="DistributionBoard"
+        OldCircuit="_circuitToEdit"
+        OnCircuitCreateOrEdit="OnCircuitChange"/>
+}
+
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
-    List<Circuit> _circuits = [];
-    
-    protected override async Task OnInitializedAsync()
+    [Parameter] public List<Circuit> Circuits { get; set; } = default!;
+
+    [Parameter] public EventCallback OnCircuitChange { get; set; }
+
+    private bool _isDeleteCircuitModalOpen;
+    private Circuit _circuitToDelete = default!;
+
+    private bool _isEditCircuitModalOpen;
+    private Circuit _circuitToEdit = default!;
+
+    void OpenDeleteCircuitModal(Circuit circuitToDelete)
     {
-        _circuits = await DatabaseContext.Circuits.ToListAsync();
+        _circuitToDelete = circuitToDelete;
+        _isDeleteCircuitModalOpen = true;
+    }
+
+    void OpenEditCircuitModal(Circuit circuitToEdit)
+    {
+        _circuitToEdit = circuitToEdit;
+        _isEditCircuitModalOpen = true;
     }
 
 }

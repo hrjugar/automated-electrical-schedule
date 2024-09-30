@@ -1,0 +1,76 @@
+@inject NavigationManager Navigation
+@inject DatabaseContext DatabaseContext
+
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        @{
+            var circuitName = string.Empty;
+
+            switch (Circuit)
+            {
+                case LightingOutletCircuit lightingOutletCircuit:
+                    circuitName = lightingOutletCircuit.Description;
+                    break;
+                case MotorOutletCircuit motorOutletCircuit:
+                    circuitName = motorOutletCircuit.Description;
+                    break;
+                case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
+                    circuitName = applianceEquipmentOutletCircuit.Description;
+                    break;
+                case ConvenienceOutletCircuit convenienceOutletCircuit:
+                    circuitName = convenienceOutletCircuit.OutletType.GetDisplayName();
+                    break;
+            }
+        }
+
+        <div class="modal delete-circuit-modal">
+            <div class="modal-header">
+                <h5>Delete circuit?</h5>
+            </div>
+
+            <div class="modal-content delete-circuit-modal-content">
+                <p class="delete-confirmation">Are you sure you want to delete <em>@circuitName</em>? This action cannot be undone.</p>
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text delete-circuit-modal-cancel-btn"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn-text delete-circuit-modal-edit-btn btn-destructive"
+                    @onclick="DeleteCircuit">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public Circuit Circuit { get; set; } = default!;
+
+    [Parameter] public EventCallback OnCircuitDelete { get; set; }
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task DeleteCircuit()
+    {
+        DatabaseContext.Circuits.Remove(Circuit);
+        await DatabaseContext.SaveChangesAsync();
+        await CloseModal();
+        await OnCircuitDelete.InvokeAsync();
+    }
+
+}

@@ -38,7 +38,7 @@
 
         <div class="board-content">
             <BoardSpecs DistributionBoard="_distributionBoard"/>
-            <BoardTableCard DistributionBoard="_distributionBoard"/>
+            <BoardTableCard DistributionBoard="_distributionBoard" Circuits="_circuits" OnCircuitChange="RefreshCircuitList"/>
         </div>
     </main>
 }
@@ -55,12 +55,17 @@
 
 @if (_isCreateCircuitModalOpen)
 {
-    <CreateCircuitModal @bind-IsOpen="@_isCreateCircuitModalOpen" DistributionBoard="@_distributionBoard"/>
+    <CreateOrEditCircuitModal
+        @bind-IsOpen="@_isCreateCircuitModalOpen"
+        DistributionBoard="@_distributionBoard"
+        OnCircuitCreateOrEdit="RefreshCircuitList"/>
 }
 
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
+
+    List<Circuit> _circuits = [];
 
     private bool _isEditBoardModalOpen;
     private bool _isDeleteBoardModalOpen;
@@ -81,12 +86,21 @@
         _isCreateCircuitModalOpen = true;
     }
 
+    async Task RefreshCircuitList()
+    {
+        _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
+
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _distributionBoard = await DatabaseContext.DistributionBoards
             .Include(b => b.Grounding)
             .Include(b => b.ConductorType)
             .SingleAsync(b => b.Id == BoardId);
+
+        _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
     }
 
 }

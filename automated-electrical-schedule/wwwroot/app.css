@@ -145,7 +145,7 @@ button {
     border-radius: var(--radius-default);
 }
 
-button[disabled=disabled], button:disabled {
+button[disabled=disabled], button:disabled, select[disabled=disabled], select:disabled {
     cursor: not-allowed;
     opacity: 0.25;
 }

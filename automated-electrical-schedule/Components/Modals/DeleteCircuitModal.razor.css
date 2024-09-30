@@ -1,0 +1,29 @@
+.delete-circuit-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 1rem;
+
+    em {
+        font-weight: 600;
+    }
+
+    .delete-confirmation {
+        font-size: 1.25rem;
+        font-weight: 400;
+    }
+
+    .delete-note {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 1rem 1.5rem;
+        background-color: var(--clr-destructive-100);
+
+        em {
+            color: var(--clr-destructive-700);
+        }
+    }
+}

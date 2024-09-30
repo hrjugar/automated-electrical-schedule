@@ -1,11 +1,11 @@
-.create-circuit-modal-fields {
+.create-or-edit-circuit-modal-fields {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     gap: 1rem;
 
-    .create-circuit-modal-field-row {
+    .create-or-edit-circuit-modal-field-row {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -17,7 +17,7 @@
         }
     }
 
-    .create-circuit-modal-field {
+    .create-or-edit-circuit-modal-field {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
