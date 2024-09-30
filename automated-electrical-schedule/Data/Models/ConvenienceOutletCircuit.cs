@@ -4,7 +4,7 @@ using automated_electrical_schedule.Data.Enums;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public class ConvenienceOutletCircuit : Circuit
+public partial class ConvenienceOutletCircuit : Circuit
 {
     [Required]
     [Display(Name = "outlet type")]

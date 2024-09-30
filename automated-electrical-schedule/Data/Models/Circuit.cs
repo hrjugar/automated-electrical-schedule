@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public abstract class Circuit
+public abstract partial class Circuit
 {
     private const string TableName = "circuits";
 

@@ -53,8 +53,9 @@
         @if (Circuits.Count > 0)
         {
             <div class="board-table-rows">
-                @foreach (var circuit in Circuits)
+                @for (var i = 0; i < Circuits.Count; i++)
                 {
+                    var circuit = Circuits[i];
                     var loadDescription = string.Empty;
 
                     switch (circuit)
@@ -74,29 +75,29 @@
                     }
 
                     <div class="board-table-row">
-                        <p class="cell cell--text cell--sticky cell--sticky--left">1</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">@loadDescription</p> @* TODO: Update this value *@
+                        <p class="cell cell--text cell--sticky cell--sticky--left">@(i + 1)</p>
+                        <p class="cell cell--text">@loadDescription</p>
                         <p class="cell cell--text">@circuit.Quantity</p>
-                        <p class="cell cell--text">1300</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">230</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">100%</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">5.6522</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
+                        <p class="cell cell--text">@(circuit.GetVoltage())</p>
+                        <p class="cell cell--text">@circuit.DemandFactor%</p>
+                        <p class="cell cell--text">@(circuit.GetAmpereLoad())</p>
 
                         <div class="cell cell--separator"></div>
 
-                        <p class="cell cell--text">15</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">50</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@(circuit.GetAmpereTrip())</p>
+                        <p class="cell cell--text">@(circuit.GetAmpereFrame())</p>
                         <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
                         <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 2 : 3)</p> @* TODO: Update pole value if not single phase *@
                         <p class="cell cell--text">@circuit.WireLength</p>
-                        <p class="cell cell--text">1.24%</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">@(circuit.GetVoltageDrop())</p>
                         <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
 
                         <div class="cell cell--separator"></div>
 
                         <p class="cell cell--text">@circuit.SetCount</p>
-                        <p class="cell cell--text">2-2.0mm^2 AA BB</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">1-3.5mm^2 AA Bb</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">2-2.0mm^2 @(circuit.ConductorType.ToString())</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">1-3.5mm^2 @(circuit.Grounding.ToString())</p> @* TODO: Update this value *@
                         <p class="cell cell--text">20mm @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
 
                         <div class="cell cell--separator"></div>

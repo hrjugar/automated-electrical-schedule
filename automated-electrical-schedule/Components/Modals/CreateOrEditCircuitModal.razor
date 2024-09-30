@@ -55,9 +55,16 @@
                         <div class="create-or-edit-circuit-modal-field">
                             <label>Motor Type <span class="red-asterisk">*</span></label>
                             <InputSelect @bind-Value="motorOutletCircuit.MotorType">
-                                @foreach (MotorType motorType in Enum.GetValues(typeof(MotorType)))
+                                @if (_newCircuit.ParentDistributionBoard.Phase == BoardPhase.SinglePhase)
                                 {
-                                    <option value="@motorType">@motorType.GetDisplayName()</option>
+                                    <option value="@(MotorType.SinglePhaseMotor)">@(MotorType.SinglePhaseMotor.GetDisplayName())</option>
+                                }
+                                else
+                                {
+                                    @foreach (MotorType motorType in Enum.GetValues(typeof(MotorType)))
+                                    {
+                                        <option value="@motorType">@motorType.GetDisplayName()</option>
+                                    }
                                 }
                             </InputSelect>
                             <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
@@ -65,7 +72,12 @@
 
                         <div class="create-or-edit-circuit-modal-field">
                             <label>Horsepower <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="motorOutletCircuit.Horsepower"/>
+                            <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
+                                @foreach (var horsepowerValue in MotorOutletCircuit.AllowedHorsepowerValues)
+                                {
+                                    <option value="@horsepowerValue">@horsepowerValue</option>
+                                }
+                            </InputSelect>
                             <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
                         </div>
 
@@ -114,7 +126,7 @@
                 <div class="create-or-edit-circuit-modal-field">
                     <label>Circuit Protection <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newCircuit.CircuitProtection>
-                        @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
+                        @foreach (var circuitProtection in _newCircuit.GetAllowedCircuitProtections())
                         {
                             <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
                         }

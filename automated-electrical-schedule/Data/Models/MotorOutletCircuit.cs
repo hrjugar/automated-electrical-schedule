@@ -4,8 +4,23 @@ using automated_electrical_schedule.Data.Enums;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public class MotorOutletCircuit : Circuit
+public partial class MotorOutletCircuit : Circuit
 {
+    public static readonly List<double> AllowedHorsepowerValues =
+    [
+        1.0 / 6,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.5,
+        2.0,
+        3.0,
+        5.0,
+        7.5,
+        10
+    ];
+
     [Required]
     [Display(Name = "motor description")]
     [Column("description")]

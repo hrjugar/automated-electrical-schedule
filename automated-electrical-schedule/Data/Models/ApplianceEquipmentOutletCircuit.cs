@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public class ApplianceEquipmentOutletCircuit : Circuit
+public partial class ApplianceEquipmentOutletCircuit : Circuit
 {
     [Required]
     [Display(Name = "appliance equipment description")]

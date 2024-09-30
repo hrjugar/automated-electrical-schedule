@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public class LightingOutletCircuit : Circuit
+public partial class LightingOutletCircuit : Circuit
 {
     [Required]
     [Display(Name = "lighting fixture description")]
