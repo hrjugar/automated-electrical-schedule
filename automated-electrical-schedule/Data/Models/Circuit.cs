@@ -29,6 +29,11 @@ public abstract partial class Circuit
     public CircuitType CircuitType { get; set; }
 
     [Required]
+    [Display(Name = "description")]
+    [Column("description")]
+    public string Description { get; set; } = string.Empty;
+
+    [Required]
     [Display(Name = "quantity")]
     [Column("quantity")]
     [Range(1, int.MaxValue, ErrorMessage = "The quantity must be at least 1.")]

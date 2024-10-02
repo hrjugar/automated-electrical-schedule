@@ -10,6 +10,7 @@ public partial class LightingOutletCircuit
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
             CircuitType = CircuitType,
+            Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
             DemandFactor = DemandFactor,
@@ -21,7 +22,6 @@ public partial class LightingOutletCircuit
             Grounding = Grounding,
             RacewayType = RacewayType,
 
-            Description = Description,
             WattagePerFixture = WattagePerFixture
         };
     }

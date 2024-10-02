@@ -10,6 +10,7 @@ public partial class ApplianceEquipmentOutletCircuit
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
             CircuitType = CircuitType,
+            Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
             DemandFactor = DemandFactor,
@@ -21,7 +22,6 @@ public partial class ApplianceEquipmentOutletCircuit
             Grounding = Grounding,
             RacewayType = RacewayType,
 
-            Description = Description,
             Wattage = Wattage
         };
     }

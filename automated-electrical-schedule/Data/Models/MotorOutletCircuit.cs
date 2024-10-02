@@ -23,11 +23,6 @@ public partial class MotorOutletCircuit : Circuit
     ];
 
     [Required]
-    [Display(Name = "motor description")]
-    [Column("description")]
-    public string Description { get; set; } = string.Empty;
-
-    [Required]
     [Display(Name = "motor type")]
     [Column("motor_type")]
     public MotorType MotorType { get; set; } = MotorType.SinglePhaseMotor;

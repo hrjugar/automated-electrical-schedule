@@ -12,6 +12,7 @@ public partial class ConvenienceOutletCircuit
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
             CircuitType = CircuitType,
+            Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
             DemandFactor = DemandFactor,

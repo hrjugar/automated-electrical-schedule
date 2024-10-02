@@ -30,15 +30,15 @@
 
                 <div class="create-or-edit-circuit-modal-content-main">
                     <div class="create-or-edit-circuit-modal-content-fields">
+                        <div class="create-or-edit-circuit-modal-field">
+                            <label>Description <span class="red-asterisk">*</span></label>
+                            <InputText class="input-primary" @bind-Value="_newCircuit.Description" placeholder="Description"/>
+                            <ValidationMessage For=@(() => _newCircuit.Description)/>
+                        </div>
+
                         @switch (_newCircuit)
                         {
                             case LightingOutletCircuit lightingOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Lighting Fixture Description <span class="red-asterisk">*</span></label>
-                                    <InputText class="input-primary" @bind-Value="lightingOutletCircuit.Description" placeholder="Lamp"/>
-                                    <ValidationMessage For=@(() => lightingOutletCircuit.Description)/>
-                                </div>
-
                                 <div class="create-or-edit-circuit-modal-field">
                                     <label>Wattage per fixture (W) <span class="red-asterisk">*</span></label>
                                     <InputNumber class="input-primary" @bind-Value="lightingOutletCircuit.WattagePerFixture"/>
@@ -47,13 +47,6 @@
 
                                 break;
                             case MotorOutletCircuit motorOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Motor Description <span class="red-asterisk">*</span></label>
-                                    @* TODO: Update placeholder text *@
-                                    <InputText class="input-primary" @bind-Value="motorOutletCircuit.Description" placeholder="Motor"/>
-                                    <ValidationMessage For=@(() => motorOutletCircuit.Description)/>
-                                </div>
-
                                 <div class="create-or-edit-circuit-modal-field">
                                     <label>Motor Type <span class="red-asterisk">*</span></label>
                                     <InputSelect @bind-Value="motorOutletCircuit.MotorType">
@@ -99,12 +92,6 @@
                                 break;
                             case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
                                 <div class="create-or-edit-circuit-modal-field">
-                                    <label>Appliance/Equipment Description <span class="red-asterisk">*</span></label>
-                                    <InputText class="input-primary" @bind-Value="applianceEquipmentOutletCircuit.Description" placeholder="Lamp"/>
-                                    <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.Description)/>
-                                </div>
-
-                                <div class="create-or-edit-circuit-modal-field">
                                     <label>Wattage <span class="red-asterisk">*</span></label>
                                     <InputNumber class="input-primary" @bind-Value="applianceEquipmentOutletCircuit.Wattage"/>
                                     <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.Wattage)/>
@@ -140,12 +127,6 @@
                                 }
                             </InputSelect>
                             <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
-                        </div>
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Sets <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="_newCircuit.SetCount"/>
-                            <ValidationMessage For=@(() => _newCircuit.SetCount)/>
                         </div>
 
                         @* TODO: Fix conductor type and grounding not updating on real time (It properly updates when submitting) *@
@@ -195,6 +176,11 @@
                     </div>
 
                     <div class="create-or-edit-circuit-modal-content-values">
+                        <div class="create-or-edit-circuit-modal-content-value">
+                            <label>Sets</label>
+                            <p>@(_newCircuit.SetCount)</p>
+                        </div>
+
                         <div class="create-or-edit-circuit-modal-content-value">
                             <label>Volt Amps</label>
                             <p>@(_newCircuit.GetVoltAmpere())</p>
@@ -339,7 +325,9 @@
 
         updatedNewCircuit.Id = _newCircuit!.Id;
         updatedNewCircuit.CircuitType = circuitType;
+        updatedNewCircuit.ParentDistributionBoardId = _newCircuit!.ParentDistributionBoardId;
         updatedNewCircuit.ParentDistributionBoard = _newCircuit!.ParentDistributionBoard;
+        updatedNewCircuit.Description = _newCircuit!.Description;
         updatedNewCircuit.Quantity = updatedNewCircuit is MotorOutletCircuit ? 1 : _newCircuit.Quantity;
         updatedNewCircuit.WireLength = _newCircuit.WireLength;
         updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit || updatedNewCircuit is ApplianceEquipmentOutletCircuit ? 100 : _newCircuit.DemandFactor;

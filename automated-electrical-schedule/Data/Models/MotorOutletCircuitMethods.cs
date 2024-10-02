@@ -12,6 +12,7 @@ public partial class MotorOutletCircuit
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
             CircuitType = CircuitType,
+            Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
             DemandFactor = DemandFactor,
@@ -23,7 +24,6 @@ public partial class MotorOutletCircuit
             Grounding = Grounding,
             RacewayType = RacewayType,
 
-            Description = Description,
             MotorType = MotorType,
             Horsepower = Horsepower
         };

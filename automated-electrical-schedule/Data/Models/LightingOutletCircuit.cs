@@ -6,11 +6,6 @@ namespace automated_electrical_schedule.Data.Models;
 public partial class LightingOutletCircuit : Circuit
 {
     [Required]
-    [Display(Name = "lighting fixture description")]
-    [Column("description")]
-    public string Description { get; set; } = string.Empty;
-
-    [Required]
     [Display(Name = "wattage per fixture")]
     [Column("wattage_per_fixture")]
     [Range(0d, double.PositiveInfinity)]
