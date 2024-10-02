@@ -100,7 +100,11 @@
             .Include(b => b.ConductorType)
             .SingleAsync(b => b.Id == BoardId);
 
-        _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
+        _circuits = await DatabaseContext.Circuits
+            .Where(c => c.ParentDistributionBoardId == BoardId)
+            .Include(c => c.Grounding)
+            .Include(c => c.ConductorType)
+            .ToListAsync();
     }
 
 }

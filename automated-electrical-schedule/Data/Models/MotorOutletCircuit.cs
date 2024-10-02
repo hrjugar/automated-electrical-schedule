@@ -10,13 +10,14 @@ public partial class MotorOutletCircuit : Circuit
     [
         1.0 / 6,
         0.25,
+        1.0 / 3,
         0.5,
         0.75,
         1.0,
         1.5,
         2.0,
         3.0,
-        5.0,
+        4.0,
         7.5,
         10
     ];
@@ -34,6 +35,6 @@ public partial class MotorOutletCircuit : Circuit
     [Required]
     [Display(Name = "horsepower")]
     [Column("horsepower")]
-    [Range(0d, double.PositiveInfinity)]
-    public double Horsepower { get; set; }
+    [Range(0.2d, double.PositiveInfinity)]
+    public double Horsepower { get; set; } = 1;
 }

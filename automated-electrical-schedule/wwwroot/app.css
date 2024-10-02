@@ -133,12 +133,6 @@ select {
     white-space: nowrap;
 }
 
-.btn-text,
-.input-primary,
-select {
-    padding-block: 1.25rem;
-}
-
 button {
     cursor: pointer;
     border: none;
@@ -152,6 +146,10 @@ button[disabled=disabled], button:disabled, select[disabled=disabled], select:di
 
 .btn-icon {
     padding: 1rem;
+}
+
+.btn-text {
+    padding-block: 1.25rem;
 }
 
 .btn-primary {
@@ -213,7 +211,11 @@ button[disabled=disabled], button:disabled, select[disabled=disabled], select:di
 
 .input-primary, .search, select {
     background: #fff;
-    border: 1px solid var(--clr-neutral-300);
+    border: 1px solid var(--clr-neutral-400);
+}
+
+.input-primary, select {
+    padding-block: 1rem;
 }
 
 input:focus, select:focus {
@@ -322,6 +324,10 @@ li {
         border: 1px solid var(--clr-neutral-300);
         border-radius: var(--radius-default);
         overflow-y: hidden;
+
+        &.modal-wide {
+            min-width: calc(100vw - 4rem);
+        }
 
         .modal-content,
         .modal-footer {

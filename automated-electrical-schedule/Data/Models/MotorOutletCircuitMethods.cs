@@ -4,6 +4,31 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class MotorOutletCircuit
 {
+    public override Circuit Clone()
+    {
+        return new MotorOutletCircuit
+        {
+            Id = Id,
+            ParentDistributionBoardId = ParentDistributionBoardId,
+            ParentDistributionBoard = ParentDistributionBoard,
+            CircuitType = CircuitType,
+            Quantity = Quantity,
+            WireLength = WireLength,
+            DemandFactor = DemandFactor,
+            CircuitProtection = CircuitProtection,
+            SetCount = SetCount,
+            ConductorTypeId = ConductorTypeId,
+            ConductorType = ConductorType,
+            GroundingId = GroundingId,
+            Grounding = Grounding,
+            RacewayType = RacewayType,
+
+            Description = Description,
+            MotorType = MotorType,
+            Horsepower = Horsepower
+        };
+    }
+
     public override List<CircuitProtection> GetAllowedCircuitProtections()
     {
         return
@@ -17,26 +42,26 @@ public partial class MotorOutletCircuit
 
     public override double GetVoltAmpere()
     {
-        // TODO: Update formula
-        return 1;
+        return GetVoltage() * GetAmpereLoad();
     }
 
     public override double GetAmpereLoad()
     {
-        // TODO: Update formula
+        if (ParentDistributionBoard.Voltage == BoardVoltage.V230)
+            return DataConstants.GetMotorOutlet230VoltAmpereLoad(Horsepower);
+
+        // TODO: Update formula for other voltages
         return 1;
     }
 
-    public override double GetAmpereTrip()
+    public override int GetAmpereTrip()
     {
         // TODO: Handle formula for fire pump
 
-        double factor;
-
-        switch (CircuitProtection)
+        var factor = CircuitProtection switch
         {
-            case CircuitProtection.NonTimeDelayFuse:
-                factor = MotorType switch
+            CircuitProtection.NonTimeDelayFuse =>
+                MotorType switch
                 {
                     MotorType.SinglePhaseMotor or
                         MotorType.SquirrelCage or
@@ -45,10 +70,9 @@ public partial class MotorOutletCircuit
                     MotorType.WoundRotor or
                         MotorType.DcConstantVoltage => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                };
-                break;
-            case CircuitProtection.DualElement:
-                factor = MotorType switch
+                },
+            CircuitProtection.DualElement =>
+                MotorType switch
                 {
                     MotorType.SinglePhaseMotor or
                         MotorType.SquirrelCage or
@@ -57,10 +81,9 @@ public partial class MotorOutletCircuit
                     MotorType.WoundRotor or
                         MotorType.DcConstantVoltage => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                };
-                break;
-            case CircuitProtection.InstantaneousTripBreaker:
-                factor = MotorType switch
+                },
+            CircuitProtection.InstantaneousTripBreaker =>
+                MotorType switch
                 {
                     MotorType.DesignBEnergyEfficient => 11,
                     MotorType.SinglePhaseMotor or
@@ -69,10 +92,9 @@ public partial class MotorOutletCircuit
                         MotorType.WoundRotor => 8,
                     MotorType.DcConstantVoltage => 2.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                };
-                break;
-            case CircuitProtection.InverseTimeBreaker:
-                factor = MotorType switch
+                },
+            CircuitProtection.InverseTimeBreaker =>
+                MotorType switch
                 {
                     MotorType.SinglePhaseMotor or
                         MotorType.SquirrelCage or
@@ -81,20 +103,12 @@ public partial class MotorOutletCircuit
                     MotorType.WoundRotor or
                         MotorType.DcConstantVoltage => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                };
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(CircuitProtection));
-        }
+                },
+            _ =>
+                throw new ArgumentOutOfRangeException(nameof(CircuitProtection))
+        };
 
-        if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase)
-            return factor;
-        return GetAmpereLoad() * factor;
-    }
-
-    public override double GetAmpereFrame()
-    {
-        // TODO: Update formula
-        return 1;
+        var value = GetAmpereLoad() * factor;
+        return DataConstants.GetAmpereTrip(value);
     }
 }

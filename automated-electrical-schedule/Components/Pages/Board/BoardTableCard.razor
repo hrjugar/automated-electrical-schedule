@@ -96,9 +96,9 @@
                         <div class="cell cell--separator"></div>
 
                         <p class="cell cell--text">@circuit.SetCount</p>
-                        <p class="cell cell--text">2-2.0mm^2 @(circuit.ConductorType.ToString())</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">1-3.5mm^2 @(circuit.Grounding.ToString())</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">20mm @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
+                        <p class="cell cell--text">2-@(circuit.GetConductorSize())mm² @(circuit.ConductorType.ToString())</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">1-@(circuit.GetGroundingSize())mm² @(circuit.Grounding.ToString())</p> @* TODO: Update this value *@
+                        <p class="cell cell--text">20mm ø @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
 
                         <div class="cell cell--separator"></div>
 
@@ -170,7 +170,7 @@
     <CreateOrEditCircuitModal
         @bind-IsOpen="@_isEditCircuitModalOpen"
         DistributionBoard="DistributionBoard"
-        OldCircuit="_circuitToEdit"
+        OldCircuit="@_circuitToEdit"
         OnCircuitCreateOrEdit="OnCircuitChange"/>
 }
 

@@ -4,6 +4,29 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ConvenienceOutletCircuit
 {
+    public override Circuit Clone()
+    {
+        return new ConvenienceOutletCircuit
+        {
+            Id = Id,
+            ParentDistributionBoardId = ParentDistributionBoardId,
+            ParentDistributionBoard = ParentDistributionBoard,
+            CircuitType = CircuitType,
+            Quantity = Quantity,
+            WireLength = WireLength,
+            DemandFactor = DemandFactor,
+            CircuitProtection = CircuitProtection,
+            SetCount = SetCount,
+            ConductorTypeId = ConductorTypeId,
+            ConductorType = ConductorType,
+            GroundingId = GroundingId,
+            Grounding = Grounding,
+            RacewayType = RacewayType,
+
+            OutletType = OutletType
+        };
+    }
+
     public override double GetVoltAmpere()
     {
         return Quantity * 180;
@@ -11,20 +34,18 @@ public partial class ConvenienceOutletCircuit
 
     public override double GetAmpereLoad()
     {
-        if (OutletType == OutletType.FourGang) return 4 * 360 * DemandFactor / GetVoltage();
+        if (OutletType == OutletType.FourGang) return 4 * 360 * DemandFactor / 100 / GetVoltage();
 
-        return (int)OutletType * 180 * DemandFactor / GetVoltage();
+        return 180 * Quantity * (DemandFactor / 100) / GetVoltage();
     }
 
-    public override double GetAmpereTrip()
+    public override int GetAmpereTrip()
     {
-        // TODO: Update formula
-        return 1;
+        return DataConstants.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
     }
 
-    public override double GetAmpereFrame()
+    public override double GetConductorSize()
     {
-        // TODO: Update formula
-        return 1;
+        return ConductorSizingTable.GetConductorSize(ConductorType, GetAmpereTrip(), 3.5);
     }
 }

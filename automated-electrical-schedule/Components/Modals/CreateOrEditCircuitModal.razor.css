@@ -1,31 +1,89 @@
-.create-or-edit-circuit-modal-fields {
+.create-or-edit-circuit-modal-content {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    gap: 1rem;
+    gap: 2rem;
 
-    .create-or-edit-circuit-modal-field-row {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 1rem;
-
-        & > * {
-            flex-grow: 1;
-        }
-    }
-
-    .create-or-edit-circuit-modal-field {
+    .create-or-edit-circuit-modal-content-type {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: stretch;
-        gap: 0.25rem;
+        align-items: flex-start;
 
-        label {
-            color: var(--clr-neutral-500);
+        select {
+            width: 20rem;
         }
     }
+
+    .create-or-edit-circuit-modal-content-main {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 4rem;
+
+        .create-or-edit-circuit-modal-content-fields {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 1rem;
+
+            .create-or-edit-circuit-modal-field-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 1rem;
+
+                & > * {
+                    flex-grow: 1;
+                }
+            }
+
+            .create-or-edit-circuit-modal-field {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+                gap: 0.25rem;
+
+                label {
+                    color: var(--clr-neutral-500);
+                }
+            }
+        }
+
+        .create-or-edit-circuit-modal-content-values {
+            min-width: 20rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--clr-neutral-50);
+            border-radius: var(--radius-default);
+
+            .create-or-edit-circuit-modal-content-value {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+                color: var(--clr-neutral-500);
+
+                label {
+                    color: var(--clr-neutral-500);
+                }
+
+                p {
+                    color: var(--clr-neutral-600);
+                    font-size: 1.5rem;
+                }
+            }
+        }
+    }
+
 }
