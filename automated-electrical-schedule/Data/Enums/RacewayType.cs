@@ -13,6 +13,8 @@ public enum RacewayType
     [Display(Name = "FMC")] Fmc,
 
     [Display(Name = "IMC")] Imc,
+    
+    [Display(Name = "RMC")] Rmc,
 
     [Display(Name = "Cable Tray")] CableTray
 }
