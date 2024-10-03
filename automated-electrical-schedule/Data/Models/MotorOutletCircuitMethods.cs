@@ -48,7 +48,7 @@ public partial class MotorOutletCircuit
     public override double GetAmpereLoad()
     {
         if (ParentDistributionBoard.Voltage == BoardVoltage.V230)
-            return DataConstants.GetMotorOutlet230VoltAmpereLoad(Horsepower);
+            return DataUtils.GetMotorOutlet230VoltAmpereLoad(Horsepower);
 
         // TODO: Update formula for other voltages
         return 1;
@@ -109,6 +109,6 @@ public partial class MotorOutletCircuit
         };
 
         var value = GetAmpereLoad() * factor;
-        return DataConstants.GetAmpereTrip(value);
+        return DataUtils.GetAmpereTrip(value);
     }
 }

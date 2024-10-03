@@ -27,6 +27,10 @@ public abstract partial class Circuit
     [Display(Name = "circuit type")]
     [Column("circuit_type")]
     public CircuitType CircuitType { get; set; }
+    
+    [Display(Name = "line-to-line voltage")]
+    [Column("line_to_line_voltage")]
+    public LineToLineVoltage? LineToLineVoltage { get; set; } = null;
 
     [Required]
     [Display(Name = "description")]

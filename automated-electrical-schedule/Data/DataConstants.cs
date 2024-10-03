@@ -1,5 +1,3 @@
-using automated_electrical_schedule.Data.Models;
-
 namespace automated_electrical_schedule.Data;
 
 public static class DataConstants
@@ -95,20 +93,32 @@ public static class DataConstants
         50
     ];
 
-    public static int GetAmpereTrip(double value, int minimumAmpereTrip = 0)
-    {
-        return StandardAmpereTripRatings
-            .First(columnAmpereTrip => columnAmpereTrip >= minimumAmpereTrip && columnAmpereTrip >= value);
-    }
+    public static readonly List<double> ConductorSizes =
+    [
+        2,
+        3.5,
+        5.5,
+        8,
 
-    public static int GetAmpereFrame(int ampereTrip)
-    {
-        return StandardAmpereFrameRatings.First(ampereFrame => ampereFrame >= ampereTrip);
-    }
+        14,
+        22,
+        30,
+        38,
 
-    public static double GetMotorOutlet230VoltAmpereLoad(double horsepower)
-    {
-        return MotorOutlet230VoltAmpereLoadRatings[
-            MotorOutletCircuit.AllowedHorsepowerValues.FindIndex(hp => Math.Abs(hp - horsepower) < 0.001)];
-    }
+        50,
+        60,
+        80,
+        100,
+
+        125,
+        150,
+        175,
+        200,
+        250,
+
+        325,
+        375,
+        400,
+        500
+    ];
 }

@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.FormulaTables;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -27,7 +28,7 @@ public abstract partial class Circuit
 
     public int GetAmpereFrame()
     {
-        return DataConstants.GetAmpereFrame(GetAmpereTrip());
+        return DataUtils.GetAmpereFrame(GetAmpereTrip());
     }
 
     public double GetVoltageDrop()
@@ -38,11 +39,11 @@ public abstract partial class Circuit
 
     public virtual double GetConductorSize()
     {
-        return ConductorSizingTable.GetConductorSize(ConductorType, GetAmpereTrip());
+        return ConductorSizeTable.GetConductorSize(ConductorType, GetAmpereTrip());
     }
 
     public double GetGroundingSize()
     {
-        return CircuitGroundingSizingTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
+        return CircuitGroundingSizeTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
     }
 }

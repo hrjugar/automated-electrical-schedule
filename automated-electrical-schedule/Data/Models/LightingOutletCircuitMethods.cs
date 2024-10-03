@@ -39,6 +39,6 @@ public partial class LightingOutletCircuit
 
     public override int GetAmpereTrip()
     {
-        return DataConstants.GetAmpereTrip(GetAmpereLoad() / 0.8, 15);
+        return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8, 15);
     }
 }

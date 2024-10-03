@@ -1,8 +1,8 @@
 using automated_electrical_schedule.Data.Enums;
 
-namespace automated_electrical_schedule.Data;
+namespace automated_electrical_schedule.Data.FormulaTables;
 
-public static class CircuitGroundingSizingTable
+public static class CircuitGroundingSizeTable
 {
     public static readonly List<int> AmpereTripRatings =
     [

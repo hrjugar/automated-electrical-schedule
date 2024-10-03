@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using automated_electrical_schedule.Data.Enums;
-using automated_electrical_schedule.Utils;
+using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 

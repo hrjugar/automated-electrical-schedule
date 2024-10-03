@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace automated_electrical_schedule.Utils;
+namespace automated_electrical_schedule.Extensions;
 
 public static class EnumExtensions
 {

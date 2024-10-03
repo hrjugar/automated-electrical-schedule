@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.FormulaTables;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -42,11 +43,11 @@ public partial class ConvenienceOutletCircuit
 
     public override int GetAmpereTrip()
     {
-        return DataConstants.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
+        return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
     }
 
     public override double GetConductorSize()
     {
-        return ConductorSizingTable.GetConductorSize(ConductorType, GetAmpereTrip(), 3.5);
+        return ConductorSizeTable.GetConductorSize(ConductorType, GetAmpereTrip(), 3.5);
     }
 }

@@ -38,6 +38,6 @@ public partial class ApplianceEquipmentOutletCircuit
 
     public override int GetAmpereTrip()
     {
-        return DataConstants.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
+        return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
     }
 }

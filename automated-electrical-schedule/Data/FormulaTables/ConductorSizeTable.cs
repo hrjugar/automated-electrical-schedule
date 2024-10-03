@@ -1,39 +1,11 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.Models;
+using automated_electrical_schedule.Extensions;
 
-namespace automated_electrical_schedule.Data;
+namespace automated_electrical_schedule.Data.FormulaTables;
 
-public static class ConductorSizingTable
+public static class ConductorSizeTable
 {
-    public static readonly List<double> ConductorSizes =
-    [
-        2,
-        3.5,
-        5.5,
-        8,
-
-        14,
-        22,
-        30,
-        38,
-
-        50,
-        60,
-        80,
-        100,
-
-        125,
-        150,
-        175,
-        200,
-        250,
-
-        325,
-        375,
-        400,
-        500
-    ];
-
     public static readonly List<int> Cu60Column =
     [
         15,
@@ -237,9 +209,11 @@ public static class ConductorSizingTable
 
         if (index == -1) throw new ArgumentOutOfRangeException(nameof(ampereTrip));
 
-        for (var i = index; i < ConductorSizes.Count; i++)
-            if (Math.Abs(ConductorSizes[i] - minimumConductorSize) < 0.001 || ConductorSizes[i] >= minimumConductorSize)
-                return ConductorSizes[i];
+        for (var i = index; i < DataConstants.ConductorSizes.Count; i++)
+            if (DataConstants.ConductorSizes[i].IsRoughlyEqualTo(minimumConductorSize) || DataConstants.ConductorSizes[i] >= minimumConductorSize)
+            {
+                return DataConstants.ConductorSizes[i];
+            }
 
         throw new ArgumentOutOfRangeException(nameof(ampereTrip));
     }

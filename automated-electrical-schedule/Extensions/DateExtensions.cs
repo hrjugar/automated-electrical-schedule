@@ -1,4 +1,4 @@
-namespace automated_electrical_schedule.Utils;
+namespace automated_electrical_schedule.Extensions;
 
 public static class DateExtensions
 {
