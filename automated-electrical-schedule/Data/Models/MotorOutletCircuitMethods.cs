@@ -12,6 +12,7 @@ public partial class MotorOutletCircuit
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
             CircuitType = CircuitType,
+            LineToLineVoltage = LineToLineVoltage,
             Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,

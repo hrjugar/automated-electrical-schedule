@@ -16,6 +16,37 @@ public abstract partial class Circuit
         ];
     }
 
+    public List<LineToLineVoltage> GetAllowedLineToLineVoltages()
+    {
+        if (ParentDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard)
+            return threePhaseDistributionBoard.LineToLineVoltage switch
+            {
+                Enums.LineToLineVoltage.Ab => [Enums.LineToLineVoltage.Ab],
+                Enums.LineToLineVoltage.Bc => [Enums.LineToLineVoltage.Bc],
+                Enums.LineToLineVoltage.Ca => [Enums.LineToLineVoltage.Ca],
+                Enums.LineToLineVoltage.Abc => this switch
+                {
+                    ConvenienceOutletCircuit or LightingOutletCircuit =>
+                    [
+                        Enums.LineToLineVoltage.Ab,
+                        Enums.LineToLineVoltage.Bc,
+                        Enums.LineToLineVoltage.Ca
+                    ],
+                    ApplianceEquipmentOutletCircuit or MotorOutletCircuit =>
+                    [
+                        Enums.LineToLineVoltage.Ab,
+                        Enums.LineToLineVoltage.Bc,
+                        Enums.LineToLineVoltage.Ca,
+                        Enums.LineToLineVoltage.Abc
+                    ],
+                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+                },
+                _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+            };
+
+        return [];
+    }
+
     public int GetVoltage()
     {
         return (int)ParentDistributionBoard.Voltage;

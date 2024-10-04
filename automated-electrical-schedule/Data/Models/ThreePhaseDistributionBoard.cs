@@ -19,11 +19,9 @@ public partial class ThreePhaseDistributionBoard : DistributionBoard
     [Column("transformer_secondary_protection")]
     public CircuitProtection? TransformerSecondaryProtection { get; set; }
 
-
-    /* USE ONLY FOR SUB BOARDS */
     [Display(Name = "line to line voltage")]
     [Column("line_to_line_voltage")]
-    public LineToLineVoltage? LineToLineVoltage { get; set; } = null;
+    public LineToLineVoltage LineToLineVoltage { get; set; } = LineToLineVoltage.Abc;
 
     /* USE ONLY WHEN STEPPING DOWN */
 

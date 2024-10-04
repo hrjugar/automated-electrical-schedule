@@ -5,11 +5,12 @@
     align-items: stretch;
     gap: 2rem;
 
-    .create-or-edit-circuit-modal-content-type {
+    .create-or-edit-circuit-modal-content-categories {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: flex-start;
         align-items: flex-start;
+        gap: 1rem;
 
         select {
             width: 20rem;

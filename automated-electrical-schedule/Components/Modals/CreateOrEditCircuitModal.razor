@@ -5,251 +5,266 @@
 @if (IsOpen && _editContext != null && _newCircuit != null)
 {
     <div class="modal-wrapper" @onclick="CloseModal">
-        <EditForm
-            class="modal modal-wide create-or-edit-circuit-modal"
-            @onclick:stopPropagation="true"
-            EditContext=@_editContext
-            OnValidSubmit=@HandleValidFormSubmit>
+    <EditForm
+        class="modal modal-wide create-or-edit-circuit-modal"
+        @onclick:stopPropagation="true"
+        EditContext=@_editContext
+        OnValidSubmit=@HandleValidFormSubmit>
 
-            <ObjectGraphDataAnnotationsValidator/>
+        <ObjectGraphDataAnnotationsValidator/>
 
-            <div class="modal-header">
-                <h5>@(OldCircuit is null ? "Create" : "Edit") Circuit</h5>
-            </div>
+        <div class="modal-header">
+            <h5>@(OldCircuit is null ? "Create" : "Edit") Circuit</h5>
+        </div>
 
-            <div class="modal-content create-or-edit-circuit-modal-content">
-                <div class="create-or-edit-circuit-modal-content-type">
-                    <InputSelect @bind-Value:get=_newCircuit.CircuitType @bind-Value:set="UpdateCircuitType" disabled="@(OldCircuit is not null)">
-                        @foreach (CircuitType circuitType in Enum.GetValues(typeof(CircuitType)))
+        @{
+            var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+        }
+
+        <div class="modal-content create-or-edit-circuit-modal-content">
+            <div class="create-or-edit-circuit-modal-content-categories">
+                <InputSelect
+                    class="select-type"
+                    @bind-Value:get=_newCircuit.CircuitType @bind-Value:set="UpdateCircuitType" disabled="@(OldCircuit is not null)">
+                    @foreach (CircuitType circuitType in Enum.GetValues(typeof(CircuitType)))
+                    {
+                        <option value="@circuitType">@circuitType.GetDisplayName()</option>
+                    }
+                </InputSelect>
+
+                @if (threePhaseBoard != null)
+                {
+                    <InputSelect class="select-line-to-line" @bind-Value="@_newCircuit.LineToLineVoltage">
+                        @foreach (var lineToLineVoltage in _newCircuit.GetAllowedLineToLineVoltages())
                         {
-                            <option value="@circuitType">@circuitType.GetDisplayName()</option>
+                            <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName()</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For=@(() => _newCircuit.CircuitType)/>
-                </div>
+                }
+            </div>
 
-                <div class="create-or-edit-circuit-modal-content-main">
-                    <div class="create-or-edit-circuit-modal-content-fields">
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Description <span class="red-asterisk">*</span></label>
-                            <InputText class="input-primary" @bind-Value="_newCircuit.Description" placeholder="Description"/>
-                            <ValidationMessage For=@(() => _newCircuit.Description)/>
-                        </div>
+            <div class="create-or-edit-circuit-modal-content-main">
+                <div class="create-or-edit-circuit-modal-content-fields">
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Description <span class="red-asterisk">*</span></label>
+                        <InputText class="input-primary" @bind-Value="_newCircuit.Description" placeholder="Description"/>
+                        <ValidationMessage For=@(() => _newCircuit.Description)/>
+                    </div>
 
-                        @switch (_newCircuit)
-                        {
-                            case LightingOutletCircuit lightingOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Wattage per fixture (W) <span class="red-asterisk">*</span></label>
-                                    <InputNumber class="input-primary" @bind-Value="lightingOutletCircuit.WattagePerFixture"/>
-                                    <ValidationMessage For=@(() => lightingOutletCircuit.WattagePerFixture)/>
-                                </div>
-
-                                break;
-                            case MotorOutletCircuit motorOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Motor Type <span class="red-asterisk">*</span></label>
-                                    <InputSelect @bind-Value="motorOutletCircuit.MotorType">
-                                        @if (_newCircuit.ParentDistributionBoard.Phase == BoardPhase.SinglePhase)
-                                        {
-                                            <option value="@(MotorType.SinglePhaseMotor)">@(MotorType.SinglePhaseMotor.GetDisplayName())</option>
-                                        }
-                                        else
-                                        {
-                                            @foreach (MotorType motorType in Enum.GetValues(typeof(MotorType)))
-                                            {
-                                                <option value="@motorType">@motorType.GetDisplayName()</option>
-                                            }
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
-                                </div>
-
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Horsepower <span class="red-asterisk">*</span></label>
-                                    <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
-                                        @foreach (var horsepowerValue in MotorOutletCircuit.AllowedHorsepowerValues)
-                                        {
-                                            <option value="@horsepowerValue">@horsepowerValue</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
-                                </div>
-
-                                break;
-                            case ConvenienceOutletCircuit convenienceOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Outlet Type <span class="red-asterisk">*</span></label>
-                                    <InputSelect @bind-Value="convenienceOutletCircuit.OutletType">
-                                        @foreach (OutletType outletType in Enum.GetValues(typeof(OutletType)))
-                                        {
-                                            <option value="@outletType">@outletType.GetDisplayName()</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => convenienceOutletCircuit.OutletType)/>
-                                </div>
-
-                                break;
-                            case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label>Wattage <span class="red-asterisk">*</span></label>
-                                    <InputNumber class="input-primary" @bind-Value="applianceEquipmentOutletCircuit.Wattage"/>
-                                    <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.Wattage)/>
-                                </div>
-
-                                break;
-                        }
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Quantity <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="_newCircuit.Quantity" disabled="@(_newCircuit is MotorOutletCircuit)"/>
-                            <ValidationMessage For=@(() => _newCircuit.Quantity)/>
-                        </div>
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Wire Length (m) <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="_newCircuit.WireLength"/>
-                            <ValidationMessage For=@(() => _newCircuit.WireLength)/>
-                        </div>
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Demand Factor (%) <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="_newCircuit.DemandFactor" disabled="@(_newCircuit is MotorOutletCircuit || _newCircuit is ApplianceEquipmentOutletCircuit)"/>
-                            <ValidationMessage For=@(() => _newCircuit.DemandFactor)/>
-                        </div>
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Circuit Protection <span class="red-asterisk">*</span></label>
-                            <InputSelect @bind-Value=_newCircuit.CircuitProtection>
-                                @foreach (var circuitProtection in _newCircuit.GetAllowedCircuitProtections())
-                                {
-                                    <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
-                        </div>
-
-                        @* TODO: Fix conductor type and grounding not updating on real time (It properly updates when submitting) *@
-
-                        <div class="create-or-edit-circuit-modal-field-row">
+                    @switch (_newCircuit)
+                    {
+                        case LightingOutletCircuit lightingOutletCircuit:
                             <div class="create-or-edit-circuit-modal-field">
-                                <label>Conductor Type <span class="red-asterisk">*</span></label>
+                                <label>Wattage per fixture (W) <span class="red-asterisk">*</span></label>
+                                <InputNumber class="input-primary" @bind-Value="lightingOutletCircuit.WattagePerFixture"/>
+                                <ValidationMessage For=@(() => lightingOutletCircuit.WattagePerFixture)/>
+                            </div>
 
-                                <InputSelect
-                                    Value="_newCircuit.ConductorTypeId"
-                                    ValueChanged="@((int value) => UpdateConductorType(value))"
-                                    ValueExpression="@(() => _newCircuit.ConductorTypeId)">
-                                    @foreach (var conductorType in _conductorTypes)
+                            break;
+                        case MotorOutletCircuit motorOutletCircuit:
+                            <div class="create-or-edit-circuit-modal-field">
+                                <label>Motor Type <span class="red-asterisk">*</span></label>
+                                <InputSelect @bind-Value="motorOutletCircuit.MotorType">
+                                    @if (_newCircuit.ParentDistributionBoard.Phase == BoardPhase.SinglePhase)
                                     {
-                                        <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                        <option value="@(MotorType.SinglePhaseMotor)">@(MotorType.SinglePhaseMotor.GetDisplayName())</option>
+                                    }
+                                    else
+                                    {
+                                        @foreach (MotorType motorType in Enum.GetValues(typeof(MotorType)))
+                                        {
+                                            <option value="@motorType">@motorType.GetDisplayName()</option>
+                                        }
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => _newCircuit.ConductorTypeId)/>
+                                <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
                             </div>
 
                             <div class="create-or-edit-circuit-modal-field">
-                                <label>Grounding <span class="red-asterisk">*</span></label>
-
-                                <InputSelect
-                                    Value="@_newCircuit.GroundingId"
-                                    ValueChanged="@((int value) => UpdateGrounding(value))"
-                                    ValueExpression="@(() => _newCircuit.GroundingId)">
-                                    @foreach (var conductorType in _conductorTypes)
+                                <label>Horsepower <span class="red-asterisk">*</span></label>
+                                <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
+                                    @foreach (var horsepowerValue in MotorOutletCircuit.AllowedHorsepowerValues)
                                     {
-                                        <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                        <option value="@horsepowerValue">@horsepowerValue</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => _newCircuit.GroundingId)/>
+                                <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
                             </div>
+
+                            break;
+                        case ConvenienceOutletCircuit convenienceOutletCircuit:
+                            <div class="create-or-edit-circuit-modal-field">
+                                <label>Outlet Type <span class="red-asterisk">*</span></label>
+                                <InputSelect @bind-Value="convenienceOutletCircuit.OutletType">
+                                    @foreach (OutletType outletType in Enum.GetValues(typeof(OutletType)))
+                                    {
+                                        <option value="@outletType">@outletType.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For=@(() => convenienceOutletCircuit.OutletType)/>
+                            </div>
+
+                            break;
+                        case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
+                            <div class="create-or-edit-circuit-modal-field">
+                                <label>Wattage <span class="red-asterisk">*</span></label>
+                                <InputNumber class="input-primary" @bind-Value="applianceEquipmentOutletCircuit.Wattage"/>
+                                <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.Wattage)/>
+                            </div>
+
+                            break;
+                    }
+
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Quantity <span class="red-asterisk">*</span></label>
+                        <InputNumber class="input-primary" @bind-Value="_newCircuit.Quantity" disabled="@(_newCircuit is MotorOutletCircuit)"/>
+                        <ValidationMessage For=@(() => _newCircuit.Quantity)/>
+                    </div>
+
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Wire Length (m) <span class="red-asterisk">*</span></label>
+                        <InputNumber class="input-primary" @bind-Value="_newCircuit.WireLength"/>
+                        <ValidationMessage For=@(() => _newCircuit.WireLength)/>
+                    </div>
+
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Demand Factor (%) <span class="red-asterisk">*</span></label>
+                        <InputNumber class="input-primary" @bind-Value="_newCircuit.DemandFactor" disabled="@(_newCircuit is MotorOutletCircuit || _newCircuit is ApplianceEquipmentOutletCircuit)"/>
+                        <ValidationMessage For=@(() => _newCircuit.DemandFactor)/>
+                    </div>
+
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Circuit Protection <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newCircuit.CircuitProtection>
+                            @foreach (var circuitProtection in _newCircuit.GetAllowedCircuitProtections())
+                            {
+                                <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
+                    </div>
+
+                    @* TODO: Fix conductor type and grounding not updating on real time (It properly updates when submitting) *@
+
+                    <div class="create-or-edit-circuit-modal-field-row">
+                        <div class="create-or-edit-circuit-modal-field">
+                            <label>Conductor Type <span class="red-asterisk">*</span></label>
+
+                            <InputSelect
+                                Value="_newCircuit.ConductorTypeId"
+                                ValueChanged="@((int value) => UpdateConductorType(value))"
+                                ValueExpression="@(() => _newCircuit.ConductorTypeId)">
+                                @foreach (var conductorType in _conductorTypes)
+                                {
+                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newCircuit.ConductorTypeId)/>
                         </div>
 
                         <div class="create-or-edit-circuit-modal-field">
-                            <label>Raceway Type <span class="red-asterisk">*</span></label>
-                            <InputSelect @bind-Value=_newCircuit.RacewayType>
-                                @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                            <label>Grounding <span class="red-asterisk">*</span></label>
+
+                            <InputSelect
+                                Value="@_newCircuit.GroundingId"
+                                ValueChanged="@((int value) => UpdateGrounding(value))"
+                                ValueExpression="@(() => _newCircuit.GroundingId)">
+                                @foreach (var conductorType in _conductorTypes)
                                 {
-                                    <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For=@(() => _newCircuit.RacewayType)/>
+                            <ValidationMessage For=@(() => _newCircuit.GroundingId)/>
                         </div>
                     </div>
 
-                    <div class="create-or-edit-circuit-modal-content-values">
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Sets</label>
-                            <p>@(_newCircuit.SetCount)</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-field">
+                        <label>Raceway Type <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newCircuit.RacewayType>
+                            @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                            {
+                                <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newCircuit.RacewayType)/>
+                    </div>
+                </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Volt Amps</label>
-                            <p>@(_newCircuit.GetVoltAmpere())</p>
-                        </div>
+                <div class="create-or-edit-circuit-modal-content-values">
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Sets</label>
+                        <p>@(_newCircuit.SetCount)</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Ampere Load</label>
-                            <p>@(Math.Round(_newCircuit.GetAmpereLoad(), 4))</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Volt Amps</label>
+                        <p>@(_newCircuit.GetVoltAmpere())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Ampere Trip</label>
-                            <p>@(_newCircuit.GetAmpereTrip())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Ampere Load</label>
+                        <p>@(Math.Round(_newCircuit.GetAmpereLoad(), 4))</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Ampere Frame</label>
-                            <p>@(_newCircuit.GetAmpereFrame())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Ampere Trip</label>
+                        <p>@(_newCircuit.GetAmpereTrip())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>R</label>
-                            <p>@(_newCircuit.GetR())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Ampere Frame</label>
+                        <p>@(_newCircuit.GetAmpereFrame())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>X</label>
-                            <p>@(_newCircuit.GetX())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>R</label>
+                        <p>@(_newCircuit.GetR())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Voltage Drop</label>
-                            <p>@(Math.Round(_newCircuit.GetVoltageDrop(), 4).ToPercentageString())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>X</label>
+                        <p>@(_newCircuit.GetX())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Conductor Size</label>
-                            <p>@(_newCircuit.GetConductorSize())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Voltage Drop</label>
+                        <p>@(Math.Round(_newCircuit.GetVoltageDrop(), 4).ToPercentageString())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Ground Size</label>
-                            <p>@(_newCircuit.GetGroundingSize())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Conductor Size</label>
+                        <p>@(_newCircuit.GetConductorSize())</p>
+                    </div>
 
-                        <div class="create-or-edit-circuit-modal-content-value">
-                            <label>Raceway Size</label>
-                            <p>@(_newCircuit.GetRacewaySize())</p>
-                        </div>
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Ground Size</label>
+                        <p>@(_newCircuit.GetGroundingSize())</p>
+                    </div>
+
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Raceway Size</label>
+                        <p>@(_newCircuit.GetRacewaySize())</p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="modal-footer modal-footer-btns">
-                <button
-                    class="btn-text create-or-edit-circuit-modal-cancel-btn"
-                    type="button"
-                    @onclick="CloseModal">
-                    Cancel
-                </button>
+        <div class="modal-footer modal-footer-btns">
+            <button
+                class="btn-text create-or-edit-circuit-modal-cancel-btn"
+                type="button"
+                @onclick="CloseModal">
+                Cancel
+            </button>
 
-                <button
-                    class="btn-text create-or-edit-circuit-modal-create-btn btn-primary"
-                    type="submit"
-                    disabled="@(!_editContext.Validate() || !_editContext.IsModified())">
-                    @(OldCircuit == null ? "Create" : "Edit")
-                </button>
-            </div>
-        </EditForm>
+            <button
+                class="btn-text create-or-edit-circuit-modal-create-btn btn-primary"
+                type="submit"
+                disabled="@(!_editContext.Validate() || !_editContext.IsModified())">
+                @(OldCircuit == null ? "Create" : "Edit")
+            </button>
+        </div>
+    </EditForm>
     </div>
 }
 
@@ -286,6 +301,11 @@
                 GroundingId = _conductorTypes[0].Id,
                 Grounding = _conductorTypes[0]
             };
+
+            if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
+            {
+                _newCircuit.LineToLineVoltage = _newCircuit.GetAllowedLineToLineVoltages()[0];
+            }
         }
 
         _editContext = new EditContext(_newCircuit);
@@ -341,6 +361,8 @@
         updatedNewCircuit.WireLength = _newCircuit.WireLength;
         updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit || updatedNewCircuit is ApplianceEquipmentOutletCircuit ? 100 : _newCircuit.DemandFactor;
 
+        updatedNewCircuit.LineToLineVoltage = _newCircuit.LineToLineVoltage;
+
         updatedNewCircuit.CircuitProtection =
             updatedNewCircuit.GetAllowedCircuitProtections().Contains(_newCircuit.CircuitProtection) ? _newCircuit.CircuitProtection : updatedNewCircuit.GetAllowedCircuitProtections()[0];
 
@@ -350,6 +372,7 @@
         updatedNewCircuit.GroundingId = _newCircuit.GroundingId;
         updatedNewCircuit.Grounding = _newCircuit.Grounding;
         updatedNewCircuit.RacewayType = _newCircuit.RacewayType;
+
 
         _newCircuit = updatedNewCircuit;
         _editContext = new EditContext(_newCircuit);

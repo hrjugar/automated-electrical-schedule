@@ -5,6 +5,9 @@
     @*     <h6>Circuits</h6> *@
     @*     <button class="btn-primary text-sm">Add</button> *@
     @* </div> *@
+    @{
+        var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+    }
 
     <div class="board-table">
         <div class="board-table-head">
@@ -15,7 +18,57 @@
             <p class="cell cell--text">VA</p>
             <p class="cell cell--text">Voltage</p>
             <p class="cell cell--text">DF</p>
-            <p class="cell cell--text">Ampere Load</p>
+
+            @if (threePhaseBoard == null)
+            {
+                <p class="cell cell--text cell--load">Ampere Load</p>
+            }
+            else
+            {
+                <div class="cell cell--separator"></div>
+
+                <div class="board-table-head-colgroup board-table-head-colgroup--load">
+                    <p class="cell cell--text board-table-head-colgroup-title">Ampere Load</p>
+
+                    <div class="board-table-head-colgroup-cols">
+                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ab or LineToLineVoltage.Abc)
+                        {
+                            <p class="cell cell--text">AB</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+
+                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Bc or LineToLineVoltage.Abc)
+                        {
+                            <p class="cell cell--text">BC</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+
+                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ca or LineToLineVoltage.Abc)
+                        {
+                            <p class="cell cell--text">CA</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+
+                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Abc)
+                        {
+                            <p class="cell cell--text">ABC</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                    </div>
+                </div>
+            }
 
             <div class="cell cell--separator"></div>
 
@@ -62,6 +115,7 @@
                     var circuitTypeLabelClass = "circuit-type-label--sub";
                     var voltageDrop = circuit.GetVoltageDrop();
                     var hasHighVoltageDrop = voltageDrop * 100 >= 3;
+                    var ampereLoadDisplay = Math.Round(circuit.GetAmpereLoad(), 4);
 
                     switch (circuit)
                     {
@@ -97,7 +151,51 @@
                         <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
                         <p class="cell cell--text">@(circuit.GetVoltage())</p>
                         <p class="cell cell--text">@circuit.DemandFactor%</p>
-                        <p class="cell cell--text">@(Math.Round(circuit.GetAmpereLoad(), 4))</p>
+
+                        @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
+                        {
+                            <p class="cell cell--text cell--load">@ampereLoadDisplay</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--separator"></div>
+
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Ab)
+                            {
+                                <p class="cell cell--text">@ampereLoadDisplay</p>
+                            }
+                            else
+                            {
+                                <div class="cell cell--empty"></div>
+                            }
+
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Bc)
+                            {
+                                <p class="cell cell--text">@ampereLoadDisplay</p>
+                            }
+                            else
+                            {
+                                <div class="cell cell--empty"></div>
+                            }
+
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Ca)
+                            {
+                                <p class="cell cell--text">@ampereLoadDisplay</p>
+                            }
+                            else
+                            {
+                                <div class="cell cell--empty"></div>
+                            }
+
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
+                            {
+                                <p class="cell cell--text">@ampereLoadDisplay</p>
+                            }
+                            else
+                            {
+                                <div class="cell cell--empty"></div>
+                            }
+                        }
 
                         <div class="cell cell--separator"></div>
 
@@ -164,7 +262,20 @@
             <p class="cell cell--text">1300</p>
             <p class="cell cell--text">230</p>
             <div class="cell cell--empty"></div>
-            <p class="cell cell--text">5.6522</p>
+
+            @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
+            {
+                <p class="cell cell--text cell--load">5.6522</p>
+            }
+            else
+            {
+                <div class="cell cell--separator"></div>
+
+                <p class="cell cell--text">5.6522</p>
+                <p class="cell cell--text">5.6522</p>
+                <p class="cell cell--text">5.6522</p>
+                <p class="cell cell--text">5.6522</p>
+            }
 
             <div class="cell cell--separator"></div>
 

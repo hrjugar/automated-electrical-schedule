@@ -1,31 +1,51 @@
-.create-or-edit-board-modal-fields {
+.create-or-edit-board-modal-content {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    gap: 1rem;
+    gap: 2rem;
 
-    .create-or-edit-board-modal-field-row {
+    .create-or-edit-board-modal-content-line-to-line {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
-        gap: 1rem;
+        align-items: flex-start;
 
-        & > * {
-            flex-grow: 1;
+        select {
+            width: 15rem;
         }
     }
 
-    .create-or-edit-board-modal-field {
+    .create-or-edit-board-modal-fields {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         align-items: stretch;
-        gap: 0.25rem;
+        gap: 1rem;
 
-        label {
-            color: var(--clr-neutral-500);
+        .create-or-edit-board-modal-field-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+
+            & > * {
+                flex-grow: 1;
+            }
+        }
+
+        .create-or-edit-board-modal-field {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 0.25rem;
+
+            label {
+                color: var(--clr-neutral-500);
+            }
         }
     }
+
 }

@@ -17,140 +17,156 @@
                 <h5>Edit Board</h5>
             </div>
 
-            <div class="modal-content create-or-edit-board-modal-fields">
+            <div class="modal-content create-or-edit-board-modal-content">
                 @{
                     var threePhaseBoard = _newDistributionBoard as ThreePhaseDistributionBoard;
                 }
 
-                <div class="create-or-edit-board-modal-field">
-                    <label>Board Name <span class="red-asterisk">*</span></label>
-                    <InputText class="input-primary" @bind-Value="_newDistributionBoard.BoardName" placeholder="Bedroom Main PB"/>
-                    <ValidationMessage For=@(() => _newDistributionBoard.BoardName)/>
-                </div>
-
-                <div class="create-or-edit-board-modal-field-row">
-                    <div class="create-or-edit-board-modal-field">
-                        <label>Phase <span class="red-asterisk">*</span></label>
-                        <InputSelect @bind-Value:get=_newDistributionBoard.Phase @bind-Value:set="UpdatePhase" disabled="@(!IsNew)">
-                            @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
+                @if (threePhaseBoard != null)
+                {
+                    <div class="create-or-edit-board-modal-content-line-to-line">
+                        <InputSelect @bind-Value="@threePhaseBoard.LineToLineVoltage" disabled="@(threePhaseBoard.ParentDistributionBoard is null)">
+                            @foreach (var lineToLineVoltage in threePhaseBoard.GetAllowedLineToLineVoltages())
                             {
-                                <option value="@phase">@phase.GetDisplayName()</option>
+                                <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName()</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For=@(() => _newDistributionBoard.Phase)/>
+                    </div>
+                }
+
+                <div class="create-or-edit-board-modal-fields">
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Board Name <span class="red-asterisk">*</span></label>
+                        <InputText class="input-primary" @bind-Value="_newDistributionBoard.BoardName" placeholder="Bedroom Main PB"/>
+                        <ValidationMessage For=@(() => _newDistributionBoard.BoardName)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field-row">
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Phase <span class="red-asterisk">*</span></label>
+                            <InputSelect @bind-Value:get=_newDistributionBoard.Phase @bind-Value:set="UpdatePhase" disabled="@(!IsNew)">
+                                @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
+                                {
+                                    <option value="@phase">@phase.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newDistributionBoard.Phase)/>
+                        </div>
+
+                        @if (threePhaseBoard != null)
+                        {
+                            <div class="create-or-edit-board-modal-field">
+                                <label>Configuration <span class="red-asterisk">*</span></label>
+                                <InputSelect
+                                    Value="threePhaseBoard.ThreePhaseConfiguration"
+                                    ValueChanged="@((ThreePhaseConfiguration config) => UpdateThreePhaseConfiguration(config))"
+                                    ValueExpression="@(() => threePhaseBoard.ThreePhaseConfiguration)"
+                                    disabled="@(!IsNew)">
+                                    @foreach (ThreePhaseConfiguration config in Enum.GetValues(typeof(ThreePhaseConfiguration)))
+                                    {
+                                        <option value="@config">@config.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For=@(() => threePhaseBoard.ThreePhaseConfiguration)/>
+                            </div>
+                        }
+                    </div>
+
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Voltage <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newDistributionBoard.Voltage>
+                            @foreach (var voltage in _newDistributionBoard.GetAllowedVoltages())
+                            {
+                                <option value="@voltage">@voltage.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.Voltage)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Circuit Protection <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newDistributionBoard.CircuitProtection>
+                            @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
+                            {
+                                <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.CircuitProtection)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Sets <span class="red-asterisk">*</span></label>
+                        <InputNumber class="input-primary" @bind-Value="_newDistributionBoard.SetCount"/>
+                        <ValidationMessage For=@(() => _newDistributionBoard.SetCount)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field-row">
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Conductor Type <span class="red-asterisk">*</span></label>
+
+                            <InputSelect @bind-Value="_newDistributionBoard.ConductorTypeId">
+                                @foreach (var conductorType in _conductorTypes)
+                                {
+                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newDistributionBoard.ConductorTypeId)/>
+                        </div>
+
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Grounding <span class="red-asterisk">*</span></label>
+
+                            <InputSelect @bind-Value="_newDistributionBoard.GroundingId">
+                                @foreach (var conductorType in _conductorTypes)
+                                {
+                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newDistributionBoard.GroundingId)/>
+                        </div>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Raceway Type <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newDistributionBoard.RacewayType>
+                            @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                            {
+                                <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.RacewayType)/>
                     </div>
 
                     @if (threePhaseBoard != null)
                     {
                         <div class="create-or-edit-board-modal-field">
-                            <label>Configuration <span class="red-asterisk">*</span></label>
-                            <InputSelect
-                                Value="threePhaseBoard.ThreePhaseConfiguration"
-                                ValueChanged="@((ThreePhaseConfiguration config) => UpdateThreePhaseConfiguration(config))"
-                                ValueExpression="@(() => threePhaseBoard.ThreePhaseConfiguration)"
-                                disabled="@(!IsNew)">
-                                @foreach (ThreePhaseConfiguration config in Enum.GetValues(typeof(ThreePhaseConfiguration)))
+                            <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
+
+                            <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled>
+                                @foreach (var transformerPrimaryProtection in threePhaseBoard.GetAllowedTransformerPrimaryProtection())
                                 {
-                                    <option value="@config">@config.GetDisplayName()</option>
+                                    <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For=@(() => threePhaseBoard.ThreePhaseConfiguration)/>
+                            <ValidationMessage For=@(() => threePhaseBoard.TransformerPrimaryProtection)/>
+                        </div>
+
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
+
+                            <InputSelect @bind-Value="@threePhaseBoard.TransformerSecondaryProtection">
+                                @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
+                                {
+                                    <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => threePhaseBoard.TransformerSecondaryProtection)/>
                         </div>
                     }
+
                 </div>
 
-
-                <div class="create-or-edit-board-modal-field">
-                    <label>Voltage <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newDistributionBoard.Voltage>
-                        @foreach (var voltage in _newDistributionBoard.GetAllowedVoltages())
-                        {
-                            <option value="@voltage">@voltage.GetDisplayName()</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For=@(() => _newDistributionBoard.Voltage)/>
-                </div>
-
-                <div class="create-or-edit-board-modal-field">
-                    <label>Circuit Protection <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newDistributionBoard.CircuitProtection>
-                        @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
-                        {
-                            <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For=@(() => _newDistributionBoard.CircuitProtection)/>
-                </div>
-
-                <div class="create-or-edit-board-modal-field">
-                    <label>Sets <span class="red-asterisk">*</span></label>
-                    <InputNumber class="input-primary" @bind-Value="_newDistributionBoard.SetCount"/>
-                    <ValidationMessage For=@(() => _newDistributionBoard.SetCount)/>
-                </div>
-
-                <div class="create-or-edit-board-modal-field-row">
-                    <div class="create-or-edit-board-modal-field">
-                        <label>Conductor Type <span class="red-asterisk">*</span></label>
-
-                        <InputSelect @bind-Value="_newDistributionBoard.ConductorTypeId">
-                            @foreach (var conductorType in _conductorTypes)
-                            {
-                                <option value="@conductorType.Id">@conductorType.ToString()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => _newDistributionBoard.ConductorTypeId)/>
-                    </div>
-
-                    <div class="create-or-edit-board-modal-field">
-                        <label>Grounding <span class="red-asterisk">*</span></label>
-
-                        <InputSelect @bind-Value="_newDistributionBoard.GroundingId">
-                            @foreach (var conductorType in _conductorTypes)
-                            {
-                                <option value="@conductorType.Id">@conductorType.ToString()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => _newDistributionBoard.GroundingId)/>
-                    </div>
-                </div>
-
-                <div class="create-or-edit-board-modal-field">
-                    <label>Raceway Type <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newDistributionBoard.RacewayType>
-                        @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
-                        {
-                            <option value="@racewayType">@racewayType.GetDisplayName()</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For=@(() => _newDistributionBoard.RacewayType)/>
-                </div>
-
-                @if (threePhaseBoard != null)
-                {
-                    <div class="create-or-edit-board-modal-field">
-                        <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
-
-                        <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled>
-                            @foreach (var transformerPrimaryProtection in threePhaseBoard.GetAllowedTransformerPrimaryProtection())
-                            {
-                                <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => threePhaseBoard.TransformerPrimaryProtection)/>
-                    </div>
-
-                    <div class="create-or-edit-board-modal-field">
-                        <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
-
-                        <InputSelect @bind-Value="@threePhaseBoard.TransformerSecondaryProtection">
-                            @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
-                            {
-                                <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => threePhaseBoard.TransformerSecondaryProtection)/>
-                    </div>
-                }
             </div>
 
             <div class="modal-footer modal-footer-btns">
@@ -279,4 +295,5 @@
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();
     }
+
 }

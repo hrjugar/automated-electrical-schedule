@@ -36,6 +36,25 @@ public partial class ThreePhaseDistributionBoard
         };
     }
 
+    public List<LineToLineVoltage> GetAllowedLineToLineVoltages()
+    {
+        return ParentDistributionBoard switch
+        {
+            null => [LineToLineVoltage.Abc],
+            ThreePhaseDistributionBoard threePhaseDistributionBoard => threePhaseDistributionBoard.LineToLineVoltage
+                switch
+                {
+                    LineToLineVoltage.Ab => [LineToLineVoltage.Ab],
+                    LineToLineVoltage.Bc => [LineToLineVoltage.Bc],
+                    LineToLineVoltage.Ca => [LineToLineVoltage.Ca],
+                    LineToLineVoltage.Abc =>
+                        [LineToLineVoltage.Ab, LineToLineVoltage.Bc, LineToLineVoltage.Ca, LineToLineVoltage.Abc],
+                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+                },
+            _ => throw new ArgumentOutOfRangeException(nameof(ParentDistributionBoard))
+        };
+    }
+
     public override List<BoardVoltage> GetAllowedVoltages()
     {
         List<BoardVoltage> phaseVoltages = ThreePhaseConfiguration switch
