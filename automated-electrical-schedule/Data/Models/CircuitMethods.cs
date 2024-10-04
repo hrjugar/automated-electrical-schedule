@@ -102,9 +102,14 @@ public abstract partial class Circuit
         return CircuitGroundingSizeTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
     }
 
+    public int GetConductorWireCount()
+    {
+        return LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
+    }
+
     public int GetRacewaySize()
     {
-        var wireCount = LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 4 : 3;
+        var wireCount = GetConductorWireCount() + 1;
         return RacewaySizeTable.GetRacewaySize(
             ConductorType.WireType,
             RacewayType,
