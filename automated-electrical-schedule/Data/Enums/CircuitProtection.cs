@@ -35,5 +35,7 @@ public enum CircuitProtection
     InstantaneousTripBreaker,
 
     [Display(Name = "Inverse Time Breaker")]
-    InverseTimeBreaker
+    InverseTimeBreaker,
+
+    [Display(Name = "Cut-out Fuse")] CutOutFuse
 }

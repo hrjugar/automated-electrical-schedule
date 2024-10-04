@@ -27,6 +27,11 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<ConductorType>().HasData(ConductorTypeSeed.All);
 
+        modelBuilder.Entity<DistributionBoard>()
+            .HasDiscriminator(b => b.Phase)
+            .HasValue<SinglePhaseDistributionBoard>(BoardPhase.SinglePhase)
+            .HasValue<ThreePhaseDistributionBoard>(BoardPhase.ThreePhase);
+
         modelBuilder.Entity<Circuit>()
             .HasDiscriminator(c => c.CircuitType)
             .HasValue<LightingOutletCircuit>(CircuitType.LightingOutlet)

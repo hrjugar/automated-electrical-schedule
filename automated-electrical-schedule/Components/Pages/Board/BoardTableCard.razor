@@ -111,7 +111,7 @@
 
                             @if (hasHighVoltageDrop)
                             {
-                                <button class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
+                                <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
                                     Correct
                                 </button>
                             }

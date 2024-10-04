@@ -1,0 +1,282 @@
+@using Microsoft.EntityFrameworkCore
+@inject DatabaseContext DatabaseContext
+
+
+@if (IsOpen && _editContext != null && _newDistributionBoard != null)
+{
+    <div class="modal-wrapper" @onclick="@CloseModal">
+        <EditForm
+            class="modal create-or-edit-board-modal"
+            @onclick:stopPropagation="true"
+            EditContext=@_editContext
+            OnValidSubmit=@HandleValidFormSubmit>
+
+            <ObjectGraphDataAnnotationsValidator/>
+
+            <div class="modal-header">
+                <h5>Edit Board</h5>
+            </div>
+
+            <div class="modal-content create-or-edit-board-modal-fields">
+                @{
+                    var threePhaseBoard = _newDistributionBoard as ThreePhaseDistributionBoard;
+                }
+
+                <div class="create-or-edit-board-modal-field">
+                    <label>Board Name <span class="red-asterisk">*</span></label>
+                    <InputText class="input-primary" @bind-Value="_newDistributionBoard.BoardName" placeholder="Bedroom Main PB"/>
+                    <ValidationMessage For=@(() => _newDistributionBoard.BoardName)/>
+                </div>
+
+                <div class="create-or-edit-board-modal-field-row">
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Phase <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value:get=_newDistributionBoard.Phase @bind-Value:set="UpdatePhase" disabled="@(!IsNew)">
+                            @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
+                            {
+                                <option value="@phase">@phase.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.Phase)/>
+                    </div>
+
+                    @if (threePhaseBoard != null)
+                    {
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Configuration <span class="red-asterisk">*</span></label>
+                            <InputSelect
+                                Value="threePhaseBoard.ThreePhaseConfiguration"
+                                ValueChanged="@((ThreePhaseConfiguration config) => UpdateThreePhaseConfiguration(config))"
+                                ValueExpression="@(() => threePhaseBoard.ThreePhaseConfiguration)"
+                                disabled="@(!IsNew)">
+                                @foreach (ThreePhaseConfiguration config in Enum.GetValues(typeof(ThreePhaseConfiguration)))
+                                {
+                                    <option value="@config">@config.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => threePhaseBoard.ThreePhaseConfiguration)/>
+                        </div>
+                    }
+                </div>
+
+
+                <div class="create-or-edit-board-modal-field">
+                    <label>Voltage <span class="red-asterisk">*</span></label>
+                    <InputSelect @bind-Value=_newDistributionBoard.Voltage>
+                        @foreach (var voltage in _newDistributionBoard.GetAllowedVoltages())
+                        {
+                            <option value="@voltage">@voltage.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For=@(() => _newDistributionBoard.Voltage)/>
+                </div>
+
+                <div class="create-or-edit-board-modal-field">
+                    <label>Circuit Protection <span class="red-asterisk">*</span></label>
+                    <InputSelect @bind-Value=_newDistributionBoard.CircuitProtection>
+                        @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
+                        {
+                            <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For=@(() => _newDistributionBoard.CircuitProtection)/>
+                </div>
+
+                <div class="create-or-edit-board-modal-field">
+                    <label>Sets <span class="red-asterisk">*</span></label>
+                    <InputNumber class="input-primary" @bind-Value="_newDistributionBoard.SetCount"/>
+                    <ValidationMessage For=@(() => _newDistributionBoard.SetCount)/>
+                </div>
+
+                <div class="create-or-edit-board-modal-field-row">
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Conductor Type <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="_newDistributionBoard.ConductorTypeId">
+                            @foreach (var conductorType in _conductorTypes)
+                            {
+                                <option value="@conductorType.Id">@conductorType.ToString()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.ConductorTypeId)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Grounding <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="_newDistributionBoard.GroundingId">
+                            @foreach (var conductorType in _conductorTypes)
+                            {
+                                <option value="@conductorType.Id">@conductorType.ToString()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.GroundingId)/>
+                    </div>
+                </div>
+
+                <div class="create-or-edit-board-modal-field">
+                    <label>Raceway Type <span class="red-asterisk">*</span></label>
+                    <InputSelect @bind-Value=_newDistributionBoard.RacewayType>
+                        @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                        {
+                            <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For=@(() => _newDistributionBoard.RacewayType)/>
+                </div>
+
+                @if (threePhaseBoard != null)
+                {
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled>
+                            @foreach (var transformerPrimaryProtection in threePhaseBoard.GetAllowedTransformerPrimaryProtection())
+                            {
+                                <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => threePhaseBoard.TransformerPrimaryProtection)/>
+                    </div>
+
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="@threePhaseBoard.TransformerSecondaryProtection">
+                            @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
+                            {
+                                <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => threePhaseBoard.TransformerSecondaryProtection)/>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text create-or-edit-board-modal-cancel-btn"
+                    type="button"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn-text create-or-edit-board-modal-edit-btn btn-primary"
+                    type="submit"
+                    disabled="@(!_editContext.Validate())">
+                    Edit
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+
+    [Parameter] public bool IsNew { get; set; }
+
+    EditContext? _editContext;
+
+    DistributionBoard? _newDistributionBoard;
+    List<ConductorType> _conductorTypes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
+
+        if (IsNew)
+        {
+            if (DistributionBoard is SinglePhaseDistributionBoard)
+            {
+                _newDistributionBoard = new SinglePhaseDistributionBoard();
+            }
+            else
+            {
+                _newDistributionBoard = new ThreePhaseDistributionBoard();
+            }
+
+            _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
+        }
+        else
+        {
+            _newDistributionBoard = DistributionBoard.Clone();
+        }
+
+        _editContext = new EditContext(_newDistributionBoard);
+    }
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    void UpdatePhase(BoardPhase phase)
+    {
+        DistributionBoard updatedNewDistributionBoard;
+
+        if (phase == BoardPhase.SinglePhase)
+        {
+            updatedNewDistributionBoard = new SinglePhaseDistributionBoard();
+        }
+        else
+        {
+            updatedNewDistributionBoard = new ThreePhaseDistributionBoard
+            {
+                ThreePhaseConfiguration = ThreePhaseConfiguration.Delta,
+                TransformerPrimaryProtection = CircuitProtection.CutOutFuse,
+                TransformerSecondaryProtection = CircuitProtection.MiniatureCircuitBreaker
+            };
+        }
+
+        updatedNewDistributionBoard.Id = _newDistributionBoard!.Id;
+        updatedNewDistributionBoard.BoardName = _newDistributionBoard.BoardName;
+        updatedNewDistributionBoard.Phase = phase;
+        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.GetAllowedVoltages()[0];
+        updatedNewDistributionBoard.CircuitProtection = _newDistributionBoard.CircuitProtection;
+        updatedNewDistributionBoard.SetCount = _newDistributionBoard.SetCount;
+        updatedNewDistributionBoard.ConductorTypeId = _newDistributionBoard.ConductorTypeId;
+        updatedNewDistributionBoard.ConductorType = _newDistributionBoard.ConductorType;
+        updatedNewDistributionBoard.GroundingId = _newDistributionBoard.GroundingId;
+        updatedNewDistributionBoard.Grounding = _newDistributionBoard.Grounding;
+        updatedNewDistributionBoard.RacewayType = _newDistributionBoard.RacewayType;
+
+        _newDistributionBoard = updatedNewDistributionBoard;
+        _editContext = new EditContext(_newDistributionBoard);
+    }
+
+    void UpdateThreePhaseConfiguration(ThreePhaseConfiguration newConfiguration)
+    {
+        var threePhaseBoard = _newDistributionBoard as ThreePhaseDistributionBoard;
+        threePhaseBoard!.ThreePhaseConfiguration = newConfiguration;
+
+        var allowedVoltages = threePhaseBoard.GetAllowedVoltages();
+        if (!allowedVoltages.Contains(threePhaseBoard.Voltage))
+        {
+            threePhaseBoard.Voltage = allowedVoltages[0];
+        }
+
+        StateHasChanged();
+    }
+
+    async Task HandleValidFormSubmit()
+    {
+        if (IsNew)
+        {
+            await DatabaseContext.DistributionBoards.AddAsync(_newDistributionBoard!);
+        }
+        else
+        {
+            DatabaseContext.Entry(DistributionBoard).CurrentValues.SetValues(_newDistributionBoard!);
+            DatabaseContext.Update(DistributionBoard);
+        }
+
+        await DatabaseContext.SaveChangesAsync();
+        await CloseModal();
+    }
+}

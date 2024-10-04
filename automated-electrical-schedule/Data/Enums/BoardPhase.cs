@@ -5,9 +5,5 @@ namespace automated_electrical_schedule.Data.Enums;
 public enum BoardPhase
 {
     [Display(Name = "Single Phase")] SinglePhase,
-
-    [Display(Name = "Three Phase - Delta")]
-    ThreePhaseDelta,
-
-    [Display(Name = "Three Phase - WYE")] ThreePhaseWye
+    [Display(Name = "Three Phase")] ThreePhase
 }

@@ -30,27 +30,41 @@
                     <ValidationMessage For=@(() => _newProject.MainDistributionBoard.BoardName)/>
                 </div>
 
-                <div class="create-project-modal-field">
-                    <label>Phase <span class="red-asterisk">*</span></label>
-                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.Phase>
-                        @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
-                        {
-                            <option value="@phase">@phase.GetDisplayName()</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.Phase)/>
+                <div class="create-project-modal-field-row">
+                    <div class="create-project-modal-field">
+                        <label>Phase <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value:get=_newProject.MainDistributionBoard.Phase @bind-Value:set="UpdatePhase">
+                            @foreach (BoardPhase phase in Enum.GetValues(typeof(BoardPhase)))
+                            {
+                                <option value="@phase">@phase.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newProject.MainDistributionBoard.Phase)/>
+                    </div>
+
+                    @if (_newProject.MainDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard)
+                    {
+                        <div class="create-project-modal-field">
+                            <label>Configuration <span class="red-asterisk">*</span></label>
+                            <InputSelect
+                                Value="threePhaseDistributionBoard.ThreePhaseConfiguration"
+                                ValueChanged="@((ThreePhaseConfiguration config) => UpdateThreePhaseConfiguration(config))"
+                                ValueExpression="@(() => threePhaseDistributionBoard.ThreePhaseConfiguration)">
+                                @foreach (ThreePhaseConfiguration config in Enum.GetValues(typeof(ThreePhaseConfiguration)))
+                                {
+                                    <option value="@config">@config.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => threePhaseDistributionBoard.ThreePhaseConfiguration)/>
+                        </div>
+                    }
                 </div>
 
                 <div class="create-project-modal-field">
                     <label>Voltage <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newProject.MainDistributionBoard.Voltage>
-                        @foreach (BoardVoltage voltage in Enum.GetValues(typeof(BoardVoltage)))
+                        @foreach (var voltage in _newProject.MainDistributionBoard.GetAllowedVoltages())
                         {
-                            @if (_newProject.MainDistributionBoard.Phase == BoardPhase.SinglePhase && voltage != BoardVoltage.V230)
-                            {
-                                continue;
-                            }
-
                             <option value="@voltage">@voltage.GetDisplayName()</option>
                         }
                     </InputSelect>
@@ -106,11 +120,39 @@
                     </InputSelect>
                     <ValidationMessage For=@(() => _newProject.MainDistributionBoard.RacewayType)/>
                 </div>
+
+                @if (_newProject.MainDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard2)
+                {
+                    <div class="create-project-modal-field">
+                        <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="@threePhaseDistributionBoard2.TransformerPrimaryProtection" disabled>
+                            @foreach (var transformerPrimaryProtection in threePhaseDistributionBoard2.GetAllowedTransformerPrimaryProtection())
+                            {
+                                <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => threePhaseDistributionBoard2.TransformerPrimaryProtection)/>
+                    </div>
+
+                    <div class="create-project-modal-field">
+                        <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
+
+                        <InputSelect @bind-Value="@threePhaseDistributionBoard2.TransformerSecondaryProtection">
+                            @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
+                            {
+                                <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => threePhaseDistributionBoard2.TransformerSecondaryProtection)/>
+                    </div>
+                }
             </div>
 
             <div class="modal-footer modal-footer-btns">
                 <button
                     class="btn-text create-project-modal-cancel-btn"
+                    type="button"
                     @onclick="CloseModal">
                     Cancel
                 </button>
@@ -130,7 +172,7 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    Project _newProject = new() { MainDistributionBoard = new DistributionBoard() };
+    Project _newProject = new() { MainDistributionBoard = new SinglePhaseDistributionBoard() };
     EditContext? _editContext = null;
 
     List<ConductorType> _conductorTypes = [];
@@ -149,6 +191,53 @@
     {
         IsOpen = false;
         await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    void UpdatePhase(BoardPhase phase)
+    {
+        DistributionBoard updatedNewDistributionBoard;
+
+        if (phase == BoardPhase.SinglePhase)
+        {
+            updatedNewDistributionBoard = new SinglePhaseDistributionBoard();
+        }
+        else
+        {
+            updatedNewDistributionBoard = new ThreePhaseDistributionBoard
+            {
+                ThreePhaseConfiguration = ThreePhaseConfiguration.Delta,
+                TransformerPrimaryProtection = CircuitProtection.CutOutFuse,
+                TransformerSecondaryProtection = CircuitProtection.MiniatureCircuitBreaker
+            };
+        }
+
+        updatedNewDistributionBoard.Id = _newProject.MainDistributionBoard.Id;
+        updatedNewDistributionBoard.BoardName = _newProject.MainDistributionBoard.BoardName;
+        updatedNewDistributionBoard.Phase = phase;
+        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.GetAllowedVoltages()[0];
+        updatedNewDistributionBoard.CircuitProtection = _newProject.MainDistributionBoard.CircuitProtection;
+        updatedNewDistributionBoard.SetCount = _newProject.MainDistributionBoard.SetCount;
+        updatedNewDistributionBoard.ConductorTypeId = _newProject.MainDistributionBoard.ConductorTypeId;
+        updatedNewDistributionBoard.ConductorType = _newProject.MainDistributionBoard.ConductorType;
+        updatedNewDistributionBoard.GroundingId = _newProject.MainDistributionBoard.GroundingId;
+        updatedNewDistributionBoard.Grounding = _newProject.MainDistributionBoard.Grounding;
+        updatedNewDistributionBoard.RacewayType = _newProject.MainDistributionBoard.RacewayType;
+
+        _newProject.MainDistributionBoard = updatedNewDistributionBoard;
+        _editContext = new EditContext(_newProject);
+    }
+
+    void UpdateThreePhaseConfiguration(ThreePhaseConfiguration newConfiguration)
+    {
+        ((ThreePhaseDistributionBoard)_newProject.MainDistributionBoard).ThreePhaseConfiguration = newConfiguration;
+
+        var allowedVoltages = _newProject.MainDistributionBoard.GetAllowedVoltages();
+        if (!allowedVoltages.Contains(_newProject.MainDistributionBoard.Voltage))
+        {
+            _newProject.MainDistributionBoard.Voltage = allowedVoltages[0];
+        }
+
+        StateHasChanged();
     }
 
     async Task HandleValidFormSubmit()

@@ -1,36 +1,114 @@
 <div class="board-specs">
+    @{
+        var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+    }
     <div class="board-spec">
         <label>Phase</label>
         <h5>@DistributionBoard.Phase.GetDisplayName()</h5>
     </div>
+
+    @if (threePhaseBoard != null)
+    {
+        <div class="board-spec">
+            <label>Configuration</label>
+            <h5>@threePhaseBoard.ThreePhaseConfiguration.GetDisplayName()</h5>
+        </div>
+
+        @if (threePhaseBoard.LineToLineVoltage != null)
+        {
+            <div class="board-spec">
+                <label>Line-to-Line Voltage</label>
+                <h5>@threePhaseBoard.LineToLineVoltage.GetDisplayName()</h5>
+            </div>
+        }
+    }
 
     <div class="board-spec">
         <label>Voltage</label>
         <h5>@DistributionBoard.Voltage.GetDisplayName()</h5>
     </div>
 
+    @if (threePhaseBoard != null)
+    {
+        @if (threePhaseBoard.TransformerPrimaryProtection != null)
+        {
+            <div class="board-spec">
+                <label>Transformer Primary Protection</label>
+                <h5>@threePhaseBoard.TransformerPrimaryProtection.GetDisplayName()</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.TransformerSecondaryProtection != null)
+        {
+            <div class="board-spec">
+                <label>Transformer Secondary Protection</label>
+                <h5>@threePhaseBoard.TransformerSecondaryProtection.GetDisplayName()</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.BreakerCircuitProtection != null)
+        {
+            <div class="board-spec">
+                <label>@($"{DistributionBoard.ParentDistributionBoard!.Voltage}V") Circuit Protection</label>
+                <h5>@threePhaseBoard.BreakerCircuitProtection.GetDisplayName()</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.BreakerSetCount != null)
+        {
+            <div class="board-spec">
+                <label>@($"{DistributionBoard.ParentDistributionBoard!.Voltage}V") Number of Sets</label>
+                <h5>@threePhaseBoard.BreakerSetCount</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.BreakerConductorType != null)
+        {
+            <div class="board-spec">
+                <label>@($"{DistributionBoard.ParentDistributionBoard!.Voltage}V") Conductor Type</label>
+                <h5>@threePhaseBoard.BreakerConductorType.ToString()</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.BreakerGrounding != null)
+        {
+            <div class="board-spec">
+                <label>@($"{DistributionBoard.ParentDistributionBoard!.Voltage}V") Grounding</label>
+                <h5>@threePhaseBoard.BreakerGrounding.ToString()</h5>
+            </div>
+        }
+
+        @if (threePhaseBoard.BreakerRacewayType != null)
+        {
+            <div class="board-spec">
+                <label>@($"{DistributionBoard.ParentDistributionBoard!.Voltage}V") Raceway Type</label>
+                <h5>@threePhaseBoard.RacewayType.GetDisplayName()</h5>
+            </div>
+        }
+    }
+
     <div class="board-spec">
-        <label>Circuit Protection</label>
+        <label>@(threePhaseBoard?.BreakerCircuitProtection != null ? $"{DistributionBoard.Voltage}V" : "") Circuit Protection</label>
         <h5>@DistributionBoard.CircuitProtection.GetDisplayName()</h5>
     </div>
 
     <div class="board-spec">
-        <label>Number of Sets</label>
+        <label>@(threePhaseBoard?.BreakerSetCount != null ? $"{DistributionBoard.Voltage}V" : "") Number of Sets</label>
         <h5>@DistributionBoard.SetCount</h5>
     </div>
 
     <div class="board-spec">
-        <label>Conductor Type</label>
+        <label>@(threePhaseBoard?.BreakerConductorType != null ? $"{DistributionBoard.Voltage}V" : "") Conductor Type</label>
         <h5>@DistributionBoard.ConductorType.ToString()</h5>
     </div>
 
     <div class="board-spec">
-        <label>Grounding</label>
+        <label>@(threePhaseBoard?.BreakerGrounding != null ? $"{DistributionBoard.Voltage}V" : "") Grounding</label>
         <h5>@DistributionBoard.Grounding.ToString()</h5>
     </div>
 
     <div class="board-spec">
-        <label>Raceway Type</label>
+        <label>@(threePhaseBoard?.BreakerRacewayType != null ? $"{DistributionBoard.Voltage}V" : "") Raceway Type</label>
         <h5>@DistributionBoard.RacewayType.GetDisplayName()</h5>
     </div>
 </div>

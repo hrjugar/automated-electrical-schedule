@@ -45,7 +45,7 @@
 
 @if (_isEditBoardModalOpen)
 {
-    <EditBoardModal @bind-IsOpen="@_isEditBoardModalOpen" DistributionBoard="@_distributionBoard"/>
+    <CreateOrEditBoardModal @bind-IsOpen="@_isEditBoardModalOpen" DistributionBoard="@_distributionBoard"/>
 }
 
 @if (_isDeleteBoardModalOpen)

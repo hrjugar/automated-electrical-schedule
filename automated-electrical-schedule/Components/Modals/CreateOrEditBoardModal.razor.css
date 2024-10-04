@@ -1,11 +1,11 @@
-.edit-board-modal-fields {
+.create-or-edit-board-modal-fields {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     gap: 1rem;
 
-    .edit-board-modal-field-row {
+    .create-or-edit-board-modal-field-row {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -17,7 +17,7 @@
         }
     }
 
-    .edit-board-modal-field {
+    .create-or-edit-board-modal-field {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
