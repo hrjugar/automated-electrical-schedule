@@ -31,10 +31,34 @@ public abstract partial class Circuit
         return DataUtils.GetAmpereFrame(GetAmpereTrip());
     }
 
+    public double GetR()
+    {
+        return VoltageDropTable.GetR(
+            RacewayType,
+            ConductorType.Material,
+            GetConductorSize()
+        );
+    }
+
+    public double GetX()
+    {
+        return VoltageDropTable.GetX(
+            RacewayType,
+            GetConductorSize()
+        );
+    }
+
     public double GetVoltageDrop()
     {
-        // TODO: Create this
-        return 1;
+        return VoltageDropTable.GetVoltageDrop(
+            LineToLineVoltage,
+            GetR(),
+            GetX(),
+            GetAmpereLoad(),
+            WireLength,
+            SetCount,
+            GetVoltage()
+        );
     }
 
     public virtual double GetConductorSize()
@@ -45,5 +69,21 @@ public abstract partial class Circuit
     public double GetGroundingSize()
     {
         return CircuitGroundingSizeTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
+    }
+
+    public int GetRacewaySize()
+    {
+        var wireCount = LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 4 : 3;
+        return RacewaySizeTable.GetRacewaySize(
+            ConductorType.WireType,
+            RacewayType,
+            GetConductorSize(),
+            wireCount
+        );
+    }
+
+    public void CorrectVoltageDrop()
+    {
+        while (GetVoltageDrop() * 100 >= 3) SetCount += 1;
     }
 }

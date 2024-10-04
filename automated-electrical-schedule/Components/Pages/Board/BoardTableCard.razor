@@ -57,6 +57,8 @@
                 {
                     var circuit = Circuits[i];
                     var loadDescription = string.Empty;
+                    var voltageDrop = circuit.GetVoltageDrop();
+                    var hasHighVoltageDrop = voltageDrop * 100 >= 3;
 
                     switch (circuit)
                     {
@@ -81,7 +83,7 @@
                         <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
                         <p class="cell cell--text">@(circuit.GetVoltage())</p>
                         <p class="cell cell--text">@circuit.DemandFactor%</p>
-                        <p class="cell cell--text">@(circuit.GetAmpereLoad())</p>
+                        <p class="cell cell--text">@(Math.Round(circuit.GetAmpereLoad(), 4))</p>
 
                         <div class="cell cell--separator"></div>
 
@@ -90,7 +92,16 @@
                         <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
                         <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 2 : 3)</p> @* TODO: Update pole value if not single phase *@
                         <p class="cell cell--text">@circuit.WireLength</p>
-                        <p class="cell cell--text">@(circuit.GetVoltageDrop())</p>
+                        <div class="@("cell cell--group " + (hasHighVoltageDrop ? "cell--error" : ""))">
+                            <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p>
+
+                            @if (hasHighVoltageDrop)
+                            {
+                                <button class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
+                                    Correct
+                                </button>
+                            }
+                        </div>
                         <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
 
                         <div class="cell cell--separator"></div>
@@ -98,21 +109,25 @@
                         <p class="cell cell--text">@circuit.SetCount</p>
                         <p class="cell cell--text">2-@(circuit.GetConductorSize())mm² @(circuit.ConductorType.ToString())</p> @* TODO: Update this value *@
                         <p class="cell cell--text">1-@(circuit.GetGroundingSize())mm² @(circuit.Grounding.ToString())</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">20mm ø @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
+                        <p class="cell cell--text">@(circuit.GetRacewaySize())mm ø @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
 
                         <div class="cell cell--separator"></div>
 
                         <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
                             <button
-                                class="btn-secondary text-sm"
+                                class="btn-icon btn-secondary"
                                 @onclick="@(() => OpenEditCircuitModal(circuit))">
-                                Edit
+                                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill="currentColor" d="M17.181 2.927a2.975 2.975 0 0 0-4.259-.054l-9.375 9.375a2.44 2.44 0 0 0-.656 1.194l-.877 3.95a.5.5 0 0 0 .596.597l3.927-.873a2.5 2.5 0 0 0 1.234-.678l9.358-9.358a2.975 2.975 0 0 0 .052-4.153m-3.552.653a1.975 1.975 0 1 1 2.793 2.793l-.671.671l-2.793-2.792zm-1.378 1.38l2.793 2.792l-7.98 7.98a1.5 1.5 0 0 1-.744.409l-3.16.702l.708-3.183c.059-.267.193-.511.386-.704z"/>
+                                </svg>
                             </button>
 
                             <button
-                                class="btn-destructive text-sm"
+                                class="btn-icon btn-destructive"
                                 @onclick="@(() => OpenDeleteCircuitModal(circuit))">
-                                Delete
+                                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill="currentColor" d="M8.5 4h3a1.5 1.5 0 0 0-3 0m-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.054l-1.194 10.344A3 3 0 0 1 12.272 18H7.728a3 3 0 0 1-2.98-2.656L3.554 5H2.5a.5.5 0 0 1 0-1zM5.741 15.23A2 2 0 0 0 7.728 17h4.544a2 2 0 0 0 1.987-1.77L15.439 5H4.561zM8.5 7.5A.5.5 0 0 1 9 8v6a.5.5 0 0 1-1 0V8a.5.5 0 0 1 .5-.5M12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -197,6 +212,13 @@
     {
         _circuitToEdit = circuitToEdit;
         _isEditCircuitModalOpen = true;
+    }
+
+    async Task CorrectVoltageDrop(Circuit circuit)
+    {
+        circuit.CorrectVoltageDrop();
+        DatabaseContext.Update(circuit);
+        await DatabaseContext.SaveChangesAsync();
     }
 
 }

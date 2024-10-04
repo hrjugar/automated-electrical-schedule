@@ -70,24 +70,24 @@ public static class ConductorTypeSeed
     //     ConductorTemperatureRating.C90,
     //     ConductorWireType.Sa
     // );
-    
+
     // public static readonly ConductorType SisCu90 = new(
     //     ConductorMaterial.Copper,
     //     ConductorTemperatureRating.C90,
     //     ConductorWireType.Sis
     // );
 
-    public static readonly ConductorType FepCu90 = new(
-        ConductorMaterial.Copper,
-        ConductorTemperatureRating.C90,
-        ConductorWireType.Fep
-    );
+    // public static readonly ConductorType FepCu90 = new(
+    //     ConductorMaterial.Copper,
+    //     ConductorTemperatureRating.C90,
+    //     ConductorWireType.Fep
+    // );
 
-    public static readonly ConductorType FepbCu90 = new(
-        ConductorMaterial.Copper,
-        ConductorTemperatureRating.C90,
-        ConductorWireType.Fepb
-    );
+    // public static readonly ConductorType FepbCu90 = new(
+    //     ConductorMaterial.Copper,
+    //     ConductorTemperatureRating.C90,
+    //     ConductorWireType.Fepb
+    // );
 
     // public static readonly ConductorType MiCu90 = new(
     //     ConductorMaterial.Copper,
@@ -208,13 +208,13 @@ public static class ConductorTypeSeed
     //     ConductorTemperatureRating.C75,
     //     ConductorWireType.Use
     // );
-    
+
     // public static readonly ConductorType TbsAl90 = new(
     //     ConductorMaterial.Aluminum,
     //     ConductorTemperatureRating.C90,
     //     ConductorWireType.Tbs
     // );
-    
+
     // public static readonly ConductorType SaAl90 = new(
     //     ConductorMaterial.Aluminum,
     //     ConductorTemperatureRating.C90,
@@ -227,17 +227,17 @@ public static class ConductorTypeSeed
     //     ConductorWireType.Sis
     // );
 
-    public static readonly ConductorType FepAl90 = new(
-        ConductorMaterial.Aluminum,
-        ConductorTemperatureRating.C90,
-        ConductorWireType.Fep
-    );
+    // public static readonly ConductorType FepAl90 = new(
+    //     ConductorMaterial.Aluminum,
+    //     ConductorTemperatureRating.C90,
+    //     ConductorWireType.Fep
+    // );
 
-    public static readonly ConductorType FepbAl90 = new(
-        ConductorMaterial.Aluminum,
-        ConductorTemperatureRating.C90,
-        ConductorWireType.Fepb
-    );
+    // public static readonly ConductorType FepbAl90 = new(
+    //     ConductorMaterial.Aluminum,
+    //     ConductorTemperatureRating.C90,
+    //     ConductorWireType.Fepb
+    // );
 
     // public static readonly ConductorType MiAl90 = new(
     //     ConductorMaterial.Aluminum,
@@ -325,8 +325,8 @@ public static class ConductorTypeSeed
         // TbsCu90,
         // SaCu90,
         // SisCu90,
-        FepCu90,
-        FepbCu90,
+        // FepCu90,
+        // FepbCu90,
         // MiCu90,
         RhhCu90,
         Rhw2Cu90,
@@ -350,8 +350,8 @@ public static class ConductorTypeSeed
         // TbsAl90,
         // SaAl90,
         // SisAl90,
-        FepAl90,
-        FepbAl90,
+        // FepAl90,
+        // FepbAl90,
         // MiAl90,
         RhhAl90,
         Rhw2Al90,
@@ -362,7 +362,7 @@ public static class ConductorTypeSeed
         // Use2Al90,
         XhhAl90,
         XhhwAl90,
-        Xhhw2Al90,
+        Xhhw2Al90
         // Zw2Al90
     ];
 }

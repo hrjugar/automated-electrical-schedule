@@ -11,9 +11,9 @@
     border-radius: var(--radius-default);
     box-shadow: var(--shadow-md);
 
-    button {
-        padding: 0.75rem 1rem;
-    }
+    /*button {*/
+    /*    padding: 0.75rem 1rem;*/
+    /*}*/
 
     .board-table-card-header {
         display: flex;
@@ -48,11 +48,26 @@
             display: none;
         }
 
+        button {
+            &.btn-text {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
         .cell {
             white-space: nowrap;
 
             &.cell--text {
                 padding-inline: 1rem 2rem;
+            }
+
+            &.cell--group {
+                padding-inline: 1rem 2rem;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 1rem;
             }
 
             &.cell--separator {
@@ -191,6 +206,12 @@
 
                     &.cell--text {
                         color: var(--clr-neutral-700);
+                    }
+
+                    &.cell--error {
+                        p {
+                            color: var(--clr-destructive-700);
+                        }
                     }
                 }
             }

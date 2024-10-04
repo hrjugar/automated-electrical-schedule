@@ -188,7 +188,7 @@
 
                         <div class="create-or-edit-circuit-modal-content-value">
                             <label>Ampere Load</label>
-                            <p>@(_newCircuit.GetAmpereLoad())</p>
+                            <p>@(Math.Round(_newCircuit.GetAmpereLoad(), 4))</p>
                         </div>
 
                         <div class="create-or-edit-circuit-modal-content-value">
@@ -202,8 +202,18 @@
                         </div>
 
                         <div class="create-or-edit-circuit-modal-content-value">
+                            <label>R</label>
+                            <p>@(_newCircuit.GetR())</p>
+                        </div>
+
+                        <div class="create-or-edit-circuit-modal-content-value">
+                            <label>X</label>
+                            <p>@(_newCircuit.GetX())</p>
+                        </div>
+
+                        <div class="create-or-edit-circuit-modal-content-value">
                             <label>Voltage Drop</label>
-                            <p>@(_newCircuit.GetVoltageDrop())</p>
+                            <p>@(Math.Round(_newCircuit.GetVoltageDrop(), 4).ToPercentageString())</p>
                         </div>
 
                         <div class="create-or-edit-circuit-modal-content-value">
@@ -218,8 +228,7 @@
 
                         <div class="create-or-edit-circuit-modal-content-value">
                             <label>Raceway Size</label>
-                            @* TODO: Update value *@
-                            <p>1</p>
+                            <p>@(_newCircuit.GetRacewaySize())</p>
                         </div>
                     </div>
                 </div>

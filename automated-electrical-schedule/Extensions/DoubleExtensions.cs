@@ -6,4 +6,9 @@ public static class DoubleExtensions
     {
         return Math.Abs(value - other) < tolerance;
     }
+
+    public static string ToPercentageString(this double value)
+    {
+        return $"{value * 100}%";
+    }
 }
