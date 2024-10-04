@@ -38,7 +38,7 @@
 
         <div class="board-content">
             <BoardSpecs DistributionBoard="_distributionBoard"/>
-            <BoardTableCard DistributionBoard="_distributionBoard" Circuits="_circuits" OnCircuitChange="RefreshCircuitList"/>
+            <BoardTableCard DistributionBoard="_distributionBoard" OnCircuitChange="RefreshCircuitList"/>
         </div>
     </main>
 }
@@ -98,13 +98,11 @@
         _distributionBoard = await DatabaseContext.DistributionBoards
             .Include(b => b.Grounding)
             .Include(b => b.ConductorType)
+            .Include(b => b.Circuits)
+            .ThenInclude(c => c.Grounding)
+            .Include(b => b.Circuits)
+            .ThenInclude(c => c.ConductorType)
             .SingleAsync(b => b.Id == BoardId);
-
-        _circuits = await DatabaseContext.Circuits
-            .Where(c => c.ParentDistributionBoardId == BoardId)
-            .Include(c => c.Grounding)
-            .Include(c => c.ConductorType)
-            .ToListAsync();
     }
 
 }

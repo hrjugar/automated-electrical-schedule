@@ -30,6 +30,11 @@
     --clr-destructive-900: #7f1d1d;
     --clr-destructive-950: #450a0a;
 
+    --clr-circuit-lighting: #fef9c3;
+    --clr-circuit-motor: #dbeafe;
+    --clr-circuit-convenience: #ffedd5;
+    --clr-circuit-appliance: #f3e8ff;
+
     --radius-default: 6px;
     --shadow-md: 0 4px 8px rgba(203, 213, 225, 0.5);
 }

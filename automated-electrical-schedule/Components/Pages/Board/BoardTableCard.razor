@@ -9,6 +9,7 @@
     <div class="board-table">
         <div class="board-table-head">
             <p class="cell cell--text cell--sticky cell--sticky--left">No.</p>
+            <p class="cell cell--text">Type</p>
             <p class="cell cell--text">Load Description</p>
             <p class="cell cell--text">Qty</p>
             <p class="cell cell--text">VA</p>
@@ -50,13 +51,15 @@
             <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
         </div>
 
-        @if (Circuits.Count > 0)
+        @if (_circuits.Count > 0)
         {
             <div class="board-table-rows">
-                @for (var i = 0; i < Circuits.Count; i++)
+                @for (var i = 0; i < _circuits.Count; i++)
                 {
-                    var circuit = Circuits[i];
+                    var circuit = _circuits[i];
                     var loadDescription = string.Empty;
+                    var circuitTypeLabel = "Sub Distribution Board";
+                    var circuitTypeLabelClass = "circuit-type-label--sub";
                     var voltageDrop = circuit.GetVoltageDrop();
                     var hasHighVoltageDrop = voltageDrop * 100 >= 3;
 
@@ -64,20 +67,31 @@
                     {
                         case LightingOutletCircuit lightingOutletCircuit:
                             loadDescription = lightingOutletCircuit.Description;
+                            circuitTypeLabel = "Lighting";
+                            circuitTypeLabelClass = "circuit-type-label--lighting";
                             break;
                         case MotorOutletCircuit motorOutletCircuit:
                             loadDescription = motorOutletCircuit.Description;
+                            circuitTypeLabel = "Motor";
+                            circuitTypeLabelClass = "circuit-type-label--motor";
                             break;
                         case ConvenienceOutletCircuit convenienceOutletCircuit:
                             loadDescription = convenienceOutletCircuit.OutletType.GetDisplayName();
+                            circuitTypeLabel = "Convenience";
+                            circuitTypeLabelClass = "circuit-type-label--convenience";
                             break;
                         case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
                             loadDescription = applianceEquipmentOutletCircuit.Description;
+                            circuitTypeLabel = "Appliance";
+                            circuitTypeLabelClass = "circuit-type-label--appliance";
                             break;
                     }
 
                     <div class="board-table-row">
-                        <p class="cell cell--text cell--sticky cell--sticky--left">@(i + 1)</p>
+                        <p class="cell cell--group cell--sticky cell--sticky--left">@(i + 1)</p>
+                        <div class="cell cell--group">
+                            <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
+                        </div>
                         <p class="cell cell--text">@loadDescription</p>
                         <p class="cell cell--text">@circuit.Quantity</p>
                         <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
@@ -145,6 +159,7 @@
         <div class="board-table-footer">
             <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
             <div class="cell cell--empty"></div>
+            <div class="cell cell--empty"></div>
             <p class="cell cell--text">10</p>
             <p class="cell cell--text">1300</p>
             <p class="cell cell--text">230</p>
@@ -192,7 +207,7 @@
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
-    [Parameter] public List<Circuit> Circuits { get; set; } = default!;
+    private List<Circuit> _circuits = [];
 
     [Parameter] public EventCallback OnCircuitChange { get; set; }
 
@@ -201,6 +216,11 @@
 
     private bool _isEditCircuitModalOpen;
     private Circuit _circuitToEdit = default!;
+
+    protected override void OnInitialized()
+    {
+        _circuits = DistributionBoard.Circuits;
+    }
 
     void OpenDeleteCircuitModal(Circuit circuitToDelete)
     {
