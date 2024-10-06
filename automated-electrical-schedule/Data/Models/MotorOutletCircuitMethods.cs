@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.FormulaTables;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -30,6 +31,39 @@ public partial class MotorOutletCircuit
         };
     }
 
+    public List<MotorType> GetAllowedMotorTypes()
+    {
+        if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase || LineToLineVoltage != Enums.LineToLineVoltage.Abc)
+            return [MotorType.SinglePhaseMotor];
+
+        if (ParentDistributionBoard.Voltage == BoardVoltage.V400)
+            return
+            [
+                MotorType.SquirrelCage,
+                MotorType.DesignBEnergyEfficient,
+                MotorType.WoundRotor,
+                MotorType.InductionMotorFirePump
+            ];
+
+        return
+        [
+            MotorType.SquirrelCage,
+            MotorType.DesignBEnergyEfficient,
+            MotorType.Synchronous,
+            MotorType.WoundRotor,
+            MotorType.InductionMotorFirePump
+        ];
+    }
+
+    public List<double> GetAllowedHorsepowerValues()
+    {
+        if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase) return DataConstants.SinglePhaseHorsepowerValues;
+
+        return MotorType == MotorType.Synchronous
+            ? DataConstants.SynchronousThreePhaseHorsepowerValues
+            : DataConstants.GeneralThreePhaseHorsepowerValues;
+    }
+
     public override List<CircuitProtection> GetAllowedCircuitProtections()
     {
         return
@@ -48,16 +82,14 @@ public partial class MotorOutletCircuit
 
     public override double GetAmpereLoad()
     {
-        if (ParentDistributionBoard.Voltage == BoardVoltage.V230)
-            return DataUtils.GetMotorOutlet230VoltAmpereLoad(Horsepower);
-
-        // TODO: Update formula for other voltages
-        return 1;
+        return ParentDistributionBoard.Phase == BoardPhase.SinglePhase
+            ? DataUtils.GetMotorOutlet230VoltAmpereLoad(Horsepower)
+            : ThreePhaseMotorLoadTable.GetMotorLoad(ParentDistributionBoard.Voltage, MotorType, Horsepower);
     }
 
     public override int GetAmpereTrip()
     {
-        // TODO: Handle formula for fire pump
+        if (MotorType == MotorType.InductionMotorFirePump) return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8);
 
         var factor = CircuitProtection switch
         {
@@ -68,8 +100,7 @@ public partial class MotorOutletCircuit
                         MotorType.SquirrelCage or
                         MotorType.DesignBEnergyEfficient or
                         MotorType.Synchronous => 3,
-                    MotorType.WoundRotor or
-                        MotorType.DcConstantVoltage => 1.5,
+                    MotorType.WoundRotor => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
                 },
             CircuitProtection.DualElement =>
@@ -79,8 +110,7 @@ public partial class MotorOutletCircuit
                         MotorType.SquirrelCage or
                         MotorType.DesignBEnergyEfficient or
                         MotorType.Synchronous => 1.75,
-                    MotorType.WoundRotor or
-                        MotorType.DcConstantVoltage => 1.5,
+                    MotorType.WoundRotor => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
                 },
             CircuitProtection.InstantaneousTripBreaker =>
@@ -91,7 +121,6 @@ public partial class MotorOutletCircuit
                         MotorType.SquirrelCage or
                         MotorType.Synchronous or
                         MotorType.WoundRotor => 8,
-                    MotorType.DcConstantVoltage => 2.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
                 },
             CircuitProtection.InverseTimeBreaker =>
@@ -101,8 +130,7 @@ public partial class MotorOutletCircuit
                         MotorType.SquirrelCage or
                         MotorType.DesignBEnergyEfficient or
                         MotorType.Synchronous => 2.5,
-                    MotorType.WoundRotor or
-                        MotorType.DcConstantVoltage => 1.5,
+                    MotorType.WoundRotor => 1.5,
                     _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
                 },
             _ =>

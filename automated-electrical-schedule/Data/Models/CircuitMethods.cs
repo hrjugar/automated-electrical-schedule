@@ -81,6 +81,11 @@ public abstract partial class Circuit
 
     public double GetVoltageDrop()
     {
+        if (RacewayType == RacewayType.CableTray)
+        {
+            return 0; 
+        }
+        
         return VoltageDropTable.GetVoltageDrop(
             LineToLineVoltage,
             GetR(),

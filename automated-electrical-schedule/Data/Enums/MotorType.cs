@@ -13,6 +13,6 @@ public enum MotorType
     [Display(Name = "Synchronous")] Synchronous,
     [Display(Name = "Wound Rotor")] WoundRotor,
 
-    [Display(Name = "DC (Constant Voltage)")]
-    DcConstantVoltage
+    [Display(Name = "Induction Motor Fire Pump")]
+    InductionMotorFirePump
 }

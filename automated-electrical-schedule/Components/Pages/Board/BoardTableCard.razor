@@ -1,304 +1,399 @@
 @inject DatabaseContext DatabaseContext
+@inject NavigationManager Navigation
 
 <div class="board-table-card">
-    @* <div class="board-table-card-header"> *@
-    @*     <h6>Circuits</h6> *@
-    @*     <button class="btn-primary text-sm">Add</button> *@
-    @* </div> *@
-    @{
-        var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+@* <div class="board-table-card-header"> *@
+@*     <h6>Circuits</h6> *@
+@*     <button class="btn-primary text-sm">Add</button> *@
+@* </div> *@
+@{
+    var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+}
+
+<div class="board-table">
+<div class="board-table-head">
+    <p class="cell cell--text cell--sticky cell--sticky--left">No.</p>
+    <p class="cell cell--text">Type</p>
+    <p class="cell cell--text">Load Description</p>
+    <p class="cell cell--text">Qty</p>
+    <p class="cell cell--text">VA</p>
+    <p class="cell cell--text">Voltage</p>
+    <p class="cell cell--text">DF</p>
+
+    @if (threePhaseBoard == null)
+    {
+        <p class="cell cell--text cell--load">Ampere Load</p>
     }
+    else
+    {
+        <div class="cell cell--separator"></div>
 
-    <div class="board-table">
-        <div class="board-table-head">
-            <p class="cell cell--text cell--sticky cell--sticky--left">No.</p>
-            <p class="cell cell--text">Type</p>
-            <p class="cell cell--text">Load Description</p>
-            <p class="cell cell--text">Qty</p>
-            <p class="cell cell--text">VA</p>
-            <p class="cell cell--text">Voltage</p>
-            <p class="cell cell--text">DF</p>
+        <div class="board-table-head-colgroup board-table-head-colgroup--load">
+            <p class="cell cell--text board-table-head-colgroup-title">Ampere Load</p>
 
-            @if (threePhaseBoard == null)
-            {
-                <p class="cell cell--text cell--load">Ampere Load</p>
-            }
-            else
-            {
-                <div class="cell cell--separator"></div>
-
-                <div class="board-table-head-colgroup board-table-head-colgroup--load">
-                    <p class="cell cell--text board-table-head-colgroup-title">Ampere Load</p>
-
-                    <div class="board-table-head-colgroup-cols">
-                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ab or LineToLineVoltage.Abc)
-                        {
-                            <p class="cell cell--text">AB</p>
-                        }
-                        else
-                        {
-                            <div class="cell cell--empty"></div>
-                        }
-
-                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Bc or LineToLineVoltage.Abc)
-                        {
-                            <p class="cell cell--text">BC</p>
-                        }
-                        else
-                        {
-                            <div class="cell cell--empty"></div>
-                        }
-
-                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ca or LineToLineVoltage.Abc)
-                        {
-                            <p class="cell cell--text">CA</p>
-                        }
-                        else
-                        {
-                            <div class="cell cell--empty"></div>
-                        }
-
-                        @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Abc)
-                        {
-                            <p class="cell cell--text">ABC</p>
-                        }
-                        else
-                        {
-                            <div class="cell cell--empty"></div>
-                        }
-                    </div>
-                </div>
-            }
-
-            <div class="cell cell--separator"></div>
-
-            <div class="board-table-head-colgroup board-table-head-colgroup--circuit-protection">
-                <p class="cell cell--text board-table-head-colgroup-title">Circuit Protection</p>
-
-                <div class="board-table-head-colgroup-cols">
-                    <p class="cell cell--text">AT</p>
-                    <p class="cell cell--text">AF</p>
-                    <p class="cell cell--text">Phase</p>
-                    <p class="cell cell--text">Pole</p>
-                    <p class="cell cell--text">Length</p>
-                    <p class="cell cell--text">VD</p>
-                    <p class="cell cell--text">Type</p>
-                </div>
-            </div>
-
-            <div class="cell cell--separator"></div>
-
-            <div class="board-table-head-colgroup board-table-head-colgroup--conductor-size">
-                <p class="cell cell--text board-table-head-colgroup-title">Conductor Size</p>
-
-                <div class="board-table-head-colgroup-cols">
-                    <p class="cell cell--text cell--head">Sets</p>
-                    <p class="cell cell--text cell--head">Phase+Neutral</p>
-                    <p class="cell cell--text cell--head">Ground</p>
-                    <p class="cell cell--text cell--head">Raceway</p>
-                </div>
-            </div>
-
-            <div class="cell cell--separator"></div>
-
-            <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
-        </div>
-
-        @if (_circuits.Count > 0)
-        {
-            <div class="board-table-rows">
-                @for (var i = 0; i < _circuits.Count; i++)
+            <div class="board-table-head-colgroup-cols">
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ab or LineToLineVoltage.Abc)
                 {
-                    var circuit = _circuits[i];
-                    var loadDescription = string.Empty;
-                    var circuitTypeLabel = "Sub Distribution Board";
-                    var circuitTypeLabelClass = "circuit-type-label--sub";
-                    var voltageDrop = circuit.GetVoltageDrop();
-                    var hasHighVoltageDrop = voltageDrop * 100 >= 3;
-                    var ampereLoadDisplay = Math.Round(circuit.GetAmpereLoad(), 4);
+                    <p class="cell cell--text">AB</p>
+                }
+                else
+                {
+                    <div class="cell cell--empty"></div>
+                }
 
-                    switch (circuit)
-                    {
-                        case LightingOutletCircuit lightingOutletCircuit:
-                            loadDescription = lightingOutletCircuit.Description;
-                            circuitTypeLabel = "Lighting";
-                            circuitTypeLabelClass = "circuit-type-label--lighting";
-                            break;
-                        case MotorOutletCircuit motorOutletCircuit:
-                            loadDescription = motorOutletCircuit.Description;
-                            circuitTypeLabel = "Motor";
-                            circuitTypeLabelClass = "circuit-type-label--motor";
-                            break;
-                        case ConvenienceOutletCircuit convenienceOutletCircuit:
-                            loadDescription = convenienceOutletCircuit.OutletType.GetDisplayName();
-                            circuitTypeLabel = "Convenience";
-                            circuitTypeLabelClass = "circuit-type-label--convenience";
-                            break;
-                        case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
-                            loadDescription = applianceEquipmentOutletCircuit.Description;
-                            circuitTypeLabel = "Appliance";
-                            circuitTypeLabelClass = "circuit-type-label--appliance";
-                            break;
-                    }
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Bc or LineToLineVoltage.Abc)
+                {
+                    <p class="cell cell--text">BC</p>
+                }
+                else
+                {
+                    <div class="cell cell--empty"></div>
+                }
 
-                    <div class="board-table-row">
-                        <p class="cell cell--group cell--sticky cell--sticky--left">@(i + 1)</p>
-                        <div class="cell cell--group">
-                            <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
-                        </div>
-                        <p class="cell cell--text">@loadDescription</p>
-                        <p class="cell cell--text">@circuit.Quantity</p>
-                        <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
-                        <p class="cell cell--text">@(circuit.GetVoltage())</p>
-                        <p class="cell cell--text">@circuit.DemandFactor%</p>
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ca or LineToLineVoltage.Abc)
+                {
+                    <p class="cell cell--text">CA</p>
+                }
+                else
+                {
+                    <div class="cell cell--empty"></div>
+                }
 
-                        @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
-                        {
-                            <p class="cell cell--text cell--load">@ampereLoadDisplay</p>
-                        }
-                        else
-                        {
-                            <div class="cell cell--separator"></div>
-
-                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Ab)
-                            {
-                                <p class="cell cell--text">@ampereLoadDisplay</p>
-                            }
-                            else
-                            {
-                                <div class="cell cell--empty"></div>
-                            }
-
-                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Bc)
-                            {
-                                <p class="cell cell--text">@ampereLoadDisplay</p>
-                            }
-                            else
-                            {
-                                <div class="cell cell--empty"></div>
-                            }
-
-                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Ca)
-                            {
-                                <p class="cell cell--text">@ampereLoadDisplay</p>
-                            }
-                            else
-                            {
-                                <div class="cell cell--empty"></div>
-                            }
-
-                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
-                            {
-                                <p class="cell cell--text">@ampereLoadDisplay</p>
-                            }
-                            else
-                            {
-                                <div class="cell cell--empty"></div>
-                            }
-                        }
-
-                        <div class="cell cell--separator"></div>
-
-                        <p class="cell cell--text">@(circuit.GetAmpereTrip())</p>
-                        <p class="cell cell--text">@(circuit.GetAmpereFrame())</p>
-                        <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
-                        <p class="cell cell--text">@(circuit.LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2)</p>
-                        <p class="cell cell--text">@circuit.WireLength</p>
-                        <div class="@("cell cell--group " + (hasHighVoltageDrop ? "cell--error" : ""))">
-                            <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p>
-
-                            @if (hasHighVoltageDrop)
-                            {
-                                <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
-                                    Correct
-                                </button>
-                            }
-                        </div>
-                        <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
-
-                        <div class="cell cell--separator"></div>
-
-                        <p class="cell cell--text">@circuit.SetCount</p>
-                        <p class="cell cell--text">@(circuit.GetConductorWireCount())-@(circuit.GetConductorSize())mm² @(circuit.ConductorType.ToString())</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">1-@(circuit.GetGroundingSize())mm² @(circuit.Grounding.ToString())</p> @* TODO: Update this value *@
-                        <p class="cell cell--text">@(circuit.GetRacewaySize())mm ø @circuit.RacewayType.GetDisplayName()</p> @* TODO: Update the size part *@
-
-                        <div class="cell cell--separator"></div>
-
-                        <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
-                            <button
-                                class="btn-icon btn-secondary"
-                                @onclick="@(() => OpenEditCircuitModal(circuit))">
-                                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill="currentColor" d="M17.181 2.927a2.975 2.975 0 0 0-4.259-.054l-9.375 9.375a2.44 2.44 0 0 0-.656 1.194l-.877 3.95a.5.5 0 0 0 .596.597l3.927-.873a2.5 2.5 0 0 0 1.234-.678l9.358-9.358a2.975 2.975 0 0 0 .052-4.153m-3.552.653a1.975 1.975 0 1 1 2.793 2.793l-.671.671l-2.793-2.792zm-1.378 1.38l2.793 2.792l-7.98 7.98a1.5 1.5 0 0 1-.744.409l-3.16.702l.708-3.183c.059-.267.193-.511.386-.704z"/>
-                                </svg>
-                            </button>
-
-                            <button
-                                class="btn-icon btn-destructive"
-                                @onclick="@(() => OpenDeleteCircuitModal(circuit))">
-                                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill="currentColor" d="M8.5 4h3a1.5 1.5 0 0 0-3 0m-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.054l-1.194 10.344A3 3 0 0 1 12.272 18H7.728a3 3 0 0 1-2.98-2.656L3.554 5H2.5a.5.5 0 0 1 0-1zM5.741 15.23A2 2 0 0 0 7.728 17h4.544a2 2 0 0 0 1.987-1.77L15.439 5H4.561zM8.5 7.5A.5.5 0 0 1 9 8v6a.5.5 0 0 1-1 0V8a.5.5 0 0 1 .5-.5M12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Abc)
+                {
+                    <p class="cell cell--text">ABC</p>
+                }
+                else
+                {
+                    <div class="cell cell--empty"></div>
                 }
             </div>
-        }
-        else
+        </div>
+    }
+
+    <div class="cell cell--separator"></div>
+
+    <div class="board-table-head-colgroup board-table-head-colgroup--circuit-protection">
+        <p class="cell cell--text board-table-head-colgroup-title">Circuit Protection</p>
+
+        <div class="board-table-head-colgroup-cols">
+            <p class="cell cell--text">AT</p>
+            <p class="cell cell--text">AF</p>
+            <p class="cell cell--text">Phase</p>
+            <p class="cell cell--text">Pole</p>
+            <p class="cell cell--text">Length</p>
+            <p class="cell cell--text">VD</p>
+            <p class="cell cell--text">Type</p>
+        </div>
+    </div>
+
+    <div class="cell cell--separator"></div>
+
+    <div class="board-table-head-colgroup board-table-head-colgroup--conductor-size">
+        <p class="cell cell--text board-table-head-colgroup-title">Conductor Size</p>
+
+        <div class="board-table-head-colgroup-cols">
+            <p class="cell cell--text cell--head">Sets</p>
+            <p class="cell cell--text cell--head">Phase+Neutral</p>
+            <p class="cell cell--text cell--head">Ground</p>
+            <p class="cell cell--text cell--head">Raceway</p>
+        </div>
+    </div>
+
+    <div class="cell cell--separator"></div>
+
+    <div class="cell cell--buttongroup cell--sticky cell--sticky--right"></div>
+</div>
+
+@if (_circuits.Count > 0)
+{
+    <div class="board-table-rows">
+        @for (var i = 0; i < _circuits.Count; i++)
         {
-            <div class="board-table-empty">
-                <p class="board-table-empty-text">This board has no circuits.</p>
+            var circuit = _circuits[i];
+            var loadDescription = string.Empty;
+            var circuitTypeLabel = "Sub Distribution Board";
+            var circuitTypeLabelClass = "circuit-type-label--sub";
+            var voltageDrop = circuit.GetVoltageDrop();
+            var hasHighVoltageDrop = voltageDrop * 100 >= 3;
+            var ampereLoadDisplay = Math.Round(circuit.GetAmpereLoad(), 4);
+
+            switch (circuit)
+            {
+                case LightingOutletCircuit lightingOutletCircuit:
+                    loadDescription = lightingOutletCircuit.Description;
+                    circuitTypeLabel = "Lighting";
+                    circuitTypeLabelClass = "circuit-type-label--lighting";
+                    break;
+                case MotorOutletCircuit motorOutletCircuit:
+                    loadDescription = motorOutletCircuit.Description;
+                    circuitTypeLabel = "Motor";
+                    circuitTypeLabelClass = "circuit-type-label--motor";
+                    break;
+                case ConvenienceOutletCircuit convenienceOutletCircuit:
+                    loadDescription = convenienceOutletCircuit.OutletType.GetDisplayName();
+                    circuitTypeLabel = "Convenience";
+                    circuitTypeLabelClass = "circuit-type-label--convenience";
+                    break;
+                case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
+                    loadDescription = applianceEquipmentOutletCircuit.Description;
+                    circuitTypeLabel = "Appliance";
+                    circuitTypeLabelClass = "circuit-type-label--appliance";
+                    break;
+            }
+
+            <div class="board-table-row">
+                <p class="cell cell--group cell--sticky cell--sticky--left">@(i + 1)</p>
+                <div class="cell cell--group">
+                    <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
+                </div>
+                <p class="cell cell--text">@loadDescription</p>
+                <p class="cell cell--text">@circuit.Quantity</p>
+                <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
+                <p class="cell cell--text">@(circuit.GetVoltage())</p>
+                <p class="cell cell--text">@circuit.DemandFactor%</p>
+
+                @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
+                {
+                    <p class="cell cell--text cell--load">@ampereLoadDisplay</p>
+                }
+                else
+                {
+                    <div class="cell cell--separator"></div>
+
+                    @if (circuit.LineToLineVoltage == LineToLineVoltage.Ab)
+                    {
+                        <p class="cell cell--text">@ampereLoadDisplay</p>
+                    }
+                    else
+                    {
+                        <div class="cell cell--empty"></div>
+                    }
+
+                    @if (circuit.LineToLineVoltage == LineToLineVoltage.Bc)
+                    {
+                        <p class="cell cell--text">@ampereLoadDisplay</p>
+                    }
+                    else
+                    {
+                        <div class="cell cell--empty"></div>
+                    }
+
+                    @if (circuit.LineToLineVoltage == LineToLineVoltage.Ca)
+                    {
+                        <p class="cell cell--text">@ampereLoadDisplay</p>
+                    }
+                    else
+                    {
+                        <div class="cell cell--empty"></div>
+                    }
+
+                    @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
+                    {
+                        <p class="cell cell--text">@ampereLoadDisplay</p>
+                    }
+                    else
+                    {
+                        <div class="cell cell--empty"></div>
+                    }
+                }
+
+                <div class="cell cell--separator"></div>
+
+                <p class="cell cell--text">@(circuit.GetAmpereTrip())</p>
+                <p class="cell cell--text">@(circuit.GetAmpereFrame())</p>
+                <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
+                <p class="cell cell--text">@(circuit.LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2)</p>
+                <p class="cell cell--text">@circuit.WireLength</p>
+                <div class="@("cell cell--group " + (hasHighVoltageDrop ? "cell--error" : ""))">
+                    <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p>
+
+                    @if (hasHighVoltageDrop)
+                    {
+                        <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
+                            Correct
+                        </button>
+                    }
+                </div>
+                <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
+
+                <div class="cell cell--separator"></div>
+
+                <p class="cell cell--text">@circuit.SetCount</p>
+                <p class="cell cell--text">@(circuit.GetConductorWireCount())-@(circuit.GetConductorSize())mm² @(circuit.ConductorType.ToString())</p>
+                <p class="cell cell--text">1-@(circuit.GetGroundingSize())mm² @(circuit.Grounding.ToString())</p>
+                <p class="cell cell--text">@(circuit.GetRacewaySize())mm ø @circuit.RacewayType.GetDisplayName()</p>
+
+                <div class="cell cell--separator"></div>
+
+                <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
+                    <button
+                        class="btn-icon btn-secondary"
+                        @onclick="@(() => OpenEditCircuitModal(circuit))">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fill="currentColor" d="M17.181 2.927a2.975 2.975 0 0 0-4.259-.054l-9.375 9.375a2.44 2.44 0 0 0-.656 1.194l-.877 3.95a.5.5 0 0 0 .596.597l3.927-.873a2.5 2.5 0 0 0 1.234-.678l9.358-9.358a2.975 2.975 0 0 0 .052-4.153m-3.552.653a1.975 1.975 0 1 1 2.793 2.793l-.671.671l-2.793-2.792zm-1.378 1.38l2.793 2.792l-7.98 7.98a1.5 1.5 0 0 1-.744.409l-3.16.702l.708-3.183c.059-.267.193-.511.386-.704z"/>
+                        </svg>
+                    </button>
+
+                    <button
+                        class="btn-icon btn-destructive"
+                        @onclick="@(() => OpenDeleteCircuitModal(circuit))">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fill="currentColor" d="M8.5 4h3a1.5 1.5 0 0 0-3 0m-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.054l-1.194 10.344A3 3 0 0 1 12.272 18H7.728a3 3 0 0 1-2.98-2.656L3.554 5H2.5a.5.5 0 0 1 0-1zM5.741 15.23A2 2 0 0 0 7.728 17h4.544a2 2 0 0 0 1.987-1.77L15.439 5H4.561zM8.5 7.5A.5.5 0 0 1 9 8v6a.5.5 0 0 1-1 0V8a.5.5 0 0 1 .5-.5M12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         }
 
-        @* TODO: Consider subdistribution boards in footer values *@
-        <div class="board-table-footer">
-            <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <p class="cell cell--text">@(DistributionBoard.GetTotalVoltAmpere())</p>
-            <p class="cell cell--text">@((int)DistributionBoard.Voltage)</p>
-            <div class="cell cell--empty"></div>
+        @for (var i = 0; i < DistributionBoard.SubDistributionBoards.Count; i++)
+        {
+            var subDistributionBoard = DistributionBoard.SubDistributionBoards[i];
+            var subThreePhaseBoard = subDistributionBoard as ThreePhaseDistributionBoard;
 
-            @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
-            {
-                <p class="cell cell--text cell--load">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(), 4))</p>
-            }
-            else
-            {
+            <div class="board-table-row">
+                @* <p class="cell cell--group cell--sticky cell--sticky--left">@(_circuits.Count + i + 1)</p> *@
+                <p class="cell cell--group cell--sticky cell--sticky--left">@(_circuits.Count + i + 1)</p>
+                <div class="cell cell--group">
+                    <span class="circuit-type-label circuit-type-label--sub">Sub Distribution Board</span>
+                </div>
+                <p class="cell cell--text">@subDistributionBoard.BoardName</p>
+                <div class="cell cell--empty"></div>
+                <p class="cell cell--text">@(subDistributionBoard.GetTotalVoltAmpere())</p>
+                <p class="cell cell--text">@((int)subDistributionBoard.Voltage)</p>
+                <div class="cell cell--empty"></div>
+
+                @if (threePhaseBoard?.LineToLineVoltage == LineToLineVoltage.Abc)
+                {
+                    <div class="cell cell--separator"></div>
+
+                    <p class="cell cell--text">@Math.Round(subDistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ab), 4)</p>
+                    <p class="cell cell--text">@Math.Round(subDistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Bc), 4)</p>
+                    <p class="cell cell--text">@Math.Round(subDistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ca), 4)</p>
+                    <p class="cell cell--text">@Math.Round(subDistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Abc), 4)</p>
+                }
+                else
+                {
+                    <p class="cell cell--text cell--load">@Math.Round(subDistributionBoard.GetTotalAmpereLoad(threePhaseBoard?.LineToLineVoltage), 4)</p>
+                }
+
                 <div class="cell cell--separator"></div>
 
-                <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ab), 4))</p>
-                <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Bc), 4))</p>
-                <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ca), 4))</p>
-                <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Abc), 4))</p>
-            }
+                <div class="cell cell--empty"></div> @* TODO: Handle ampere trip for sub distribution boards *@
+                <div class="cell cell--empty"></div>
+                <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
+                <p class="cell cell--text">@(subThreePhaseBoard?.LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2)</p>
+                <div class="cell cell--empty"></div> @* TODO: Add wire length for sub distribution boards *@
+                <div class="cell cell--group">
+                    @* TODO: Handle voltage drop for sub distribution boards *@
+                    <p>XX</p>
 
-            <div class="cell cell--separator"></div>
+                    @* TODO: Implement voltage drop correction for sub boards *@
 
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
+                    @* <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p> *@
 
-            <div class="cell cell--separator"></div>
+                    @* @if (hasHighVoltageDrop) *@
+                    @* { *@
+                    @* <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))"> *@
+                    @*     Correct *@
+                    @* </button> *@
+                    @* } *@
+                </div>
+                <p class="cell cell--text">@subDistributionBoard.CircuitProtection.GetDisplayName()</p>
 
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
-            <div class="cell cell--empty"></div>
+                <div class="cell cell--separator"></div>
 
-            <div class="cell cell--separator"></div>
+                <p class="cell cell--text">@subDistributionBoard.SetCount</p>
+                <p class="cell cell--text">XX-XXmm² @(subDistributionBoard.ConductorType.ToString())</p> @* TODO: Update conductor size for sub board*@
+                <p class="cell cell--text">1-XXmm² @(subDistributionBoard.Grounding.ToString())</p> @* TODO: Update grounding size for sub board *@
+                <p class="cell cell--text">XXmm ø @subDistributionBoard.RacewayType.GetDisplayName()</p> @* TODO: Update raceway size for sub board *@
 
-            <div class="cell cell--empty cell--sticky cell--sticky--right"></div>
-        </div>
+                <div class="cell cell--separator"></div>
+
+                <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
+                    <button
+                        class="link-btn btn-icon btn-primary"
+                        @onclick="@(() => GoToSubBoardPage(subDistributionBoard.Id))">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
+                        </svg>
+                    </button>
+
+                    @* <button *@
+                    @*     class="btn-icon btn-secondary" *@
+                    @*     @onclick="@(() => { })"> *@
+                    @*     $1$ TODO: Open edit sub board modal #1# *@
+                    @*     <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"> *@
+                    @*         <path fill="currentColor" d="M17.181 2.927a2.975 2.975 0 0 0-4.259-.054l-9.375 9.375a2.44 2.44 0 0 0-.656 1.194l-.877 3.95a.5.5 0 0 0 .596.597l3.927-.873a2.5 2.5 0 0 0 1.234-.678l9.358-9.358a2.975 2.975 0 0 0 .052-4.153m-3.552.653a1.975 1.975 0 1 1 2.793 2.793l-.671.671l-2.793-2.792zm-1.378 1.38l2.793 2.792l-7.98 7.98a1.5 1.5 0 0 1-.744.409l-3.16.702l.708-3.183c.059-.267.193-.511.386-.704z"/> *@
+                    @*     </svg> *@
+                    @* </button> *@
+                    @* *@
+                    @* <button *@
+                    @*     class="btn-icon btn-destructive" *@
+                    @*     @onclick="@(() => { })"> *@
+                    @*     $1$ TODO: Open delete sub board modal #1# *@
+                    @*     <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"> *@
+                    @*         <path fill="currentColor" d="M8.5 4h3a1.5 1.5 0 0 0-3 0m-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.054l-1.194 10.344A3 3 0 0 1 12.272 18H7.728a3 3 0 0 1-2.98-2.656L3.554 5H2.5a.5.5 0 0 1 0-1zM5.741 15.23A2 2 0 0 0 7.728 17h4.544a2 2 0 0 0 1.987-1.77L15.439 5H4.561zM8.5 7.5A.5.5 0 0 1 9 8v6a.5.5 0 0 1-1 0V8a.5.5 0 0 1 .5-.5M12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/> *@
+                    @*     </svg> *@
+                    @* </button> *@
+                </div>
+            </div>
+        }
     </div>
+}
+else
+{
+    <div class="board-table-empty">
+        <p class="board-table-empty-text">This board has no circuits.</p>
+    </div>
+}
+
+@* TODO: Consider subdistribution boards in footer values *@
+<div class="board-table-footer">
+    <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <p class="cell cell--text">@(DistributionBoard.GetTotalVoltAmpere())</p>
+    <p class="cell cell--text">@((int)DistributionBoard.Voltage)</p>
+    <div class="cell cell--empty"></div>
+
+    @if (threePhaseBoard?.LineToLineVoltage != LineToLineVoltage.Abc)
+    {
+        <p class="cell cell--text cell--load">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(), 4))</p>
+    }
+    else
+    {
+        <div class="cell cell--separator"></div>
+
+        <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ab), 4))</p>
+        <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Bc), 4))</p>
+        <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Ca), 4))</p>
+        <p class="cell cell--text">@(Math.Round(DistributionBoard.GetTotalAmpereLoad(LineToLineVoltage.Abc), 4))</p>
+    }
+
+    <div class="cell cell--separator"></div>
+
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+
+    <div class="cell cell--separator"></div>
+
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+    <div class="cell cell--empty"></div>
+
+    <div class="cell cell--separator"></div>
+
+    <div class="cell cell--empty cell--sticky cell--sticky--right"></div>
+</div>
+</div>
 </div>
 
 @if (_isDeleteCircuitModalOpen)
@@ -328,7 +423,12 @@
     private bool _isEditCircuitModalOpen;
     private Circuit _circuitToEdit = default!;
 
-    protected override void OnInitialized()
+    // protected override void OnInitialized()
+    // {
+    //     _circuits = DistributionBoard.Circuits;
+    // }
+
+    protected override void OnParametersSet()
     {
         _circuits = DistributionBoard.Circuits;
     }
@@ -350,6 +450,11 @@
         circuit.CorrectVoltageDrop();
         DatabaseContext.Update(circuit);
         await DatabaseContext.SaveChangesAsync();
+    }
+
+    void GoToSubBoardPage(int subBoardId)
+    {
+        Navigation.NavigateTo($"/board/{subBoardId}");
     }
 
 }

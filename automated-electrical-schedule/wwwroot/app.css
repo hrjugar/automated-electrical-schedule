@@ -138,7 +138,7 @@ select {
     white-space: nowrap;
 }
 
-button {
+button, .link-btn {
     cursor: pointer;
     border: none;
     border-radius: var(--radius-default);

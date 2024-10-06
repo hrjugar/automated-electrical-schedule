@@ -14,6 +14,10 @@
 
             @* TODO: Implement functionality for buttons *@
             <div class="header-controls">
+                <button class="btn-text btn-primary" @onclick="OpenCreateBoardModal">
+                    Add Sub Distribution Board
+                </button>
+
                 <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
@@ -61,6 +65,11 @@
         OnCircuitCreateOrEdit="RefreshCircuitList"/>
 }
 
+@if (_isCreateBoardModalOpen)
+{
+    <CreateOrEditBoardModal @bind-IsOpen="@_isCreateBoardModalOpen" DistributionBoard="@_distributionBoard" IsNew="true"/>
+}
+
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
@@ -70,6 +79,7 @@
     private bool _isEditBoardModalOpen;
     private bool _isDeleteBoardModalOpen;
     private bool _isCreateCircuitModalOpen;
+    private bool _isCreateBoardModalOpen;
 
     void OpenEditBoardModal()
     {
@@ -86,6 +96,11 @@
         _isCreateCircuitModalOpen = true;
     }
 
+    void OpenCreateBoardModal()
+    {
+        _isCreateBoardModalOpen = true;
+    }
+
     async Task RefreshCircuitList()
     {
         _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
@@ -93,16 +108,55 @@
         StateHasChanged();
     }
 
-    protected override async Task OnInitializedAsync()
+    async Task LoadSubDistributionBoardsRecursively(DistributionBoard board)
     {
-        _distributionBoard = await DatabaseContext.DistributionBoards
+        foreach (var subBoard in board.SubDistributionBoards)
+        {
+            await DatabaseContext.Entry(subBoard).Reference(b => b.ParentDistributionBoard).LoadAsync();
+            await DatabaseContext.Entry(subBoard).Reference(b => b.ConductorType).LoadAsync();
+            await DatabaseContext.Entry(subBoard).Reference(b => b.Grounding).LoadAsync();
+            await DatabaseContext.Entry(subBoard).Collection(b => b.Circuits).LoadAsync();
+
+            foreach (var circuit in subBoard.Circuits)
+            {
+                await DatabaseContext.Entry(circuit).Reference(c => c.ConductorType).LoadAsync();
+                await DatabaseContext.Entry(circuit).Reference(c => c.Grounding).LoadAsync();
+            }
+
+            await DatabaseContext.Entry(subBoard).Collection(b => b.SubDistributionBoards).LoadAsync();
+
+            if (subBoard.SubDistributionBoards.Count > 0)
+            {
+                await LoadSubDistributionBoardsRecursively(subBoard);
+            }
+        }
+    }
+
+    async Task<DistributionBoard> GetCompleteDistributionBoard(int boardId)
+    {
+        var board = await DatabaseContext.DistributionBoards
+            .Include(b => b.ParentDistributionBoard)
             .Include(b => b.Grounding)
             .Include(b => b.ConductorType)
             .Include(b => b.Circuits)
             .ThenInclude(c => c.Grounding)
             .Include(b => b.Circuits)
             .ThenInclude(c => c.ConductorType)
-            .SingleAsync(b => b.Id == BoardId);
+            .Include(b => b.SubDistributionBoards)
+            .SingleAsync(b => b.Id == boardId);
+
+        await LoadSubDistributionBoardsRecursively(board);
+        return board;
+    }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     _distributionBoard = await GetCompleteDistributionBoard(BoardId);
+    // }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _distributionBoard = await GetCompleteDistributionBoard(BoardId);
     }
 
 }

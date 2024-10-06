@@ -1,4 +1,5 @@
 @using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
 
 
@@ -14,7 +15,7 @@
             <ObjectGraphDataAnnotationsValidator/>
 
             <div class="modal-header">
-                <h5>Edit Board</h5>
+                <h5>@(IsNew ? "Add" : "Edit") Board</h5>
             </div>
 
             <div class="modal-content create-or-edit-board-modal-content">
@@ -143,7 +144,7 @@
                         <div class="create-or-edit-board-modal-field">
                             <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
 
-                            <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled>
+                            <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled="@(_newDistributionBoard.ParentDistributionBoard == null)">
                                 @foreach (var transformerPrimaryProtection in threePhaseBoard.GetAllowedTransformerPrimaryProtection())
                                 {
                                     <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
@@ -181,7 +182,7 @@
                     class="btn-text create-or-edit-board-modal-edit-btn btn-primary"
                     type="submit"
                     disabled="@(!_editContext.Validate())">
-                    Edit
+                    @(IsNew ? "Add" : "Edit")
                 </button>
             </div>
         </EditForm>
@@ -216,7 +217,12 @@
                 _newDistributionBoard = new ThreePhaseDistributionBoard();
             }
 
+            _newDistributionBoard.ParentDistributionBoardId = DistributionBoard.Id;
             _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
+            _newDistributionBoard.ConductorTypeId = _conductorTypes[0].Id;
+            _newDistributionBoard.ConductorType = _conductorTypes[0];
+            _newDistributionBoard.GroundingId = _conductorTypes[0].Id;
+            _newDistributionBoard.Grounding = _conductorTypes[0];
         }
         else
         {
@@ -294,6 +300,11 @@
 
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();
+
+        if (IsNew)
+        {
+            Navigation.NavigateTo($"/board/{_newDistributionBoard!.Id}");
+        }
     }
 
 }

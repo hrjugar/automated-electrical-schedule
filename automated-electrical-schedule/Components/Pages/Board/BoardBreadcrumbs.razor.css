@@ -1,0 +1,18 @@
+.board-breadcrumbs {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.25rem;
+
+    .current-crumb {
+        color: var(--clr-neutral-400);
+        font-weight: 600;
+    }
+
+    .crumb-separator {
+        path {
+            color: var(--clr-neutral-400);
+        }
+    }
+}

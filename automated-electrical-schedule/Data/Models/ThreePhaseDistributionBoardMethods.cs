@@ -64,9 +64,13 @@ public partial class ThreePhaseDistributionBoard
             _ => throw new ArgumentOutOfRangeException(nameof(ThreePhaseConfiguration))
         };
 
+        var maxChildBoardVoltage = SubDistributionBoards.Count > 0
+            ? (int) SubDistributionBoards.MaxBy(b => (int)b.Voltage)!.Voltage
+            : 0;
+
         return ParentDistributionBoard == null
             ? phaseVoltages
-            : phaseVoltages.Where(v => (int)v <= (int)ParentDistributionBoard.Voltage).ToList();
+            : phaseVoltages.Where(v => (int)v <= (int)ParentDistributionBoard.Voltage && (int) v >= maxChildBoardVoltage).ToList();
     }
 
     public List<CircuitProtection> GetAllowedTransformerPrimaryProtection()

@@ -1,10 +1,66 @@
-<div class="project-breadcrumbs">
+@using Microsoft.EntityFrameworkCore
+@inject DatabaseContext DatabaseContext
+
+<div class="board-breadcrumbs">
     <a href="/">Projects</a>
+
+    @foreach (var crumb in breadcrumbs)
+    {
+        <svg class="icon-sm crumb-separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
+            <path fill="currentColor" d="M4.47 2.22a.75.75 0 0 0 0 1.06L7.19 6L4.47 8.72a.75.75 0 0 0 1.06 1.06l3.25-3.25a.75.75 0 0 0 0-1.06L5.53 2.22a.75.75 0 0 0-1.06 0"/>
+        </svg>
+
+        @if (crumb.Id == DistributionBoard.Id)
+        {
+            <p class="current-crumb">@crumb.BoardName</p>
+        }
+        else
+        {
+            <a href="/board/@crumb.Id">@crumb.BoardName</a>
+        }
+    }
 </div>
 
 
 @code {
-
     [Parameter] public DistributionBoard DistributionBoard { get; set; }
     // TODO: Implement the breadcrumbs
+
+    List<DistributionBoard> breadcrumbs = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        breadcrumbs = await InitializeBreadcrumbs();
+    }
+
+    async Task<List<DistributionBoard>> InitializeBreadcrumbs()
+    {
+        var currentBoard = DistributionBoard;
+        List<DistributionBoard> boards = [currentBoard];
+
+        // while (currentBoard != null)
+        // {
+        //     boards.Add(currentBoard);
+        //     if (currentBoard.ParentDistributionBoard == null)
+        //     {
+        //         break;
+        //     }
+        //
+        //     currentBoard = await DatabaseContext.DistributionBoards
+        //         .Include(b => b.ParentDistributionBoard)
+        //         .SingleAsync(b => b.Id == currentBoard.ParentDistributionBoard.Id);
+        // }
+
+        while (currentBoard.ParentDistributionBoard != null)
+        {
+            boards.Add(currentBoard.ParentDistributionBoard);
+            currentBoard = await DatabaseContext.DistributionBoards
+                .Include(b => b.ParentDistributionBoard)
+                .SingleAsync(b => b.Id == currentBoard.ParentDistributionBoard.Id);
+        }
+
+        boards.Reverse();
+        return boards;
+    }
+
 }

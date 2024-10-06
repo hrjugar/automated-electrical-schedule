@@ -77,7 +77,7 @@ public static class DataConstants
         6000
     ];
 
-    public static readonly List<double> MotorOutlet230VoltAmpereLoadRatings =
+    public static readonly List<double> SinglePhaseMotorOutletAmpereLoadRatings =
     [
         2.2,
         2.9,
@@ -91,6 +91,61 @@ public static class DataConstants
         28,
         40,
         50
+    ];
+
+    public static readonly List<double> SinglePhaseHorsepowerValues =
+    [
+        1.0 / 6,
+        0.25,
+        1.0 / 3,
+        0.5,
+        0.75,
+        1.0,
+        1.5,
+        2.0,
+        3.0,
+        4.0,
+        7.5,
+        10
+    ];
+
+    public static readonly List<double> GeneralThreePhaseHorsepowerValues =
+    [
+        0.5,
+        0.75,
+        1,
+        1.5,
+        2,
+        3,
+        5,
+        7.5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        40,
+        50,
+        60,
+        75,
+        100,
+        125,
+        150,
+        200
+    ];
+
+    public static readonly List<double> SynchronousThreePhaseHorsepowerValues =
+    [
+        25,
+        30,
+        40,
+        50,
+        60,
+        75,
+        100,
+        125,
+        150,
+        200
     ];
 
     public static readonly List<double> ConductorSizes =

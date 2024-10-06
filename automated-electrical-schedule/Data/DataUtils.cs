@@ -18,7 +18,7 @@ public static class DataUtils
 
     public static double GetMotorOutlet230VoltAmpereLoad(double horsepower)
     {
-        return DataConstants.MotorOutlet230VoltAmpereLoadRatings[
+        return DataConstants.SinglePhaseMotorOutletAmpereLoadRatings[
             MotorOutletCircuit.AllowedHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))];
     }
 }
