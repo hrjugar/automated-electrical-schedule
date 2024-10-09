@@ -31,12 +31,13 @@ public partial class MotorOutletCircuit
         };
     }
 
-    public List<MotorType> GetAllowedMotorTypes()
+    public static List<MotorType> GetAllowedMotorTypesStatic(DistributionBoard parentDistributionBoard,
+        LineToLineVoltage? lineToLineVoltage)
     {
-        if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase || LineToLineVoltage != Enums.LineToLineVoltage.Abc)
+        if (parentDistributionBoard.Phase == BoardPhase.SinglePhase || lineToLineVoltage != Enums.LineToLineVoltage.Abc)
             return [MotorType.SinglePhaseMotor];
 
-        if (ParentDistributionBoard.Voltage == BoardVoltage.V400)
+        if (parentDistributionBoard.Voltage == BoardVoltage.V400)
             return
             [
                 MotorType.SquirrelCage,
@@ -53,6 +54,31 @@ public partial class MotorOutletCircuit
             MotorType.WoundRotor,
             MotorType.InductionMotorFirePump
         ];
+    }
+
+    public List<MotorType> GetAllowedMotorTypes()
+    {
+        return GetAllowedMotorTypesStatic(ParentDistributionBoard, LineToLineVoltage);
+        // if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase || LineToLineVoltage != Enums.LineToLineVoltage.Abc)
+        //     return [MotorType.SinglePhaseMotor];
+        //
+        // if (ParentDistributionBoard.Voltage == BoardVoltage.V400)
+        //     return
+        //     [
+        //         MotorType.SquirrelCage,
+        //         MotorType.DesignBEnergyEfficient,
+        //         MotorType.WoundRotor,
+        //         MotorType.InductionMotorFirePump
+        //     ];
+        //
+        // return
+        // [
+        //     MotorType.SquirrelCage,
+        //     MotorType.DesignBEnergyEfficient,
+        //     MotorType.Synchronous,
+        //     MotorType.WoundRotor,
+        //     MotorType.InductionMotorFirePump
+        // ];
     }
 
     public List<double> GetAllowedHorsepowerValues()
@@ -82,7 +108,7 @@ public partial class MotorOutletCircuit
 
     public override double GetAmpereLoad()
     {
-        return ParentDistributionBoard.Phase == BoardPhase.SinglePhase
+        return ParentDistributionBoard.Phase == BoardPhase.SinglePhase || MotorType == MotorType.SinglePhaseMotor
             ? DataUtils.GetMotorOutlet230VoltAmpereLoad(Horsepower)
             : ThreePhaseMotorLoadTable.GetMotorLoad(ParentDistributionBoard.Voltage, MotorType, Horsepower);
     }

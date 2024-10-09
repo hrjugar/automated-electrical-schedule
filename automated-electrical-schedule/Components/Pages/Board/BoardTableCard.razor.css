@@ -225,7 +225,13 @@
                     }
 
                     &.cell--load {
-                        grid-column: span 5;
+                        &.cell--load--no-line {
+                            grid-column: span 5;
+                        }
+
+                        &.cell--load--line {
+                            grid-column: span 4;
+                        }
                     }
 
                     &.cell--error {
@@ -275,7 +281,15 @@
             }
 
             .cell--load {
-                grid-column: span 5;
+                &.cell--load {
+                    &.cell--load--no-line {
+                        grid-column: span 5;
+                    }
+
+                    &.cell--load--line {
+                        grid-column: span 4;
+                    }
+                }
             }
         }
     }

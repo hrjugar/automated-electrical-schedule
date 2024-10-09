@@ -81,11 +81,8 @@ public abstract partial class Circuit
 
     public double GetVoltageDrop()
     {
-        if (RacewayType == RacewayType.CableTray)
-        {
-            return 0; 
-        }
-        
+        if (RacewayType == RacewayType.CableTray) return 0;
+
         return VoltageDropTable.GetVoltageDrop(
             LineToLineVoltage,
             GetR(),
@@ -104,7 +101,7 @@ public abstract partial class Circuit
 
     public double GetGroundingSize()
     {
-        return CircuitGroundingSizeTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
+        return CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, GetAmpereTrip());
     }
 
     public int GetConductorWireCount()

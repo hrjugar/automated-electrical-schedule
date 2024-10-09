@@ -14,19 +14,24 @@
             <h5>@threePhaseBoard.ThreePhaseConfiguration.GetDisplayName()</h5>
         </div>
 
-        @if (threePhaseBoard.LineToLineVoltage != null)
-        {
-            <div class="board-spec">
-                <label>Line-to-Line Voltage</label>
-                <h5>@threePhaseBoard.LineToLineVoltage.GetDisplayName()</h5>
-            </div>
-        }
+        <div class="board-spec">
+            <label>Line-to-Line Voltage</label>
+            <h5>@threePhaseBoard.LineToLineVoltage.GetDisplayName()</h5>
+        </div>
     }
 
     <div class="board-spec">
         <label>Voltage</label>
         <h5>@DistributionBoard.Voltage.GetDisplayName()</h5>
     </div>
+
+    @if (DistributionBoard.WireLength != null)
+    {
+        <div class="board-spec">
+            <label>Wire Length</label>
+            <h5>@DistributionBoard.WireLength</h5>
+        </div>
+    }
 
     @if (threePhaseBoard != null)
     {

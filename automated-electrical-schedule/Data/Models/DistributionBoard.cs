@@ -50,10 +50,19 @@ public abstract partial class DistributionBoard
     [Column("voltage")]
     public BoardVoltage Voltage { get; set; } = BoardVoltage.V230;
 
+    [Display(Name = "wire length")]
+    [Column("wire_length")]
+    [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
+    public double? WireLength { get; set; }
+
     [Required]
     [Display(Name = "circuit protection")]
     [Column("circuit_protection")]
     public CircuitProtection CircuitProtection { get; set; } = CircuitProtection.MiniatureCircuitBreaker;
+
+    [Display(Name = "line-to-line voltage")]
+    [Column("line_to_line_voltage")]
+    public LineToLineVoltage? LineToLineVoltage { get; set; } = null;
 
     [Required]
     [Display(Name = "sets")]
@@ -83,6 +92,48 @@ public abstract partial class DistributionBoard
     [Display(Name = "raceway type")]
     [Column("raceway_type")]
     public RacewayType RacewayType { get; set; }
+
+    /* USE WHEN THIS OR PARENT BOARD IS THREE PHASE */
+
+    [Display(Name = "transformer primary protection")]
+    [Column("transformer_primary_protection")]
+    public CircuitProtection? TransformerPrimaryProtection { get; set; }
+
+    [Display(Name = "transformer secondary protection")]
+    [Column("transformer_secondary_protection")]
+    public CircuitProtection? TransformerSecondaryProtection { get; set; }
+
+    /* USE ONLY WHEN STEPPING DOWN */
+
+    [Display(Name = "breaker circuit protection")]
+    [Column("breaker_circuit_protection")]
+    public CircuitProtection? BreakerCircuitProtection { get; set; }
+
+    [Display(Name = "breaker sets")]
+    [Column("breaker_set_count")]
+    public int? BreakerSetCount { get; set; }
+
+    [Display(Name = "breaker conductor type")]
+    [Column("breaker_conductor_type_id")]
+    public int? BreakerConductorTypeId { get; set; }
+
+    [ForeignKey(nameof(BreakerConductorTypeId))]
+    [ValidateComplexType]
+    public ConductorType? BreakerConductorType { get; set; }
+
+    [Display(Name = "breaker grounding")]
+    [Column("breaker_grounding_id")]
+    public int? BreakerGroundingId { get; set; }
+
+    [ForeignKey(nameof(BreakerGroundingId))]
+    [ValidateComplexType]
+    public ConductorType? BreakerGrounding { get; set; }
+
+    [Display(Name = "breaker raceway type")]
+    [Column("breaker_raceway_type")]
+    public RacewayType? BreakerRacewayType { get; set; }
+
+    /* LISTS OF REFERENCES */
 
     public List<DistributionBoard> SubDistributionBoards { get; set; } = [];
 

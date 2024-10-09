@@ -355,7 +355,11 @@
             case CircuitType.MotorOutlet:
                 updatedNewCircuit = new MotorOutletCircuit
                 {
-                    Horsepower = 1
+                    Horsepower = 1,
+                    MotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
+                        _newCircuit!.ParentDistributionBoard,
+                        _newCircuit.LineToLineVoltage
+                    )[0]
                 };
                 break;
             case CircuitType.ConvenienceOutlet:

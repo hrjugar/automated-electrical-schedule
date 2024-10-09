@@ -14,44 +14,26 @@ public partial class ThreePhaseDistributionBoard
             ParentDistributionBoard = ParentDistributionBoard,
             Phase = Phase,
             Voltage = Voltage,
+            WireLength = WireLength,
             CircuitProtection = CircuitProtection,
+            LineToLineVoltage = LineToLineVoltage,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,
             ConductorType = ConductorType,
             GroundingId = GroundingId,
             Grounding = Grounding,
             RacewayType = RacewayType,
-
-            ThreePhaseConfiguration = ThreePhaseConfiguration,
             TransformerPrimaryProtection = TransformerPrimaryProtection,
             TransformerSecondaryProtection = TransformerSecondaryProtection,
-            LineToLineVoltage = LineToLineVoltage,
             BreakerCircuitProtection = BreakerCircuitProtection,
             BreakerSetCount = BreakerSetCount,
             BreakerConductorTypeId = BreakerConductorTypeId,
             BreakerConductorType = BreakerConductorType,
             BreakerGroundingId = BreakerGroundingId,
             BreakerGrounding = BreakerGrounding,
-            BreakerRacewayType = BreakerRacewayType
-        };
-    }
+            BreakerRacewayType = BreakerRacewayType,
 
-    public List<LineToLineVoltage> GetAllowedLineToLineVoltages()
-    {
-        return ParentDistributionBoard switch
-        {
-            null => [LineToLineVoltage.Abc],
-            ThreePhaseDistributionBoard threePhaseDistributionBoard => threePhaseDistributionBoard.LineToLineVoltage
-                switch
-                {
-                    LineToLineVoltage.Ab => [LineToLineVoltage.Ab],
-                    LineToLineVoltage.Bc => [LineToLineVoltage.Bc],
-                    LineToLineVoltage.Ca => [LineToLineVoltage.Ca],
-                    LineToLineVoltage.Abc =>
-                        [LineToLineVoltage.Ab, LineToLineVoltage.Bc, LineToLineVoltage.Ca, LineToLineVoltage.Abc],
-                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
-                },
-            _ => throw new ArgumentOutOfRangeException(nameof(ParentDistributionBoard))
+            ThreePhaseConfiguration = ThreePhaseConfiguration
         };
     }
 
@@ -65,12 +47,18 @@ public partial class ThreePhaseDistributionBoard
         };
 
         var maxChildBoardVoltage = SubDistributionBoards.Count > 0
-            ? (int) SubDistributionBoards.MaxBy(b => (int)b.Voltage)!.Voltage
+            ? (int)SubDistributionBoards.MaxBy(b => (int)b.Voltage)!.Voltage
             : 0;
 
         return ParentDistributionBoard == null
             ? phaseVoltages
-            : phaseVoltages.Where(v => (int)v <= (int)ParentDistributionBoard.Voltage && (int) v >= maxChildBoardVoltage).ToList();
+            : phaseVoltages.Where(v => (int)v <= (int)ParentDistributionBoard.Voltage && (int)v >= maxChildBoardVoltage)
+                .ToList();
+    }
+
+    public override List<LineToLineVoltage> GetAllowedLineToLineVoltages()
+    {
+        return [Enums.LineToLineVoltage.Abc];
     }
 
     public List<CircuitProtection> GetAllowedTransformerPrimaryProtection()
