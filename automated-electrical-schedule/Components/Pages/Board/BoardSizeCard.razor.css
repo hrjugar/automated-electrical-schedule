@@ -1,10 +1,36 @@
 .board-size-card {
-    .board-size-card-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
 
-    .board-size-card-value {
-        color: var(--clr-neutral-700);
+    .board-size {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+
+        .board-size-label,
+        .board-size-content {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--clr-neutral-400);
+        }
+
+        .board-size-label {
+            width: 15rem;
+            border-inline: 1px solid var(--clr-neutral-400);
+        }
+
+        .board-size-content {
+            flex-grow: 1;
+            border-right: 1px solid var(--clr-neutral-400);
+        }
+
+        &:not(:first-child) {
+            .board-size-label,
+            .board-size-content {
+                border-bottom: 1px solid var(--clr-neutral-400);
+            }
+        }
     }
 }

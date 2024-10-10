@@ -59,6 +59,7 @@ public abstract partial class DistributionBoard
 
     public int GetAmpereTrip()
     {
+        /* TODO: Edit formula for three phase */
         double highestMotorLoad = 0;
         if (Circuits.Count > 0)
         {

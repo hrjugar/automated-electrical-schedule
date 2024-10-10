@@ -125,7 +125,7 @@
 
                 <div class="create-or-edit-circuit-modal-field">
                     <label>Demand Factor (%) <span class="red-asterisk">*</span></label>
-                    <InputNumber class="input-primary" @bind-Value="_newCircuit.DemandFactor" disabled="@(_newCircuit is MotorOutletCircuit || _newCircuit is ApplianceEquipmentOutletCircuit)"/>
+                    <InputNumber class="input-primary" @bind-Value="_newCircuit.DemandFactor" disabled="@(_newCircuit is MotorOutletCircuit)"/>
                     <ValidationMessage For=@(() => _newCircuit.DemandFactor)/>
                 </div>
 
@@ -377,7 +377,7 @@
         updatedNewCircuit.Description = _newCircuit!.Description;
         updatedNewCircuit.Quantity = updatedNewCircuit is MotorOutletCircuit ? 1 : _newCircuit.Quantity;
         updatedNewCircuit.WireLength = _newCircuit.WireLength;
-        updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit || updatedNewCircuit is ApplianceEquipmentOutletCircuit ? 100 : _newCircuit.DemandFactor;
+        updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit ? 100 : _newCircuit.DemandFactor;
 
         updatedNewCircuit.LineToLineVoltage = _newCircuit.LineToLineVoltage;
 

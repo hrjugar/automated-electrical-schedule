@@ -12,7 +12,6 @@
                 <h2>@_distributionBoard.BoardName</h2>
             </div>
 
-            @* TODO: Implement functionality for buttons *@
             <div class="header-controls">
                 <button class="btn-text btn-primary" @onclick="OpenCreateBoardModal">
                     Add Sub Distribution Board
@@ -42,7 +41,13 @@
 
         <div class="board-content">
             <BoardSpecs DistributionBoard="_distributionBoard"/>
-            <BoardTableCard DistributionBoard="_distributionBoard" OnCircuitChange="RefreshCircuitList"/>
+
+            <div class="board-content-main">
+                <BoardTableCard DistributionBoard="_distributionBoard" OnCircuitChange="RefreshCircuitList"/>
+            </div>
+            @* <div class="board-content-main"> *@
+            @*     <BoardSizeCard DistributionBoard="_distributionBoard"/> *@
+            @* </div> *@
         </div>
     </main>
 }

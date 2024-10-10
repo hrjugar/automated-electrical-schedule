@@ -1,9 +1,25 @@
 <div class="card board-size-card">
-    <p class="board-size-card-name">@Name</p>
-    <p class="board-size-card-value">@Value</p>
+    @* <div class="board-size"> *@
+    @*     <div class="board-size-label"> *@
+    @*         <p>Size of Circuit Protection</p> *@
+    @*     </div> *@
+    @* *@
+    @*     <div class="board-size-content"> *@
+    @*         <p>Use XX</p> *@
+    @*     </div> *@
+    @* </div> *@
+    @* *@
+    @* <div class="board-size"> *@
+    @*     <div class="board-size-label"> *@
+    @*         <p>Size of Wire</p> *@
+    @*     </div> *@
+    @* *@
+    @*     <div class="board-size-content"> *@
+    @*         <p>Use XX</p> *@
+    @*     </div> *@
+    @* </div> *@
 </div>
 
 @code {
-    [Parameter] public string Name { get; set; } = string.Empty;
-    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 }
