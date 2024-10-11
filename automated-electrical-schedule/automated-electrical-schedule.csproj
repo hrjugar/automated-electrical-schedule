@@ -88,4 +88,8 @@
         <AdditionalFiles Include="Components\Pages\Projects\ProjectsPage.razor"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Seeds\" />
+    </ItemGroup>
+
 </Project>

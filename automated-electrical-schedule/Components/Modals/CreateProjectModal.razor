@@ -63,7 +63,7 @@
                 <div class="create-project-modal-field">
                     <label>Voltage <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newProject.MainDistributionBoard.Voltage>
-                        @foreach (var voltage in _newProject.MainDistributionBoard.GetAllowedVoltages())
+                        @foreach (var voltage in _newProject.MainDistributionBoard.AllowedVoltages)
                         {
                             <option value="@voltage">@voltage.GetDisplayName()</option>
                         }
@@ -87,7 +87,7 @@
                         <label>Conductor Type <span class="red-asterisk">*</span></label>
 
                         <InputSelect @bind-Value="_newProject.MainDistributionBoard.ConductorTypeId">
-                            @foreach (var conductorType in _conductorTypes)
+                            @foreach (var conductorType in ConductorType.All)
                             {
                                 <option value="@conductorType.Id">@conductorType.ToString()</option>
                                 @* <option value="@conductorType.Name">@conductorType.Name</option> *@
@@ -100,10 +100,9 @@
                         <label>Grounding <span class="red-asterisk">*</span></label>
 
                         <InputSelect @bind-Value="_newProject.MainDistributionBoard.GroundingId">
-                            @foreach (var conductorType in _conductorTypes)
+                            @foreach (var conductorType in ConductorType.All)
                             {
                                 <option value="@conductorType.Id">@conductorType.ToString()</option>
-                                @* <option value="@conductorType.Name">@conductorType.Name</option> *@
                             }
                         </InputSelect>
                         <ValidationMessage For=@(() => _newProject.MainDistributionBoard.GroundingId)/>
@@ -127,7 +126,7 @@
                         <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
 
                         <InputSelect @bind-Value="@threePhaseDistributionBoard2.TransformerPrimaryProtection" disabled>
-                            @foreach (var transformerPrimaryProtection in threePhaseDistributionBoard2.GetAllowedTransformerPrimaryProtection())
+                            @foreach (var transformerPrimaryProtection in threePhaseDistributionBoard2.AllowedTransformerPrimaryProtection)
                             {
                                 <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
                             }
@@ -175,15 +174,8 @@
     Project _newProject = new() { MainDistributionBoard = new SinglePhaseDistributionBoard() };
     EditContext? _editContext = null;
 
-    List<ConductorType> _conductorTypes = [];
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
-
-        _newProject.MainDistributionBoard.ConductorTypeId = _conductorTypes[0].Id;
-        _newProject.MainDistributionBoard.GroundingId = _conductorTypes[0].Id;
-
         _editContext = new EditContext(_newProject);
     }
 
@@ -215,13 +207,11 @@
         updatedNewDistributionBoard.Id = _newProject.MainDistributionBoard.Id;
         updatedNewDistributionBoard.BoardName = _newProject.MainDistributionBoard.BoardName;
         updatedNewDistributionBoard.Phase = phase;
-        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.GetAllowedVoltages()[0];
+        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.AllowedVoltages[0];
         updatedNewDistributionBoard.CircuitProtection = _newProject.MainDistributionBoard.CircuitProtection;
         updatedNewDistributionBoard.SetCount = _newProject.MainDistributionBoard.SetCount;
         updatedNewDistributionBoard.ConductorTypeId = _newProject.MainDistributionBoard.ConductorTypeId;
-        updatedNewDistributionBoard.ConductorType = _newProject.MainDistributionBoard.ConductorType;
         updatedNewDistributionBoard.GroundingId = _newProject.MainDistributionBoard.GroundingId;
-        updatedNewDistributionBoard.Grounding = _newProject.MainDistributionBoard.Grounding;
         updatedNewDistributionBoard.RacewayType = _newProject.MainDistributionBoard.RacewayType;
 
         _newProject.MainDistributionBoard = updatedNewDistributionBoard;
@@ -232,7 +222,7 @@
     {
         ((ThreePhaseDistributionBoard)_newProject.MainDistributionBoard).ThreePhaseConfiguration = newConfiguration;
 
-        var allowedVoltages = _newProject.MainDistributionBoard.GetAllowedVoltages();
+        var allowedVoltages = _newProject.MainDistributionBoard.AllowedVoltages;
         if (!allowedVoltages.Contains(_newProject.MainDistributionBoard.Voltage))
         {
             _newProject.MainDistributionBoard.Voltage = allowedVoltages[0];

@@ -1,13 +1,11 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.Models;
-using automated_electrical_schedule.Data.Seeds;
 using Microsoft.EntityFrameworkCore;
 
 namespace automated_electrical_schedule.Data;
 
 public class DatabaseContext : DbContext
 {
-    public DbSet<ConductorType> ConductorTypes { get; init; }
     public DbSet<DistributionBoard> DistributionBoards { get; init; }
     public DbSet<Project> Projects { get; init; }
     public DbSet<Circuit> Circuits { get; init; }
@@ -22,10 +20,6 @@ public class DatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        for (var i = 0; i < ConductorTypeSeed.All.Count; i++) ConductorTypeSeed.All[i].Id = i + 1;
-
-        modelBuilder.Entity<ConductorType>().HasData(ConductorTypeSeed.All);
 
         modelBuilder.Entity<DistributionBoard>()
             .HasDiscriminator(b => b.Phase)

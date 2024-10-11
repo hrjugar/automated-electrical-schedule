@@ -2,6 +2,12 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class LightingOutletCircuit
 {
+    public override double VoltAmpere => Quantity * WattagePerFixture;
+
+    public override double AmpereLoad => Quantity * WattagePerFixture * DemandFactor / 100 / Voltage;
+
+    public override int AmpereTrip => DataUtils.GetAmpereTrip(AmpereLoad / 0.8, 15);
+
     public override Circuit Clone()
     {
         return new LightingOutletCircuit
@@ -18,28 +24,10 @@ public partial class LightingOutletCircuit
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,
-            ConductorType = ConductorType,
             GroundingId = GroundingId,
-            Grounding = Grounding,
             RacewayType = RacewayType,
 
             WattagePerFixture = WattagePerFixture
         };
-    }
-
-
-    public override double GetVoltAmpere()
-    {
-        return Quantity * WattagePerFixture;
-    }
-
-    public override double GetAmpereLoad()
-    {
-        return Quantity * WattagePerFixture * DemandFactor / 100 / GetVoltage();
-    }
-
-    public override int GetAmpereTrip()
-    {
-        return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8, 15);
     }
 }

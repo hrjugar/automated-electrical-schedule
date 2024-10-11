@@ -32,7 +32,7 @@
             <p class="cell cell--text board-table-head-colgroup-title">Ampere Load</p>
 
             <div class="board-table-head-colgroup-cols">
-                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ab or LineToLineVoltage.Abc)
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.A or LineToLineVoltage.Abc)
                 {
                     <p class="cell cell--text">AB</p>
                 }
@@ -41,7 +41,7 @@
                     <div class="cell cell--empty"></div>
                 }
 
-                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Bc or LineToLineVoltage.Abc)
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.B or LineToLineVoltage.Abc)
                 {
                     <p class="cell cell--text">BC</p>
                 }
@@ -50,7 +50,7 @@
                     <div class="cell cell--empty"></div>
                 }
 
-                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.Ca or LineToLineVoltage.Abc)
+                @if (threePhaseBoard.LineToLineVoltage is LineToLineVoltage.C or LineToLineVoltage.Abc)
                 {
                     <p class="cell cell--text">CA</p>
                 }
@@ -114,9 +114,9 @@
             var loadDescription = string.Empty;
             var circuitTypeLabel = "Sub Distribution Board";
             var circuitTypeLabelClass = "circuit-type-label--sub";
-            var voltageDrop = circuit.GetVoltageDrop();
+            var voltageDrop = circuit.VoltageDrop;
             var hasHighVoltageDrop = voltageDrop * 100 >= 3;
-            var ampereLoadDisplay = Math.Round(circuit.GetAmpereLoad(), 4);
+            var ampereLoadDisplay = Math.Round(circuit.AmpereLoad, 4);
 
             switch (circuit)
             {
@@ -149,8 +149,8 @@
                 </div>
                 <p class="cell cell--text">@loadDescription</p>
                 <p class="cell cell--text">@circuit.Quantity</p>
-                <p class="cell cell--text">@(circuit.GetVoltAmpere())</p>
-                <p class="cell cell--text">@(circuit.GetVoltage())</p>
+                <p class="cell cell--text">@(circuit.VoltAmpere)</p>
+                <p class="cell cell--text">@(circuit.Voltage)</p>
                 <p class="cell cell--text">@circuit.DemandFactor%</p>
 
                 @if (threePhaseBoard is null)
@@ -163,7 +163,7 @@
 
                     if (threePhaseBoard.LineToLineVoltage == LineToLineVoltage.Abc)
                     {
-                        @if (circuit.LineToLineVoltage == LineToLineVoltage.Ab)
+                        @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
                         {
                             <p class="cell cell--text">@ampereLoadDisplay</p>
                         }
@@ -172,7 +172,7 @@
                             <div class="cell cell--empty"></div>
                         }
 
-                        @if (circuit.LineToLineVoltage == LineToLineVoltage.Bc)
+                        @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
                         {
                             <p class="cell cell--text">@ampereLoadDisplay</p>
                         }
@@ -181,7 +181,7 @@
                             <div class="cell cell--empty"></div>
                         }
 
-                        @if (circuit.LineToLineVoltage == LineToLineVoltage.Ca)
+                        @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
                         {
                             <p class="cell cell--text">@ampereLoadDisplay</p>
                         }
@@ -207,8 +207,8 @@
 
                 <div class="cell cell--separator"></div>
 
-                <p class="cell cell--text">@(circuit.GetAmpereTrip())</p>
-                <p class="cell cell--text">@(circuit.GetAmpereFrame())</p>
+                <p class="cell cell--text">@(circuit.AmpereTrip)</p>
+                <p class="cell cell--text">@(circuit.AmpereFrame)</p>
                 <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
                 <p class="cell cell--text">@(circuit.LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2)</p>
                 <p class="cell cell--text">@circuit.WireLength</p>
@@ -227,9 +227,9 @@
                 <div class="cell cell--separator"></div>
 
                 <p class="cell cell--text">@circuit.SetCount</p>
-                <p class="cell cell--text">@(circuit.GetConductorWireCount())-@(circuit.GetConductorSize())mm² @(circuit.ConductorType.ToString())</p>
-                <p class="cell cell--text">1-@(circuit.GetGroundingSize())mm² @(circuit.Grounding.ToString())</p>
-                <p class="cell cell--text">@(circuit.GetRacewaySize())mm ø @circuit.RacewayType.GetDisplayName()</p>
+                <p class="cell cell--text">@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
+                <p class="cell cell--text">1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
+                <p class="cell cell--text">@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
 
                 <div class="cell cell--separator"></div>
 
@@ -256,6 +256,7 @@
         @for (var i = 0; i < DistributionBoard.SubDistributionBoards.Count; i++)
         {
             var subDistributionBoard = DistributionBoard.SubDistributionBoards[i];
+            var subThreePhaseBoard = subDistributionBoard as ThreePhaseDistributionBoard;
 
             <div class="board-table-row">
                 <p class="cell cell--group cell--sticky cell--sticky--left">@(_circuits.Count + i + 1)</p>
@@ -264,7 +265,7 @@
                 </div>
                 <p class="cell cell--text">@subDistributionBoard.BoardName</p>
                 <div class="cell cell--empty"></div>
-                <p class="cell cell--text">@(subDistributionBoard.GetVoltAmpere())</p>
+                <p class="cell cell--text">@(subDistributionBoard.VoltAmpere)</p>
                 <p class="cell cell--text">@((int)subDistributionBoard.Voltage)</p>
                 <div class="cell cell--empty"></div>
 
@@ -284,29 +285,29 @@
 
                 @if (subDistributionBoard.LineToLineVoltage is null)
                 {
-                    <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(subDistributionBoard.GetAmpereLoad(), 4)</p>
+                    <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(subDistributionBoard.AmpereLoad, 4)</p>
                 }
                 else
                 {
                     <div class="cell cell--separator"></div>
 
-                    if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
+                    if (subThreePhaseBoard != null)
                     {
-                        <p class="cell cell--text">@Math.Round(subDistributionBoard.GetAmpereLoad(LineToLineVoltage.Ab), 4)</p>
-                        <p class="cell cell--text">@Math.Round(subDistributionBoard.GetAmpereLoad(LineToLineVoltage.Bc), 4)</p>
-                        <p class="cell cell--text">@Math.Round(subDistributionBoard.GetAmpereLoad(LineToLineVoltage.Ca), 4)</p>
-                        <p class="cell cell--text">@Math.Round(subDistributionBoard.GetAmpereLoad(LineToLineVoltage.Ca), 4)</p>
+                        <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadA, 4)</p>
+                        <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadB, 4)</p>
+                        <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadC, 4)</p>
+                        <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadAbc, 4)</p>
                     }
                     else
                     {
-                        <p class="cell cell--text cell--load cell--load--line">@Math.Round(subDistributionBoard.GetAmpereLoad(), 4)</p>
+                        <p class="cell cell--text cell--load cell--load--line">@Math.Round(subDistributionBoard.AmpereLoad, 4)</p>
                     }
                 }
 
                 <div class="cell cell--separator"></div>
 
-                <p class="cell cell--text">@(subDistributionBoard.GetAmpereTrip())</p>
-                <p class="cell cell--text">@(subDistributionBoard.GetAmpereFrame())</p>
+                <p class="cell cell--text">@(subDistributionBoard.AmpereTrip)</p>
+                <p class="cell cell--text">@(subDistributionBoard.AmpereFrame)</p>
                 <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
                 <p class="cell cell--text">@(subDistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2)</p>
                 @if (subDistributionBoard.WireLength is not null)
@@ -319,7 +320,7 @@
                 }
 
                 <div class="cell cell--group">
-                    <p>@(Math.Round(subDistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p>
+                    <p>@(Math.Round(subDistributionBoard.VoltageDrop, 4).ToPercentageString())</p>
 
                     @* TODO: Implement voltage drop correction for sub boards *@
 
@@ -337,9 +338,9 @@
                 <div class="cell cell--separator"></div>
 
                 <p class="cell cell--text">@subDistributionBoard.SetCount</p>
-                <p class="cell cell--text">@(subDistributionBoard.GetConductorWireCount())-@(subDistributionBoard.GetConductorSize())mm² @(subDistributionBoard.ConductorType.ToString())</p>
-                <p class="cell cell--text">1-@(subDistributionBoard.GetGroundingSize())mm² @(subDistributionBoard.Grounding.ToString())</p>
-                <p class="cell cell--text">@(subDistributionBoard.GetRacewaySize())mm ø @subDistributionBoard.RacewayType.GetDisplayName()</p>
+                <p class="cell cell--text">@(subDistributionBoard.ConductorWireCount)-@(subDistributionBoard.ConductorSize)mm² @(subDistributionBoard.ConductorType.ToString())</p>
+                <p class="cell cell--text">1-@(subDistributionBoard.GroundingSize)mm² @(subDistributionBoard.Grounding.ToString())</p>
+                <p class="cell cell--text">@(subDistributionBoard.RacewaySize)mm ø @subDistributionBoard.RacewayType.GetDisplayName()</p>
 
                 <div class="cell cell--separator"></div>
 
@@ -387,29 +388,29 @@ else
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
-    <p class="cell cell--text">@(DistributionBoard.GetVoltAmpere())</p>
+    <p class="cell cell--text">@(DistributionBoard.VoltAmpere)</p>
     <p class="cell cell--text">@((int)DistributionBoard.Voltage)</p>
     <div class="cell cell--empty"></div>
 
-    @switch (DistributionBoard.LineToLineVoltage)
+    @if (DistributionBoard.LineToLineVoltage is null)
     {
-        case null:
-            <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(DistributionBoard.GetAmpereLoad(), 4)</p>
-            break;
-        case LineToLineVoltage.Abc:
-            <div class="cell cell--separator"></div>
+        <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(DistributionBoard.AmpereLoad, 4)</p>
+    }
+    else
+    {
+        <div class="cell cell--separator"></div>
 
-            <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Ab), 4)</p>
-            <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Bc), 4)</p>
-            <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Ca), 4)</p>
-            <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Abc), 4)</p>
-            break;
-        case LineToLineVoltage.Ab:
-        case LineToLineVoltage.Bc:
-        case LineToLineVoltage.Ca:
-        default:
-            <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.GetAmpereLoad(), 4)</p>
-            break;
+        if (threePhaseBoard != null)
+        {
+            <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadA, 4)</p>
+            <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadB, 4)</p>
+            <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadC, 4)</p>
+            <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadAbc, 4)</p>
+        }
+        else
+        {
+            <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.AmpereLoad, 4)</p>
+        }
     }
 
     @* @if (DistributionBoard.LineToLineVoltage is null) *@
@@ -435,8 +436,8 @@ else
 
     <div class="cell cell--separator"></div>
 
-    <p class="cell cell--text">@(DistributionBoard.GetAmpereTrip())</p>
-    <p class="cell cell--text">@(DistributionBoard.GetAmpereFrame())</p>
+    <p class="cell cell--text">@(DistributionBoard.AmpereTrip)</p>
+    <p class="cell cell--text">@(DistributionBoard.AmpereFrame)</p>
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
@@ -447,7 +448,7 @@ else
     }
     else
     {
-        <p class="cell cell--text">@(Math.Round(DistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p>
+        <p class="cell cell--text">@(Math.Round(DistributionBoard.VoltageDrop, 4).ToPercentageString())</p>
         @* <p>@(Math.Round(subDistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p> *@
     }
 

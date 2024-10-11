@@ -2,6 +2,12 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ApplianceEquipmentOutletCircuit
 {
+    public override double VoltAmpere => Wattage;
+
+    public override double AmpereLoad => VoltAmpere * (DemandFactor / 100) / Voltage;
+
+    public override int AmpereTrip => DataUtils.GetAmpereTrip(AmpereLoad / 0.8, 20);
+
     public override Circuit Clone()
     {
         return new ApplianceEquipmentOutletCircuit
@@ -18,27 +24,10 @@ public partial class ApplianceEquipmentOutletCircuit
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,
-            ConductorType = ConductorType,
             GroundingId = GroundingId,
-            Grounding = Grounding,
             RacewayType = RacewayType,
 
             Wattage = Wattage
         };
-    }
-
-    public override double GetVoltAmpere()
-    {
-        return Wattage;
-    }
-
-    public override double GetAmpereLoad()
-    {
-        return GetVoltAmpere() * (DemandFactor / 100) / GetVoltage();
-    }
-
-    public override int GetAmpereTrip()
-    {
-        return DataUtils.GetAmpereTrip(GetAmpereLoad() / 0.8, 20);
     }
 }

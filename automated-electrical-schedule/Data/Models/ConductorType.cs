@@ -1,20 +1,17 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
-[Table(TableName)]
-public class ConductorType
+public partial class ConductorType
 {
-    private const string TableName = "conductor_types";
-
     public ConductorType()
     {
     }
 
-    public ConductorType(ConductorMaterial material, ConductorTemperatureRating temperatureRating,
+    public ConductorType(
+        ConductorMaterial material, 
+        ConductorTemperatureRating temperatureRating,
         ConductorWireType wireType)
     {
         Material = material;
@@ -22,16 +19,13 @@ public class ConductorType
         WireType = wireType;
     }
 
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Column("id")]
-    public int Id { get; set; }
+    public ConductorMaterial Material { get; }
 
-    [Column("material")] public ConductorMaterial Material { get; set; }
+    public ConductorTemperatureRating TemperatureRating { get; }
 
-    [Column("temperature_rating")] public ConductorTemperatureRating TemperatureRating { get; set; }
+    public ConductorWireType WireType { get; }
 
-    [Column("wire_type")] public ConductorWireType WireType { get; set; }
+    public string Id => $"{WireType.GetDisplayName()}_{Material.GetDisplayName()}_{TemperatureRating.GetDisplayName()}";
 
     public override string ToString()
     {

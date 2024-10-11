@@ -70,20 +70,12 @@ public abstract partial class Circuit
     [Required]
     [Display(Name = "conductor type")]
     [Column("conductor_type_id")]
-    public int ConductorTypeId { get; set; }
-
-    [ForeignKey(nameof(ConductorTypeId))]
-    [ValidateComplexType]
-    public ConductorType ConductorType { get; set; } = null!;
+    public string ConductorTypeId { get; set; } = ConductorType.All[0].Id;
 
     [Required]
     [Display(Name = "grounding")]
     [Column("grounding_id")]
-    public int GroundingId { get; set; }
-
-    [ForeignKey(nameof(GroundingId))]
-    [ValidateComplexType]
-    public ConductorType Grounding { get; set; } = null!;
+    public string GroundingId { get; set; } = ConductorType.All[0].Id;
 
     [Required]
     [Display(Name = "raceway type")]

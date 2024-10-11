@@ -1,9 +1,8 @@
 using automated_electrical_schedule.Data.Enums;
-using automated_electrical_schedule.Data.Models;
 
-namespace automated_electrical_schedule.Data.Seeds;
+namespace automated_electrical_schedule.Data.Models;
 
-public static class ConductorTypeSeed
+public partial class ConductorType
 {
     public static readonly ConductorType TwCu60 = new(
         ConductorMaterial.Copper,
@@ -365,4 +364,10 @@ public static class ConductorTypeSeed
         Xhhw2Al90
         // Zw2Al90
     ];
+    
+    public static ConductorType FindById(string id)
+    {
+        var foundConductorType = All.Find(conductorType => conductorType.Id == id);
+        return foundConductorType ?? throw new ArgumentException($"Conductor type with id {id} not found.");
+    }
 }

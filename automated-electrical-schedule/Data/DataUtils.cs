@@ -1,4 +1,3 @@
-using automated_electrical_schedule.Data.Models;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data;
@@ -19,6 +18,6 @@ public static class DataUtils
     public static double GetMotorOutlet230VoltAmpereLoad(double horsepower)
     {
         return DataConstants.SinglePhaseMotorOutletAmpereLoadRatings[
-            MotorOutletCircuit.AllowedHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))];
+            DataConstants.SinglePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))];
     }
 }

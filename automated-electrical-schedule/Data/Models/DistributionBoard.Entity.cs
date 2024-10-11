@@ -10,17 +10,6 @@ public abstract partial class DistributionBoard
 {
     private const string TableName = "distribution_boards";
 
-    public static readonly List<CircuitProtection> AllowedCircuitProtections =
-    [
-        CircuitProtection.MiniatureCircuitBreaker,
-        CircuitProtection.MoldedCaseCircuitBreaker,
-        CircuitProtection.OilCircuitBreaker,
-        CircuitProtection.AirBreakCircuitBreaker,
-        CircuitProtection.AirBlastCircuitBreaker,
-        CircuitProtection.VacuumCircuitBreaker,
-        CircuitProtection.SulfurHexafluorideCircuitBreaker
-    ];
-
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
@@ -73,20 +62,12 @@ public abstract partial class DistributionBoard
     [Required]
     [Display(Name = "conductor type")]
     [Column("conductor_type_id")]
-    public int ConductorTypeId { get; set; }
-
-    [ForeignKey(nameof(ConductorTypeId))]
-    [ValidateComplexType]
-    public ConductorType ConductorType { get; set; } = null!;
+    public string ConductorTypeId { get; set; } = ConductorType.All[0].Id;
 
     [Required]
     [Display(Name = "grounding")]
     [Column("grounding_id")]
-    public int GroundingId { get; set; }
-
-    [ForeignKey(nameof(GroundingId))]
-    [ValidateComplexType]
-    public ConductorType Grounding { get; set; } = null!;
+    public string GroundingId { get; set; } = ConductorType.All[0].Id;
 
     [Required]
     [Display(Name = "raceway type")]
@@ -115,19 +96,11 @@ public abstract partial class DistributionBoard
 
     [Display(Name = "breaker conductor type")]
     [Column("breaker_conductor_type_id")]
-    public int? BreakerConductorTypeId { get; set; }
-
-    [ForeignKey(nameof(BreakerConductorTypeId))]
-    [ValidateComplexType]
-    public ConductorType? BreakerConductorType { get; set; }
+    public string? BreakerConductorTypeId { get; set; }
 
     [Display(Name = "breaker grounding")]
     [Column("breaker_grounding_id")]
-    public int? BreakerGroundingId { get; set; }
-
-    [ForeignKey(nameof(BreakerGroundingId))]
-    [ValidateComplexType]
-    public ConductorType? BreakerGrounding { get; set; }
+    public string? BreakerGroundingId { get; set; }
 
     [Display(Name = "breaker raceway type")]
     [Column("breaker_raceway_type")]

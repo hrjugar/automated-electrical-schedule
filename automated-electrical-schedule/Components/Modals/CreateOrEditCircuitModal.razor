@@ -35,9 +35,9 @@
             @if (threePhaseBoard != null)
             {
                 <InputSelect class="select-line-to-line" @bind-Value="@_newCircuit.LineToLineVoltage">
-                    @foreach (var lineToLineVoltage in _newCircuit.GetAllowedLineToLineVoltages())
+                    @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
                     {
-                        <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName()</option>
+                        <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
                     }
                 </InputSelect>
             }
@@ -68,7 +68,7 @@
                                 Value="motorOutletCircuit.MotorType"
                                 ValueChanged="@((MotorType motorType) => UpdateMotorType(motorType))"
                                 ValueExpression="@(() => motorOutletCircuit.MotorType)">
-                                @foreach (var motorType in motorOutletCircuit.GetAllowedMotorTypes())
+                                @foreach (var motorType in motorOutletCircuit.AllowedMotorTypes)
                                 {
                                     <option value="@motorType">@motorType.GetDisplayName()</option>
                                 }
@@ -79,7 +79,7 @@
                         <div class="create-or-edit-circuit-modal-field">
                             <label>Horsepower <span class="red-asterisk">*</span></label>
                             <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
-                                @foreach (var horsepowerValue in motorOutletCircuit.GetAllowedHorsepowerValues())
+                                @foreach (var horsepowerValue in motorOutletCircuit.AllowedHorsepowerValues)
                                 {
                                     <option value="@horsepowerValue">@horsepowerValue</option>
                                 }
@@ -132,7 +132,7 @@
                 <div class="create-or-edit-circuit-modal-field">
                     <label>Circuit Protection <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newCircuit.CircuitProtection>
-                        @foreach (var circuitProtection in _newCircuit.GetAllowedCircuitProtections())
+                        @foreach (var circuitProtection in _newCircuit.AllowedCircuitProtections)
                         {
                             <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
                         }
@@ -146,11 +146,8 @@
                     <div class="create-or-edit-circuit-modal-field">
                         <label>Conductor Type <span class="red-asterisk">*</span></label>
 
-                        <InputSelect
-                            Value="_newCircuit.ConductorTypeId"
-                            ValueChanged="@((int value) => UpdateConductorType(value))"
-                            ValueExpression="@(() => _newCircuit.ConductorTypeId)">
-                            @foreach (var conductorType in _conductorTypes)
+                        <InputSelect @bind-Value="_newCircuit.ConductorTypeId">
+                            @foreach (var conductorType in ConductorType.All)
                             {
                                 <option value="@conductorType.Id">@conductorType.ToString()</option>
                             }
@@ -162,12 +159,10 @@
                         <label>Grounding <span class="red-asterisk">*</span></label>
 
                         <InputSelect
-                            Value="@_newCircuit.GroundingId"
-                            ValueChanged="@((int value) => UpdateGrounding(value))"
-                            ValueExpression="@(() => _newCircuit.GroundingId)">
-                            @foreach (var conductorType in _conductorTypes)
+                            @bind-Value="@_newCircuit.GroundingId">
+                            @foreach (var grounding in ConductorType.All)
                             {
-                                <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                <option value="@grounding.Id">@grounding.ToString()</option>
                             }
                         </InputSelect>
                         <ValidationMessage For=@(() => _newCircuit.GroundingId)/>
@@ -194,52 +189,52 @@
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Volt Amps</label>
-                    <p>@(_newCircuit.GetVoltAmpere())</p>
+                    <p>@(_newCircuit.VoltAmpere)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Load</label>
-                    <p>@(Math.Round(_newCircuit.GetAmpereLoad(), 4))</p>
+                    <p>@(Math.Round(_newCircuit.AmpereLoad, 4))</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Trip</label>
-                    <p>@(_newCircuit.GetAmpereTrip())</p>
+                    <p>@(_newCircuit.AmpereTrip)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Frame</label>
-                    <p>@(_newCircuit.GetAmpereFrame())</p>
+                    <p>@(_newCircuit.AmpereFrame)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>R</label>
-                    <p>@(_newCircuit.GetR())</p>
+                    <p>@(_newCircuit.R)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>X</label>
-                    <p>@(_newCircuit.GetX())</p>
+                    <p>@(_newCircuit.X)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Voltage Drop</label>
-                    <p>@(Math.Round(_newCircuit.GetVoltageDrop(), 4).ToPercentageString())</p>
+                    <p>@(Math.Round(_newCircuit.VoltageDrop, 4).ToPercentageString())</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Conductor Size</label>
-                    <p>@(_newCircuit.GetConductorSize())</p>
+                    <p>@(_newCircuit.ConductorSize)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ground Size</label>
-                    <p>@(_newCircuit.GetGroundingSize())</p>
+                    <p>@(_newCircuit.GroundingSize)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Raceway Size</label>
-                    <p>@(_newCircuit.GetRacewaySize())</p>
+                    <p>@(_newCircuit.RacewaySize)</p>
                 </div>
             </div>
         </div>
@@ -277,12 +272,9 @@
     EditContext? _editContext;
 
     Circuit? _newCircuit;
-    List<ConductorType> _conductorTypes = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
-
         if (OldCircuit != null)
         {
             _newCircuit = OldCircuit.Clone();
@@ -292,15 +284,13 @@
             _newCircuit = new LightingOutletCircuit
             {
                 ParentDistributionBoard = DistributionBoard,
-                ConductorTypeId = _conductorTypes[0].Id,
-                ConductorType = _conductorTypes[0],
-                GroundingId = _conductorTypes[0].Id,
-                Grounding = _conductorTypes[0]
+                ConductorTypeId = ConductorType.All[0].Id,
+                GroundingId = ConductorType.All[0].Id,
             };
 
             if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
             {
-                _newCircuit.LineToLineVoltage = _newCircuit.GetAllowedLineToLineVoltages()[0];
+                _newCircuit.LineToLineVoltage = _newCircuit.AllowedLineToLineVoltages[0];
             }
         }
 
@@ -313,26 +303,12 @@
         await IsOpenChanged.InvokeAsync(IsOpen);
     }
 
-    void UpdateConductorType(int newConductorTypeId)
-    {
-        _newCircuit!.ConductorTypeId = newConductorTypeId;
-        _newCircuit.ConductorType = _conductorTypes.First(ct => ct.Id == newConductorTypeId);
-        StateHasChanged();
-    }
-
-    void UpdateGrounding(int newGroundingId)
-    {
-        _newCircuit!.GroundingId = newGroundingId;
-        _newCircuit.Grounding = _conductorTypes.First(ct => ct.Id == newGroundingId);
-        StateHasChanged();
-    }
-
     void UpdateMotorType(MotorType newMotorType)
     {
         var motorOutletCircuit = _newCircuit as MotorOutletCircuit;
         motorOutletCircuit!.MotorType = newMotorType;
 
-        var allowedHorsepowerValues = motorOutletCircuit.GetAllowedHorsepowerValues();
+        var allowedHorsepowerValues = motorOutletCircuit.AllowedHorsepowerValues;
 
         if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
         {
@@ -382,13 +358,11 @@
         updatedNewCircuit.LineToLineVoltage = _newCircuit.LineToLineVoltage;
 
         updatedNewCircuit.CircuitProtection =
-            updatedNewCircuit.GetAllowedCircuitProtections().Contains(_newCircuit.CircuitProtection) ? _newCircuit.CircuitProtection : updatedNewCircuit.GetAllowedCircuitProtections()[0];
+            updatedNewCircuit.AllowedCircuitProtections.Contains(_newCircuit.CircuitProtection) ? _newCircuit.CircuitProtection : updatedNewCircuit.AllowedCircuitProtections[0];
 
         updatedNewCircuit.SetCount = _newCircuit.SetCount;
         updatedNewCircuit.ConductorTypeId = _newCircuit.ConductorTypeId;
-        updatedNewCircuit.ConductorType = _newCircuit.ConductorType;
         updatedNewCircuit.GroundingId = _newCircuit.GroundingId;
-        updatedNewCircuit.Grounding = _newCircuit.Grounding;
         updatedNewCircuit.RacewayType = _newCircuit.RacewayType;
 
 

@@ -21,6 +21,7 @@
             <div class="modal-content create-or-edit-board-modal-content">
                 @{
                     var threePhaseBoard = _newDistributionBoard as ThreePhaseDistributionBoard;
+                    var parentThreePhaseBoard = _newDistributionBoard.ParentDistributionBoard as ThreePhaseDistributionBoard;
                 }
 
                 <div class="create-or-edit-board-modal-fields">
@@ -34,7 +35,7 @@
                         <div class="create-or-edit-board-modal-field">
                             <label>Phase <span class="red-asterisk">*</span></label>
                             <InputSelect @bind-Value:get=_newDistributionBoard.Phase @bind-Value:set="UpdatePhase" disabled="@(!IsNew || _newDistributionBoard.ParentDistributionBoard is SinglePhaseDistributionBoard)">
-                                @foreach (var phase in _newDistributionBoard.GetAllowedPhases())
+                                @foreach (var phase in _newDistributionBoard.AllowedPhases)
                                 {
                                     <option value="@phase">@phase.GetDisplayName()</option>
                                 }
@@ -61,16 +62,16 @@
                         }
                     </div>
 
-                    @if (_newDistributionBoard.ParentDistributionBoard is ThreePhaseDistributionBoard)
+                    @if (parentThreePhaseBoard is not null)
                     {
                         <div class="create-or-edit-board-modal-field">
                             <label>Line-to-Line Voltage Type <span class="red-asterisk">*</span></label>
                             <InputSelect
                                 @bind-Value="@_newDistributionBoard.LineToLineVoltage"
                                 disabled="@(_newDistributionBoard is ThreePhaseDistributionBoard || _newDistributionBoard.ParentDistributionBoard is not ThreePhaseDistributionBoard)">
-                                @foreach (var linetoLineVoltage in _newDistributionBoard.GetAllowedLineToLineVoltages())
+                                @foreach (var linetoLineVoltage in _newDistributionBoard.AllowedLineToLineVoltages)
                                 {
-                                    <option value="@linetoLineVoltage">@linetoLineVoltage.GetDisplayName()</option>
+                                    <option value="@linetoLineVoltage">@linetoLineVoltage.GetDisplayName(parentThreePhaseBoard.ThreePhaseConfiguration)</option>
                                 }
                             </InputSelect>
                             <ValidationMessage For=@(() => _newDistributionBoard.LineToLineVoltage)/>
@@ -81,7 +82,7 @@
                     <div class="create-or-edit-board-modal-field">
                         <label>Voltage <span class="red-asterisk">*</span></label>
                         <InputSelect @bind-Value=_newDistributionBoard.Voltage>
-                            @foreach (var voltage in _newDistributionBoard.GetAllowedVoltages())
+                            @foreach (var voltage in _newDistributionBoard.AllowedVoltages)
                             {
                                 <option value="@voltage">@voltage.GetDisplayName()</option>
                             }
@@ -114,7 +115,7 @@
                             <label>Conductor Type <span class="red-asterisk">*</span></label>
 
                             <InputSelect @bind-Value="_newDistributionBoard.ConductorTypeId">
-                                @foreach (var conductorType in _conductorTypes)
+                                @foreach (var conductorType in ConductorType.All)
                                 {
                                     <option value="@conductorType.Id">@conductorType.ToString()</option>
                                 }
@@ -126,9 +127,9 @@
                             <label>Grounding <span class="red-asterisk">*</span></label>
 
                             <InputSelect @bind-Value="_newDistributionBoard.GroundingId">
-                                @foreach (var conductorType in _conductorTypes)
+                                @foreach (var grounding in ConductorType.All)
                                 {
-                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                    <option value="@grounding.Id">@grounding.ToString()</option>
                                 }
                             </InputSelect>
                             <ValidationMessage For=@(() => _newDistributionBoard.GroundingId)/>
@@ -152,7 +153,7 @@
                             <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
 
                             <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled="@(_newDistributionBoard.ParentDistributionBoard == null)">
-                                @foreach (var transformerPrimaryProtection in threePhaseBoard.GetAllowedTransformerPrimaryProtection())
+                                @foreach (var transformerPrimaryProtection in threePhaseBoard.AllowedTransformerPrimaryProtection)
                                 {
                                     <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
                                 }
@@ -207,12 +208,9 @@
     EditContext? _editContext;
 
     DistributionBoard? _newDistributionBoard;
-    List<ConductorType> _conductorTypes = [];
-
-    protected override async Task OnParametersSetAsync()
+    
+    protected override void OnParametersSet()
     {
-        _conductorTypes = await DatabaseContext.ConductorTypes.ToListAsync();
-
         if (IsNew)
         {
             if (DistributionBoard is SinglePhaseDistributionBoard)
@@ -221,7 +219,7 @@
 
                 if (DistributionBoard.ParentDistributionBoard is ThreePhaseDistributionBoard)
                 {
-                    _newDistributionBoard.LineToLineVoltage = LineToLineVoltage.Ab;
+                    _newDistributionBoard.LineToLineVoltage = LineToLineVoltage.A;
                 }
             }
             else
@@ -236,10 +234,6 @@
             _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
             _newDistributionBoard.Phase = DistributionBoard.Phase;
             _newDistributionBoard.WireLength = 1;
-            _newDistributionBoard.ConductorTypeId = _conductorTypes[0].Id;
-            _newDistributionBoard.ConductorType = _conductorTypes[0];
-            _newDistributionBoard.GroundingId = _conductorTypes[0].Id;
-            _newDistributionBoard.Grounding = _conductorTypes[0];
         }
         else
         {
@@ -265,7 +259,7 @@
 
             if (_newDistributionBoard?.ParentDistributionBoard is ThreePhaseDistributionBoard)
             {
-                updatedNewDistributionBoard.LineToLineVoltage = LineToLineVoltage.Ab;
+                updatedNewDistributionBoard.LineToLineVoltage = LineToLineVoltage.A;
             }
         }
         else
@@ -284,15 +278,14 @@
         updatedNewDistributionBoard.ParentDistributionBoardId = _newDistributionBoard.ParentDistributionBoardId;
         updatedNewDistributionBoard.BoardName = _newDistributionBoard.BoardName;
         updatedNewDistributionBoard.Phase = phase;
-        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.GetAllowedVoltages()[0];
+        updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.AllowedVoltages[0];
         updatedNewDistributionBoard.WireLength = _newDistributionBoard.WireLength;
         updatedNewDistributionBoard.CircuitProtection = _newDistributionBoard.CircuitProtection;
         updatedNewDistributionBoard.SetCount = _newDistributionBoard.SetCount;
         updatedNewDistributionBoard.ConductorTypeId = _newDistributionBoard.ConductorTypeId;
-        updatedNewDistributionBoard.ConductorType = _newDistributionBoard.ConductorType;
         updatedNewDistributionBoard.GroundingId = _newDistributionBoard.GroundingId;
-        updatedNewDistributionBoard.Grounding = _newDistributionBoard.Grounding;
         updatedNewDistributionBoard.RacewayType = _newDistributionBoard.RacewayType;
+        
 
         _newDistributionBoard = updatedNewDistributionBoard;
         _editContext = new EditContext(_newDistributionBoard);
@@ -303,7 +296,7 @@
         var threePhaseBoard = _newDistributionBoard as ThreePhaseDistributionBoard;
         threePhaseBoard!.ThreePhaseConfiguration = newConfiguration;
 
-        var allowedVoltages = threePhaseBoard.GetAllowedVoltages();
+        var allowedVoltages = threePhaseBoard.AllowedVoltages;
         if (!allowedVoltages.Contains(threePhaseBoard.Voltage))
         {
             threePhaseBoard.Voltage = allowedVoltages[0];
