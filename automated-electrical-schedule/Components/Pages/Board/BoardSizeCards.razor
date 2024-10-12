@@ -2,18 +2,32 @@
     <div class="board-size-card">
         <label>Size of Circuit Protection</label>
 
-        <ul class="board-size-content">
-            <li>Use @(DistributionBoard.AmpereTrip) Ampere Trip, @(DistributionBoard.AmpereFrame) Ampere Frame, @(DistributionBoard.Pole)-Pole, @(DistributionBoard.CircuitProtection.GetDisplayName())</li>
-        </ul>
+        @if (DistributionBoard.AmpereTrip == 0 || DistributionBoard.AmpereFrame == 0)
+        {
+            <p>Board has no circuits.</p>
+        }
+        else
+        {
+            <ul class="board-size-content">
+                <li>Use @(DistributionBoard.AmpereTrip) Ampere Trip, @(DistributionBoard.AmpereFrame) Ampere Frame, @(DistributionBoard.Pole)-Pole, @(DistributionBoard.CircuitProtection.GetDisplayName())</li>
+            </ul>
+        }
     </div>
 
     <div class="board-size-card">
         <label>Size of Wire</label>
 
-        <ul class="board-size-content">
-            <li>Use @(DistributionBoard.SetCount) set@(DistributionBoard.SetCount > 1 ? "s" : "") of @(DistributionBoard.ConductorWireCount)-@(DistributionBoard.ConductorSize)mm² @(DistributionBoard.ConductorType.ToString()) and @(DistributionBoard.GroundingWireCount)-@(DistributionBoard.GroundingSize)mm² @(DistributionBoard.Grounding.ToString())</li>
-            <li>Use @(DistributionBoard.RacewaySize)mm ø @(DistributionBoard.RacewayType.GetDisplayName())</li>
-        </ul>
+        @if (DistributionBoard.RacewaySize == 0)
+        {
+            <p>Board has no circuits.</p>
+        }
+        else
+        {
+            <ul class="board-size-content">
+                <li>Use @(DistributionBoard.SetCount) set@(DistributionBoard.SetCount > 1 ? "s" : "") of @(DistributionBoard.ConductorWireCount)-@(DistributionBoard.ConductorSize)mm² @(DistributionBoard.ConductorType.ToString()) and @(DistributionBoard.GroundingWireCount)-@(DistributionBoard.GroundingSize)mm² @(DistributionBoard.Grounding.ToString())</li>
+                <li>Use @(DistributionBoard.RacewaySize)mm ø @(DistributionBoard.RacewayType.GetDisplayName())</li>
+            </ul>
+        }
     </div>
 
     @if (DistributionBoard.HasTransformer)
@@ -21,11 +35,18 @@
         <div class="board-size-card">
             <label>Transformer</label>
 
-            <ul class="board-size-content">
-                <li>@(DistributionBoard.TransformerRating / 1000)kVA</li>
-                <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip) @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
-                <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip) @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
-            </ul>
+            @if (DistributionBoard.TransformerRating == 0)
+            {
+                <p>Board has no circuits.</p>
+            }
+            else
+            {
+                <ul class="board-size-content">
+                    <li>@(DistributionBoard.TransformerRating / 1000)kVA</li>
+                    <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip) @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
+                    <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip) @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
+                </ul>
+            }
         </div>
     }
 </div>

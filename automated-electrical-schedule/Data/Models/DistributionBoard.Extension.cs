@@ -39,6 +39,50 @@ public abstract partial class DistributionBoard
 
     public abstract List<LineToLineVoltage> AllowedLineToLineVoltages { get; }
 
+    public string LineToLineVoltageDisplay
+    {
+        get
+        {
+            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return "ABC";
+            if (LineToLineVoltage is null) return "";
+
+            var currentBoard = ParentDistributionBoard;
+            ThreePhaseConfiguration? threePhaseConfiguration = null;
+
+            while (currentBoard is not null)
+            {
+                if (currentBoard is ThreePhaseDistributionBoard threePhaseBoard)
+                {
+                    threePhaseConfiguration = threePhaseBoard.ThreePhaseConfiguration;
+                    break;
+                }
+
+                currentBoard = currentBoard.ParentDistributionBoard;
+            }
+
+            return threePhaseConfiguration switch
+            {
+                ThreePhaseConfiguration.Delta => LineToLineVoltage switch
+                {
+                    Enums.LineToLineVoltage.A => "AB",
+                    Enums.LineToLineVoltage.B => "BC",
+                    Enums.LineToLineVoltage.C => "CA",
+                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+                },
+                ThreePhaseConfiguration.Wye => LineToLineVoltage switch
+                {
+                    Enums.LineToLineVoltage.A => "AN",
+                    Enums.LineToLineVoltage.B => "BN",
+                    Enums.LineToLineVoltage.C => "CN",
+                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+                },
+                null => "XXX",
+                _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
+            };
+            ;
+        }
+    }
+
     public double VoltAmpere
     {
         get

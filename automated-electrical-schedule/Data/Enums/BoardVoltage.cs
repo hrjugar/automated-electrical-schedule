@@ -4,11 +4,11 @@ namespace automated_electrical_schedule.Data.Enums;
 
 public enum BoardVoltage
 {
-    [Display(Name = "230 Volts")] V230 = 230,
+    [Display(Name = "230V")] V230 = 230,
 
-    [Display(Name = "400 Volts")] V400 = 400,
+    [Display(Name = "400V 3Φ / 230V 1Φ")] V400 = 400,
 
-    [Display(Name = "460 Volts")] V460 = 460,
+    [Display(Name = "460V")] V460 = 460,
 
-    [Display(Name = "575 Volts")] V575 = 575
+    [Display(Name = "575V")] V575 = 575
 }

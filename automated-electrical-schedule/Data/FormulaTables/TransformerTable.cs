@@ -2,6 +2,8 @@ namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class TransformerTable
 {
+    public const double TransformerPrimaryProtectionFactor = 2.5;
+
     public static readonly List<int> TransformerRatings =
     [
         3000,
@@ -20,10 +22,10 @@ public static class TransformerTable
         1000000
     ];
 
-    public static double TransformerPrimaryProtectionFactor = 2.5;
-
     public static int GetTransformerRating(double value)
     {
+        if (value == 0) return 0;
+
         return TransformerRatings.First(rating => rating >= value);
     }
 

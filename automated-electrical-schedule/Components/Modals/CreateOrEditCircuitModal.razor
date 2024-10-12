@@ -1,4 +1,3 @@
-@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
 
@@ -26,7 +25,7 @@
             <InputSelect
                 class="select-type"
                 @bind-Value:get=_newCircuit.CircuitType @bind-Value:set="UpdateCircuitType" disabled="@(OldCircuit is not null)">
-                @foreach (CircuitType circuitType in Enum.GetValues(typeof(CircuitType)))
+                @foreach (var circuitType in _newCircuit.AllowedCircuitTypes)
                 {
                     <option value="@circuitType">@circuitType.GetDisplayName()</option>
                 }
@@ -34,7 +33,11 @@
 
             @if (threePhaseBoard != null)
             {
-                <InputSelect class="select-line-to-line" @bind-Value="@_newCircuit.LineToLineVoltage">
+                <InputSelect
+                    class="select-line-to-line"
+                    @* TODO: Update allowed motor types after updating line to line voltage*@
+                    @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
+                    @bind-Value="_newCircuit.LineToLineVoltage">
                     @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
                     {
                         <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
@@ -81,7 +84,7 @@
                             <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
                                 @foreach (var horsepowerValue in motorOutletCircuit.AllowedHorsepowerValues)
                                 {
-                                    <option value="@horsepowerValue">@horsepowerValue</option>
+                                    <option value="@horsepowerValue">@horsepowerValue.ToHorsepowerFractionalString()</option>
                                 }
                             </InputSelect>
                             <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
@@ -285,7 +288,7 @@
             {
                 ParentDistributionBoard = DistributionBoard,
                 ConductorTypeId = ConductorType.All[0].Id,
-                GroundingId = ConductorType.All[0].Id,
+                GroundingId = ConductorType.All[0].Id
             };
 
             if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
@@ -369,6 +372,27 @@
         _newCircuit = updatedNewCircuit;
         _editContext = new EditContext(_newCircuit);
     }
+
+    void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
+    {
+        _newCircuit!.LineToLineVoltage = lineToLineVoltage;
+        StateHasChanged();
+    }
+
+    // void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
+    // {
+    //     _newCircuit!.LineToLineVoltage = lineToLineVoltage;
+    //
+    //     if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
+    //     {
+    //         if (!motorOutletCircuit.AllowedMotorTypes.Contains(motorOutletCircuit.MotorType))
+    //         {
+    //             motorOutletCircuit.MotorType = motorOutletCircuit.AllowedMotorTypes[0];
+    //         }
+    //     }
+    //     
+    //     StateHasChanged();
+    // }
 
     async Task HandleValidFormSubmit()
     {

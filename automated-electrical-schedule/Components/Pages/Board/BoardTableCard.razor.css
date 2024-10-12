@@ -176,6 +176,14 @@
                     .board-table-head-colgroup-title, .board-table-head-colgroup-cols {
                         grid-column: span 4;
                     }
+
+                    &.board-table-head-colgroup--load--single-phase {
+                        .board-table-head-colgroup-cols {
+                            .cell {
+                                grid-column: span 4;
+                            }
+                        }
+                    }
                 }
 
                 &.board-table-head-colgroup--circuit-protection {

@@ -7,6 +7,27 @@ public abstract partial class Circuit
 {
     public const int GroundingWireCount = 1;
 
+    public List<CircuitType> AllowedCircuitTypes
+    {
+        get
+        {
+            if (ParentDistributionBoard.Voltage is BoardVoltage.V460 or BoardVoltage.V575)
+                return
+                [
+                    CircuitType.LightingOutlet,
+                    CircuitType.ConvenienceOutlet
+                ];
+
+            return
+            [
+                CircuitType.LightingOutlet,
+                CircuitType.MotorOutlet,
+                CircuitType.ConvenienceOutlet,
+                CircuitType.ApplianceEquipmentOutlet
+            ];
+        }
+    }
+
     public virtual List<CircuitProtection> AllowedCircuitProtections =>
     [
         CircuitProtection.MiniatureCircuitBreaker,

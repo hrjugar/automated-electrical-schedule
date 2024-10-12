@@ -20,7 +20,9 @@
         <div class="board-spec">
             <label>Line-to-Line Voltage</label>
             <h5>
-                @(((LineToLineVoltage)DistributionBoard.LineToLineVoltage).GetDisplayName(threePhaseBoard is null ? ((ThreePhaseDistributionBoard)DistributionBoard.ParentDistributionBoard!).ThreePhaseConfiguration : threePhaseBoard.ThreePhaseConfiguration))
+                @* TODO: Fix this later *@
+                @* @(((LineToLineVoltage)DistributionBoard.LineToLineVoltage).GetDisplayName(ThreePhaseConfiguration.Delta)) *@
+                @(DistributionBoard.LineToLineVoltageDisplay)
             </h5>
         </div>
     }
