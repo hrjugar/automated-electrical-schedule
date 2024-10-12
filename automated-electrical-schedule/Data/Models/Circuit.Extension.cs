@@ -14,8 +14,8 @@ public abstract partial class Circuit
             if (ParentDistributionBoard.Voltage is BoardVoltage.V460 or BoardVoltage.V575)
                 return
                 [
-                    CircuitType.LightingOutlet,
-                    CircuitType.ConvenienceOutlet
+                    CircuitType.MotorOutlet,
+                    CircuitType.ApplianceEquipmentOutlet
                 ];
 
             return

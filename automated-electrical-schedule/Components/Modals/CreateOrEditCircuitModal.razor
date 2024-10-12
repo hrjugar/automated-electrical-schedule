@@ -33,11 +33,9 @@
 
             @if (threePhaseBoard != null)
             {
-                <InputSelect
-                    class="select-line-to-line"
-                    @* TODO: Update allowed motor types after updating line to line voltage*@
-                    @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
-                    @bind-Value="_newCircuit.LineToLineVoltage">
+                @* TODO: Update allowed motor types after updating line to line voltage*@
+                @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
+                <InputSelect class="select-line-to-line" @bind-Value=@_newCircuit.LineToLineVoltage>
                     @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
                     {
                         <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
