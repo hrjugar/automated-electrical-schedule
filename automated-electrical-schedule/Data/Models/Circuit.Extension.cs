@@ -5,6 +5,8 @@ namespace automated_electrical_schedule.Data.Models;
 
 public abstract partial class Circuit
 {
+    public const int GroundingWireCount = 1;
+
     public virtual List<CircuitProtection> AllowedCircuitProtections =>
     [
         CircuitProtection.MiniatureCircuitBreaker,
@@ -64,6 +66,22 @@ public abstract partial class Circuit
         }
     }
 
+    public int Phase => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 1;
+
+    public int Pole
+    {
+        get
+        {
+            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return 3;
+
+            if (ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
+                parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta)
+                return 2;
+
+            return 1;
+        }
+    }
+
     public abstract double VoltAmpere { get; }
 
     public abstract double AmpereLoad { get; }
@@ -102,17 +120,15 @@ public abstract partial class Circuit
     }
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
-    
+
     public virtual double ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip);
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
-    
+
     public double GroundingSize =>
         CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
-    
-    public const int GroundingWireCount = 1;
-    
+
     public int RacewaySize
     {
         get
@@ -122,7 +138,8 @@ public abstract partial class Circuit
                 ConductorType.WireType,
                 RacewayType,
                 ConductorSize,
-                wireCount
+                wireCount,
+                SetCount
             );
         }
     }

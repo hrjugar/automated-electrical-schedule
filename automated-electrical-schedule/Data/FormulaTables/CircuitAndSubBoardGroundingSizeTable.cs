@@ -99,6 +99,8 @@ public static class CircuitAndSubBoardGroundingSizeTable
 
     public static double GetGroundingSize(ConductorMaterial conductorMaterial, int ampereTrip)
     {
+        if (ampereTrip == 0) return 0;
+
         var column = conductorMaterial == ConductorMaterial.Copper ? CuColumn : AlColumn;
         var index = AmpereTripRatings.FindIndex(at => at >= ampereTrip);
 

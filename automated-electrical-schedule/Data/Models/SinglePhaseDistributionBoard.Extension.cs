@@ -22,7 +22,7 @@ public partial class SinglePhaseDistributionBoard
         }
     }
 
-    public override int AmpereTrip
+    protected override double Current
     {
         get
         {
@@ -35,8 +35,7 @@ public partial class SinglePhaseDistributionBoard
                 if (motorWithHighestLoad is MotorOutletCircuit) highestMotorLoad = motorWithHighestLoad.AmpereLoad;
             }
 
-            var value = (AmpereLoad + 0.25 * highestMotorLoad) / 0.8;
-            return DataUtils.GetAmpereTrip(value, 20);
+            return AmpereLoad + 0.25 * highestMotorLoad;
         }
     }
 

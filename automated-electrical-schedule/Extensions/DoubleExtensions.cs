@@ -9,6 +9,6 @@ public static class DoubleExtensions
 
     public static string ToPercentageString(this double value)
     {
-        return $"{value * 100}%";
+        return $"{Math.Round(value * 100, 2)}%";
     }
 }

@@ -1,4 +1,3 @@
-@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
 
@@ -81,7 +80,10 @@
 
                     <div class="create-or-edit-board-modal-field">
                         <label>Voltage <span class="red-asterisk">*</span></label>
-                        <InputSelect @bind-Value=_newDistributionBoard.Voltage>
+                        <InputSelect
+                            Value=_newDistributionBoard.Voltage
+                            ValueChanged="@((BoardVoltage voltage) => UpdateVoltage(voltage))"
+                            ValueExpression="@(() => _newDistributionBoard.Voltage)">
                             @foreach (var voltage in _newDistributionBoard.AllowedVoltages)
                             {
                                 <option value="@voltage">@voltage.GetDisplayName()</option>
@@ -147,33 +149,83 @@
                         <ValidationMessage For=@(() => _newDistributionBoard.RacewayType)/>
                     </div>
 
-                    @if (threePhaseBoard != null)
+                    @if (_newDistributionBoard.HasTransformer)
                     {
                         <div class="create-or-edit-board-modal-field">
                             <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
 
-                            <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled="@(_newDistributionBoard.ParentDistributionBoard == null)">
-                                @foreach (var transformerPrimaryProtection in threePhaseBoard.AllowedTransformerPrimaryProtection)
+                            <InputSelect @bind-Value="@_newDistributionBoard.TransformerPrimaryProtection" disabled="@(_newDistributionBoard.ParentDistributionBoard == null)">
+                                @foreach (var transformerPrimaryProtection in _newDistributionBoard.AllowedTransformerPrimaryProtections)
                                 {
                                     <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For=@(() => threePhaseBoard.TransformerPrimaryProtection)/>
+                            <ValidationMessage For=@(() => _newDistributionBoard.TransformerPrimaryProtection)/>
                         </div>
 
                         <div class="create-or-edit-board-modal-field">
                             <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
 
-                            <InputSelect @bind-Value="@threePhaseBoard.TransformerSecondaryProtection">
+                            <InputSelect @bind-Value="@_newDistributionBoard.TransformerSecondaryProtection">
                                 @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
                                 {
                                     <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For=@(() => threePhaseBoard.TransformerSecondaryProtection)/>
+                            <ValidationMessage For=@(() => _newDistributionBoard.TransformerSecondaryProtection)/>
                         </div>
                     }
 
+                    @if (_newDistributionBoard.HasBreaker)
+                    {
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Breaker Circuit Protection <span class="red-asterisk">*</span></label>
+                            <InputSelect @bind-Value=_newDistributionBoard.BreakerCircuitProtection>
+                                @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)
+                                {
+                                    <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newDistributionBoard.BreakerCircuitProtection)/>
+                        </div>
+
+                        <div class="create-or-edit-board-modal-field-row">
+                            <div class="create-or-edit-board-modal-field">
+                                <label>Breaker Conductor Type <span class="red-asterisk">*</span></label>
+
+                                <InputSelect @bind-Value="_newDistributionBoard.BreakerConductorTypeId">
+                                    @foreach (var conductorType in ConductorType.All)
+                                    {
+                                        <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For=@(() => _newDistributionBoard.BreakerConductorTypeId)/>
+                            </div>
+
+                            <div class="create-or-edit-board-modal-field">
+                                <label>Breaker Grounding <span class="red-asterisk">*</span></label>
+
+                                <InputSelect @bind-Value="_newDistributionBoard.GroundingId">
+                                    @foreach (var grounding in ConductorType.All)
+                                    {
+                                        <option value="@grounding.Id">@grounding.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For=@(() => _newDistributionBoard.BreakerGroundingId)/>
+                            </div>
+                        </div>
+
+                        <div class="create-or-edit-board-modal-field">
+                            <label>Breaker Raceway Type <span class="red-asterisk">*</span></label>
+                            <InputSelect @bind-Value=_newDistributionBoard.RacewayType>
+                                @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                                {
+                                    <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => _newDistributionBoard.BreakerRacewayType)/>
+                        </div>
+                    }
                 </div>
 
             </div>
@@ -208,7 +260,7 @@
     EditContext? _editContext;
 
     DistributionBoard? _newDistributionBoard;
-    
+
     protected override void OnParametersSet()
     {
         if (IsNew)
@@ -216,17 +268,14 @@
             if (DistributionBoard is SinglePhaseDistributionBoard)
             {
                 _newDistributionBoard = new SinglePhaseDistributionBoard();
-
-                if (DistributionBoard.ParentDistributionBoard is ThreePhaseDistributionBoard)
-                {
-                    _newDistributionBoard.LineToLineVoltage = LineToLineVoltage.A;
-                }
+                _newDistributionBoard.LineToLineVoltage = DistributionBoard.LineToLineVoltage;
             }
-            else
+            else if (DistributionBoard is ThreePhaseDistributionBoard threePhaseBoard)
             {
                 _newDistributionBoard = new ThreePhaseDistributionBoard
                 {
-                    LineToLineVoltage = LineToLineVoltage.Abc
+                    LineToLineVoltage = LineToLineVoltage.Abc,
+                    ThreePhaseConfiguration = threePhaseBoard.ThreePhaseConfiguration
                 };
             }
 
@@ -234,6 +283,22 @@
             _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
             _newDistributionBoard.Phase = DistributionBoard.Phase;
             _newDistributionBoard.WireLength = 1;
+            _newDistributionBoard.Voltage = _newDistributionBoard.AllowedVoltages[0];
+
+            if (_newDistributionBoard.HasTransformer)
+            {
+                _newDistributionBoard.TransformerPrimaryProtection = _newDistributionBoard.AllowedTransformerPrimaryProtections[0];
+                _newDistributionBoard.TransformerSecondaryProtection = DistributionBoard.AllowedCircuitProtections[0];
+            }
+
+            if (_newDistributionBoard.HasBreaker)
+            {
+                _newDistributionBoard.BreakerCircuitProtection = DistributionBoard.AllowedCircuitProtections[0];
+                _newDistributionBoard.BreakerSetCount = 1;
+                _newDistributionBoard.BreakerConductorTypeId = ConductorType.All[0].Id;
+                _newDistributionBoard.BreakerGroundingId = ConductorType.All[0].Id;
+                _newDistributionBoard.BreakerRacewayType = RacewayType.Pvc;
+            }
         }
         else
         {
@@ -267,9 +332,7 @@
             updatedNewDistributionBoard = new ThreePhaseDistributionBoard
             {
                 LineToLineVoltage = LineToLineVoltage.Abc,
-                ThreePhaseConfiguration = ThreePhaseConfiguration.Delta,
-                TransformerPrimaryProtection = CircuitProtection.CutOutFuse,
-                TransformerSecondaryProtection = CircuitProtection.MiniatureCircuitBreaker
+                ThreePhaseConfiguration = ThreePhaseConfiguration.Delta
             };
         }
 
@@ -285,7 +348,21 @@
         updatedNewDistributionBoard.ConductorTypeId = _newDistributionBoard.ConductorTypeId;
         updatedNewDistributionBoard.GroundingId = _newDistributionBoard.GroundingId;
         updatedNewDistributionBoard.RacewayType = _newDistributionBoard.RacewayType;
-        
+
+        if (updatedNewDistributionBoard.HasTransformer)
+        {
+            updatedNewDistributionBoard.TransformerPrimaryProtection = updatedNewDistributionBoard.AllowedTransformerPrimaryProtections[0];
+            updatedNewDistributionBoard.TransformerSecondaryProtection = DistributionBoard.AllowedCircuitProtections[0];
+        }
+
+        if (updatedNewDistributionBoard.HasBreaker)
+        {
+            updatedNewDistributionBoard.BreakerCircuitProtection = DistributionBoard.AllowedCircuitProtections[0];
+            updatedNewDistributionBoard.BreakerSetCount = 1;
+            updatedNewDistributionBoard.BreakerConductorTypeId = ConductorType.All[0].Id;
+            updatedNewDistributionBoard.BreakerGroundingId = ConductorType.All[0].Id;
+            updatedNewDistributionBoard.BreakerRacewayType = RacewayType.Pvc;
+        }
 
         _newDistributionBoard = updatedNewDistributionBoard;
         _editContext = new EditContext(_newDistributionBoard);
@@ -300,6 +377,50 @@
         if (!allowedVoltages.Contains(threePhaseBoard.Voltage))
         {
             threePhaseBoard.Voltage = allowedVoltages[0];
+        }
+
+        StateHasChanged();
+    }
+
+    void UpdateVoltage(BoardVoltage voltage)
+    {
+        var previousHasBreaker = _newDistributionBoard!.HasBreaker;
+        var previousHasTransformer = _newDistributionBoard.HasTransformer;
+
+        _newDistributionBoard.Voltage = voltage;
+
+        if (_newDistributionBoard.HasBreaker)
+        {
+            if (_newDistributionBoard.HasBreaker != previousHasBreaker)
+            {
+                _newDistributionBoard.BreakerCircuitProtection = DistributionBoard.AllowedCircuitProtections[0];
+                _newDistributionBoard.BreakerSetCount = 1;
+                _newDistributionBoard.BreakerConductorTypeId = ConductorType.All[0].Id;
+                _newDistributionBoard.BreakerGroundingId = ConductorType.All[0].Id;
+                _newDistributionBoard.BreakerRacewayType = RacewayType.Pvc;
+            }
+        }
+        else
+        {
+            _newDistributionBoard.BreakerCircuitProtection = null;
+            _newDistributionBoard.BreakerSetCount = null;
+            _newDistributionBoard.BreakerConductorTypeId = null;
+            _newDistributionBoard.BreakerGroundingId = null;
+            _newDistributionBoard.BreakerRacewayType = null;
+        }
+
+        if (_newDistributionBoard.HasTransformer)
+        {
+            if (_newDistributionBoard.HasTransformer != previousHasTransformer)
+            {
+                _newDistributionBoard.TransformerPrimaryProtection = _newDistributionBoard.AllowedTransformerPrimaryProtections[0];
+                _newDistributionBoard.TransformerSecondaryProtection = DistributionBoard.AllowedCircuitProtections[0];
+            }
+        }
+        else
+        {
+            _newDistributionBoard.TransformerPrimaryProtection = null;
+            _newDistributionBoard.TransformerSecondaryProtection = null;
         }
 
         StateHasChanged();

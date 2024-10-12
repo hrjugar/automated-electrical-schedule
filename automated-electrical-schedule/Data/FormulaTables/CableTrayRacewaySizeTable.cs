@@ -25,6 +25,8 @@ public static class CableTrayRacewaySizeTable
         int groundingWireCount,
         double groundingWireSize)
     {
+        if (setCount == 0 || conductorWireSize == 0 || groundingWireSize == 0) return 0;
+
         var allowableFillArea =
             setCount * (conductorWireCount * conductorWireSize + groundingWireCount * groundingWireSize);
 

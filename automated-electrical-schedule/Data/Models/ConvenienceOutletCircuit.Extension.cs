@@ -5,7 +5,9 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ConvenienceOutletCircuit
 {
-    public override double VoltAmpere => Quantity * 180;
+    public override double VoltAmpere => OutletType == OutletType.FourGang
+        ? Quantity * 360
+        : Quantity * 180;
 
     public override double AmpereLoad
     {

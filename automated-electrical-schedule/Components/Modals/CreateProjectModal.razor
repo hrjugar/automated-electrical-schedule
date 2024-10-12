@@ -1,10 +1,12 @@
-@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
 
 @if (IsOpen && _editContext != null)
 {
     <div class="modal-wrapper" @onclick="CloseModal">
+        @{
+            var threePhaseBoard = _newProject.MainDistributionBoard as ThreePhaseDistributionBoard;
+        }
         <EditForm
             class="modal create-project-modal"
             @onclick:stopPropagation="true"
@@ -42,20 +44,20 @@
                         <ValidationMessage For=@(() => _newProject.MainDistributionBoard.Phase)/>
                     </div>
 
-                    @if (_newProject.MainDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard)
+                    @if (threePhaseBoard is not null)
                     {
                         <div class="create-project-modal-field">
                             <label>Configuration <span class="red-asterisk">*</span></label>
                             <InputSelect
-                                Value="threePhaseDistributionBoard.ThreePhaseConfiguration"
+                                Value="threePhaseBoard.ThreePhaseConfiguration"
                                 ValueChanged="@((ThreePhaseConfiguration config) => UpdateThreePhaseConfiguration(config))"
-                                ValueExpression="@(() => threePhaseDistributionBoard.ThreePhaseConfiguration)">
+                                ValueExpression="@(() => threePhaseBoard.ThreePhaseConfiguration)">
                                 @foreach (ThreePhaseConfiguration config in Enum.GetValues(typeof(ThreePhaseConfiguration)))
                                 {
                                     <option value="@config">@config.GetDisplayName()</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For=@(() => threePhaseDistributionBoard.ThreePhaseConfiguration)/>
+                            <ValidationMessage For=@(() => threePhaseBoard.ThreePhaseConfiguration)/>
                         </div>
                     }
                 </div>
@@ -120,30 +122,30 @@
                     <ValidationMessage For=@(() => _newProject.MainDistributionBoard.RacewayType)/>
                 </div>
 
-                @if (_newProject.MainDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard2)
+                @if (threePhaseBoard is not null)
                 {
                     <div class="create-project-modal-field">
                         <label>Transformer Primary Protection <span class="red-asterisk">*</span></label>
 
-                        <InputSelect @bind-Value="@threePhaseDistributionBoard2.TransformerPrimaryProtection" disabled>
-                            @foreach (var transformerPrimaryProtection in threePhaseDistributionBoard2.AllowedTransformerPrimaryProtection)
+                        <InputSelect @bind-Value="@threePhaseBoard.TransformerPrimaryProtection" disabled>
+                            @foreach (var transformerPrimaryProtection in threePhaseBoard.AllowedTransformerPrimaryProtections)
                             {
                                 <option value="@transformerPrimaryProtection">@transformerPrimaryProtection.GetDisplayName()</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For=@(() => threePhaseDistributionBoard2.TransformerPrimaryProtection)/>
+                        <ValidationMessage For=@(() => threePhaseBoard.TransformerPrimaryProtection)/>
                     </div>
 
                     <div class="create-project-modal-field">
                         <label>Transformer Secondary Protection <span class="red-asterisk">*</span></label>
 
-                        <InputSelect @bind-Value="@threePhaseDistributionBoard2.TransformerSecondaryProtection">
+                        <InputSelect @bind-Value="@threePhaseBoard.TransformerSecondaryProtection">
                             @foreach (var transformerSecondaryProtection in DistributionBoard.AllowedCircuitProtections)
                             {
                                 <option value="@transformerSecondaryProtection">@transformerSecondaryProtection.GetDisplayName()</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For=@(() => threePhaseDistributionBoard2.TransformerSecondaryProtection)/>
+                        <ValidationMessage For=@(() => threePhaseBoard.TransformerSecondaryProtection)/>
                     </div>
                 }
             </div>

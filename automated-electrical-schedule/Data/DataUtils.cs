@@ -6,12 +6,16 @@ public static class DataUtils
 {
     public static int GetAmpereTrip(double value, int minimumAmpereTrip = 0)
     {
+        if (value == 0) return 0;
+
         return DataConstants.StandardAmpereTripRatings
             .First(columnAmpereTrip => columnAmpereTrip >= minimumAmpereTrip && columnAmpereTrip >= value);
     }
 
     public static int GetAmpereFrame(int ampereTrip)
     {
+        if (ampereTrip == 0) return 0;
+
         return DataConstants.StandardAmpereFrameRatings.First(ampereFrame => ampereFrame >= ampereTrip);
     }
 

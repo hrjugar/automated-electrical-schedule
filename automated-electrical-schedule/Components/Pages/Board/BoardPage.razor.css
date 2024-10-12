@@ -45,7 +45,7 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: stretch;
-            overflow: hidden;
+            overflow-x: hidden;
             gap: 1rem;
         }
     }

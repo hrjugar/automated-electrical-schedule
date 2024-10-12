@@ -138,6 +138,8 @@ public static class MainBoardGroundingSizeTable
     public static double GetGroundingSize(ConductorMaterial conductorMaterial, ConductorMaterial groundingMaterial,
         double conductorSize)
     {
+        if (conductorSize == 0) return 0;
+
         var table = conductorMaterial == ConductorMaterial.Copper
             ? CopperConductorGroundingSizeTable
             : AluminumConductorGroundingSizeTable;

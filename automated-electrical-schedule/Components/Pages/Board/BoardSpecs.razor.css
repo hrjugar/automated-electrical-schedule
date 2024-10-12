@@ -1,10 +1,15 @@
 .board-specs {
-    min-width: 15rem;
+    min-width: 20rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    gap: 1.5rem;
+    gap: 1rem;
+    background-color: white;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--clr-neutral-300);
+    border-radius: var(--radius-default);
+    overflow-y: auto;
 
     .board-spec {
         display: flex;
@@ -18,6 +23,7 @@
 
         h5 {
             color: var(--clr-neutral-700);
+            font-size: 1.25rem;
             font-weight: 400;
         }
     }

@@ -204,16 +204,17 @@ public static class ConductorSizeTable
 
     public static double GetConductorSize(ConductorType conductorType, int ampereTrip, double minimumConductorSize = 0)
     {
+        if (ampereTrip == 0) return 0;
+
         var column = GetColumn(conductorType);
         var index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip);
 
         if (index == -1) throw new ArgumentOutOfRangeException(nameof(ampereTrip));
 
         for (var i = index; i < DataConstants.ConductorSizes.Count; i++)
-            if (DataConstants.ConductorSizes[i].IsRoughlyEqualTo(minimumConductorSize) || DataConstants.ConductorSizes[i] >= minimumConductorSize)
-            {
+            if (DataConstants.ConductorSizes[i].IsRoughlyEqualTo(minimumConductorSize) ||
+                DataConstants.ConductorSizes[i] >= minimumConductorSize)
                 return DataConstants.ConductorSizes[i];
-            }
 
         throw new ArgumentOutOfRangeException(nameof(ampereTrip));
     }

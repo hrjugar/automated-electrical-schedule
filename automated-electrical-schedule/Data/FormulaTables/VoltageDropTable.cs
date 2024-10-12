@@ -208,6 +208,8 @@ public static class VoltageDropTable
 
     public static double GetX(RacewayType racewayType, double conductorSize)
     {
+        if (conductorSize == 0) return 0;
+
         var column = racewayType switch
         {
             RacewayType.Pvc or
@@ -245,6 +247,8 @@ public static class VoltageDropTable
 
     public static double GetR(RacewayType racewayType, ConductorMaterial conductorMaterial, double conductorSize)
     {
+        if (conductorSize == 0) return 0;
+
         var column = GetRColumn(racewayType, conductorMaterial);
         return column[DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize))];
     }
@@ -258,6 +262,8 @@ public static class VoltageDropTable
         int setCount,
         int voltage)
     {
+        if (r == 0 || x == 0 || ampereLoad == 0 || wireLength == 0 || setCount == 0 || voltage == 0) return 0;
+
         var factor = lineToLineVoltage == LineToLineVoltage.Abc ? Math.Sqrt(3) : 2;
 
         return factor * ampereLoad * Math.Sqrt(Math.Pow(r, 2) + Math.Pow(x, 2)) * (wireLength / (305 * setCount)) *

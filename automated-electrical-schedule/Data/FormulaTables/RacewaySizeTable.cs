@@ -834,8 +834,11 @@ public static class RacewaySizeTable
         ConductorWireType conductorWireType,
         RacewayType racewayType,
         double conductorSize,
-        int wireCount)
+        int wireCount,
+        int setCount)
     {
+        if (conductorSize == 0) return 0;
+
         Dictionary<RacewayType, List<List<int>>> conductorGroupWireCountTableDict;
         if (ConductorGroupOneWireTypes.Contains(conductorWireType))
             conductorGroupWireCountTableDict = ConductorGroupOneWireCountTableDict;
@@ -852,6 +855,6 @@ public static class RacewaySizeTable
         var wireCountColumn =
             wireCountTable[DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize))];
 
-        return RacewaySizes[racewayType][wireCountColumn.FindIndex(columnWireCount => columnWireCount >= wireCount)];
+        return RacewaySizes[racewayType][wireCountColumn.FindIndex(columnWireCount => columnWireCount >= (wireCount * setCount))];
     }
 }

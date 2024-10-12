@@ -48,6 +48,42 @@ public abstract partial class DistributionBoard
         }
     }
 
+    public List<CircuitProtection> AllowedTransformerPrimaryProtections
+    {
+        get
+        {
+            if (ParentDistributionBoard is null && this is ThreePhaseDistributionBoard)
+                return [CircuitProtection.CutOutFuse];
+
+            return AllowedCircuitProtections;
+        }
+    }
+
+    public bool HasBreaker =>
+        ParentDistributionBoard is not null &&
+        (int)ParentDistributionBoard.Voltage > (int)Voltage &&
+        ParentDistributionBoard is ThreePhaseDistributionBoard
+        {
+            ThreePhaseConfiguration : ThreePhaseConfiguration.Delta
+        };
+
+    public bool HasTransformer =>
+        (ParentDistributionBoard is null && this is ThreePhaseDistributionBoard) || HasBreaker;
+
+    public int Pole
+    {
+        get
+        {
+            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return 3;
+
+            if (ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
+                parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta)
+                return 2;
+
+            return 1;
+        }
+    }
+
     // public double AmpereLoad
     // {
     //     get
@@ -106,11 +142,15 @@ public abstract partial class DistributionBoard
     //     }
     // }
 
-    public abstract int AmpereTrip { get; }
+    protected abstract double Current { get; }
+
+    public int AmpereTrip => DataUtils.GetAmpereTrip(Current / 0.8, 20);
 
     public abstract double AmpereLoad { get; }
 
-    public int AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
+    public int AmpereFrame => Circuits.Count == 0 && SubDistributionBoards.Count == 0
+        ? 0
+        : DataUtils.GetAmpereFrame(AmpereTrip);
 
     public double R => VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
 
@@ -135,7 +175,7 @@ public abstract partial class DistributionBoard
     }
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
-    
+
     public double ConductorSize
     {
         get
@@ -149,10 +189,11 @@ public abstract partial class DistributionBoard
             return ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, minConductorSize);
         }
     }
+
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
-    
+
     public double GroundingSize => ParentDistributionBoard is null
         ? MainBoardGroundingSizeTable.GetGroundingSize(ConductorType.Material, Grounding.Material,
             ConductorSize)
@@ -177,14 +218,54 @@ public abstract partial class DistributionBoard
                 ConductorType.WireType,
                 RacewayType,
                 ConductorSize,
-                wireCount
+                wireCount,
+                SetCount
             );
         }
     }
-    
-    public ConductorType? BreakerConductorType => BreakerConductorTypeId is null ? null : ConductorType.FindById(BreakerConductorTypeId);
-    
-    public ConductorType? BreakerGrounding => BreakerGroundingId is null ? null : ConductorType.FindById(BreakerGroundingId);
+
+    private double? TransformerCurrent
+    {
+        get
+        {
+            if (!HasTransformer) return null;
+
+            return Math.Sqrt(3) * (int)Voltage * Current;
+        }
+    }
+
+    public int? TransformerRating => TransformerCurrent is null
+        ? null
+        : TransformerTable.GetTransformerRating(TransformerCurrent.Value);
+
+    public int? TransformerPrimaryProtectionAmpereTrip
+    {
+        get
+        {
+            if (TransformerCurrent is null) return null;
+
+            var value = TransformerCurrent.Value / (Math.Sqrt(3) * (int)Voltage) *
+                        TransformerTable.TransformerPrimaryProtectionFactor;
+            return DataUtils.GetAmpereTrip(value);
+        }
+    }
+
+    public int? TransformerSecondaryProtectionAmpereTrip
+    {
+        get
+        {
+            if (TransformerCurrent is null) return null;
+
+            var value = Current * TransformerTable.GetTransformerSecondaryProtectionFactor(Current);
+            return DataUtils.GetAmpereTrip(value);
+        }
+    }
+
+    public ConductorType? BreakerConductorType =>
+        BreakerConductorTypeId is null ? null : ConductorType.FindById(BreakerConductorTypeId);
+
+    public ConductorType? BreakerGrounding =>
+        BreakerGroundingId is null ? null : ConductorType.FindById(BreakerGroundingId);
 
     public abstract DistributionBoard Clone();
 }
