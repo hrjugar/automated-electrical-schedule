@@ -77,7 +77,11 @@ public partial class Information
     /* --- VOLT AMPERE --- */
     
     // TODO: Add Lighting Outlet VA Information
-    public static readonly Information LightingVoltAmpere = TempInfo;
+    public static readonly Information LightingVoltAmpere = new(
+        VoltAmpereTitle,
+        LightingSubtitle,
+        "Apparent power is the total power in an AC circuit, combining both active (real) power, which performs actual work, and reactive power, which sustains the electric and magnetic fields. It is measured in volt-amperes (VA) and calculated as the product of the circuit's voltage and current, without considering the phase angle between them."
+    );
 
     public static readonly Information ConvenienceVoltAmpere = new(
         VoltAmpereTitle,
@@ -393,7 +397,18 @@ public partial class Information
     );
     
     // TODO: Cable tray raceway information area
-    public static readonly Information CableTrayRaceway = TempInfo;
+    public static readonly Information CableTrayRaceway = new(
+        RacewayTitle,
+        CableTraySubtitle,
+        [
+            new Reference(
+                "“Allowable Cable Fill Area for Single conductor Cables in Ladder, Ventilated Trough, or Solid Bottom Cable Trays for Cables Rated 2000 Volts or less”, Philippine Electrical Code Part 1, Chap. 3.92, no. 3.92.2.13(A), pp. 269, 2017.",
+                [
+                    "Cable tray is a set of units forming a structural system used to fasten or support Cables and Raceways. Cable Trays are permitted in following areas: Support system for service conductors, feeders, branch circuits, communications circuits, control circuits and signal circuits. Furthermore, it can be also used in exposed sunlight, whereas, the cables must be sun resistant"
+                ]
+            )
+        ]
+    );
     
     /* --- METHODS --- */
 

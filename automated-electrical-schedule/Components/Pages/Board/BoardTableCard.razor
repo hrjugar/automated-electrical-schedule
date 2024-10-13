@@ -98,7 +98,7 @@
         @for (var i = 0; i < _circuits.Count; i++)
         {
             var circuit = _circuits[i];
-            var circuitTypeLabel = "B";
+            var circuitTypeLabel = "Sub";
             var circuitTypeLabelClass = "circuit-type-label--sub";
             var voltageDrop = circuit.VoltageDrop;
             var hasHighVoltageDrop = voltageDrop * 100 >= 3;
@@ -296,7 +296,7 @@
             <div class="board-table-row">
                 <p class="cell cell--group cell--sticky cell--sticky--left">@(_circuits.Count + i + 1)</p>
                 <div class="cell cell--group">
-                    <span class="circuit-type-label circuit-type-label--sub">Sub Distribution Board</span>
+                    <span class="circuit-type-label circuit-type-label--sub">Sub</span>
                 </div>
                 <p class="cell cell--text">@subDistributionBoard.BoardName</p>
                 <div class="cell cell--empty"></div>
