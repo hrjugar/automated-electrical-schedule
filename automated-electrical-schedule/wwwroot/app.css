@@ -243,10 +243,6 @@ select {
     -webkit-background-clip: border-box;
 }
 
-li {
-    list-style-position: inside;
-}
-
 .link-primary {
     padding: 1rem 1.25rem;
     font-size: 1rem;
@@ -358,6 +354,29 @@ li {
 
         .modal-content {
             overflow-y: auto;
+        }
+    }
+    
+    .modal-sheet {
+        margin-left: auto;
+        min-width: 25rem;
+        width: 25rem;
+        height: 100vh;
+        background-color: white;
+        border: 1px solid var(--clr-neutral-300);
+        border-radius: var(--radius-default);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 2rem;
+        gap: 2rem;
+        overflow-y: hidden;
+        
+        .modal-content {
+            overflow-y: auto;
+            font-size: 1.125rem;
+            color: var(--clr-neutral-700);
         }
     }
 }

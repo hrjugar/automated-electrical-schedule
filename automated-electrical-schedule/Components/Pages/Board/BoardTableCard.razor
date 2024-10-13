@@ -98,7 +98,7 @@
         @for (var i = 0; i < _circuits.Count; i++)
         {
             var circuit = _circuits[i];
-            var circuitTypeLabel = "Sub Distribution Board";
+            var circuitTypeLabel = "B";
             var circuitTypeLabelClass = "circuit-type-label--sub";
             var voltageDrop = circuit.VoltageDrop;
             var hasHighVoltageDrop = voltageDrop * 100 >= 3;
@@ -107,37 +107,55 @@
             switch (circuit)
             {
                 case LightingOutletCircuit lightingOutletCircuit:
-                    circuitTypeLabel = "Lighting";
+                    circuitTypeLabel = "L";
                     circuitTypeLabelClass = "circuit-type-label--lighting";
                     break;
                 case MotorOutletCircuit motorOutletCircuit:
-                    circuitTypeLabel = "Motor";
+                    circuitTypeLabel = "M";
                     circuitTypeLabelClass = "circuit-type-label--motor";
                     break;
                 case ConvenienceOutletCircuit convenienceOutletCircuit:
-                    circuitTypeLabel = "Convenience";
+                    circuitTypeLabel = "C";
                     circuitTypeLabelClass = "circuit-type-label--convenience";
                     break;
                 case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
-                    circuitTypeLabel = "Appliance";
+                    circuitTypeLabel = "A/E";
                     circuitTypeLabelClass = "circuit-type-label--appliance";
                     break;
             }
 
             <div class="board-table-row">
                 <p class="cell cell--group cell--sticky cell--sticky--left">@(i + 1)</p>
-                <div class="cell cell--group">
+                <div 
+                    class="cell cell--group cell--info">
                     <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateCircuitTypeInfo(circuit.CircuitType))"/>
                 </div>
                 <p class="cell cell--text">@circuit.Description</p>
-                <p class="cell cell--text">@circuit.Quantity</p>
-                <p class="cell cell--text">@(circuit.VoltAmpere)</p>
-                <p class="cell cell--text">@(circuit.Voltage)</p>
-                <p class="cell cell--text">@circuit.DemandFactor%</p>
+                
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.Quantity</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.VoltAmpere</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.Voltage</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltageInfo(circuit.Phase))"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.DemandFactor%</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.DemandFactor)"/>
+                </div>
 
                 @if (DistributionBoard.LineToLineVoltage is null)
                 {
-                    <p class="cell cell--text cell--load cell--load--no-line">@ampereLoadDisplay</p>
+                    <div class="cell cell--group cell--info cell--load cell--load--no-line">
+                        <p>@ampereLoadDisplay</p>
+                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
+                    </div>
                 }
                 else
                 {
@@ -147,7 +165,10 @@
                     {
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
                         {
-                            <p class="cell cell--text">@ampereLoadDisplay</p>
+                            <div class="cell cell--group cell--info cell--load">
+                                <p>@ampereLoadDisplay</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.A))"/>
+                            </div>
                         }
                         else
                         {
@@ -156,7 +177,10 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
                         {
-                            <p class="cell cell--text">@ampereLoadDisplay</p>
+                            <div class="cell cell--group cell--info cell--load">
+                                <p>@ampereLoadDisplay</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.B))"/>
+                            </div>
                         }
                         else
                         {
@@ -165,7 +189,10 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
                         {
-                            <p class="cell cell--text">@ampereLoadDisplay</p>
+                            <div class="cell cell--group cell--info cell--load">
+                                <p>@ampereLoadDisplay</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.C))"/>
+                            </div>
                         }
                         else
                         {
@@ -174,7 +201,10 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
                         {
-                            <p class="cell cell--text">@ampereLoadDisplay</p>
+                            <div class="cell cell--group cell--info cell--load">
+                                <p>@ampereLoadDisplay</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.Abc))"/>
+                            </div>
                         }
                         else
                         {
@@ -183,18 +213,30 @@
                     }
                     else
                     {
-                        <p class="cell cell--text cell--load cell--load--line">@ampereLoadDisplay</p>
+                        <div class="cell cell--group cell--info cell--load cell--load--line">
+                            <p>@ampereLoadDisplay</p>
+                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
+                        </div>
                     }
                 }
 
                 <div class="cell cell--separator"></div>
 
-                <p class="cell cell--text">@(circuit.AmpereTrip)</p>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.AmpereTrip</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereTripInfo(circuit.CircuitType))"/>
+                </div>
                 <p class="cell cell--text">@(circuit.AmpereFrame)</p>
-                <p class="cell cell--text">@(circuit.Phase)</p>
-                <p class="cell cell--text">@(circuit.Pole)</p>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.Phase</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePhaseInfo(circuit.Phase))"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>@circuit.Pole</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePoleInfo(circuit.Pole))"/>
+                </div>
                 <p class="cell cell--text">@circuit.WireLength</p>
-                <div class="@("cell cell--group " + (hasHighVoltageDrop ? "cell--error" : ""))">
+                <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop ? "cell--error" : ""))">
                     <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p>
 
                     @if (hasHighVoltageDrop)
@@ -203,15 +245,26 @@
                             Correct
                         </button>
                     }
+                    
+                    <InfoButton OnClick="() => OpenInformationArea(Information.VoltageDrop)" />
                 </div>
                 <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
 
                 <div class="cell cell--separator"></div>
 
                 <p class="cell cell--text">@circuit.SetCount</p>
-                <p class="cell cell--text">@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
-                <p class="cell cell--text">1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
-                <p class="cell cell--text">@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
+                <div class="cell cell--group cell--info">
+                    <p>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateConductorInfo(circuit.ConductorType.WireType))"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.Grounding)"/>
+                </div>
+                <div class="cell cell--group cell--info">
+                    <p>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
+                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(circuit.RacewayType))"/>
+                </div>
 
                 <div class="cell cell--separator"></div>
 
@@ -623,6 +676,13 @@ else
         OnCircuitCreateOrEdit="OnCircuitChange"/>
 }
 
+@if (_isInformationAreaOpen)
+{
+    <InformationAreaModalSheet 
+        @bind-IsOpen="@_isInformationAreaOpen"
+        Information="@_information" />
+}
+
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
@@ -635,6 +695,9 @@ else
 
     private bool _isEditCircuitModalOpen;
     private Circuit _circuitToEdit = default!;
+
+    private bool _isInformationAreaOpen;
+    private Information _information = default!;
 
     // protected override void OnInitialized()
     // {
@@ -656,6 +719,12 @@ else
     {
         _circuitToEdit = circuitToEdit;
         _isEditCircuitModalOpen = true;
+    }
+    
+    void OpenInformationArea(Information information)
+    {
+        _information = information;
+        _isInformationAreaOpen = true;
     }
 
     async Task CorrectVoltageDrop(Circuit circuit)

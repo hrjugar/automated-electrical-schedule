@@ -1,0 +1,58 @@
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div class="modal-sheet info-area-modal-sheet">
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h4>@Information.Title</h4>
+                    @if (Information.Subtitle is not null)
+                    {
+                        <p>@Information.Subtitle</p>
+                    }
+                </div>
+            </div>
+            
+            <div class="modal-content">
+                @if (Information.Description is not null)
+                {
+                    <p class="info-description">@Information.Description</p>
+                }
+                
+                @for (var i = 0; i < Information.References.Count; i++)
+                {
+                    var reference = Information.References[i];
+
+                    <div class="info-reference">
+                        @if (reference.Name is not null)
+                        {
+                            <p class="info-reference-name"><b>Reference (@(i + 1)):</b> @reference.Name</p>
+                        }
+                        
+                        @if (reference.Descriptions.Count > 0)
+                        {
+                            <ul class="info-reference-descriptions">
+                                @foreach (var description in reference.Descriptions)
+                                {
+                                    <li class="info-reference-description">@description</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public Information Information { get; set; } = default!;
+    
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+}

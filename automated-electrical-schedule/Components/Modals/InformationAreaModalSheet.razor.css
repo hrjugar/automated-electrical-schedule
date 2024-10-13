@@ -1,0 +1,39 @@
+.info-area-modal-sheet {
+    .modal-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        
+        .modal-header-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+    }
+    
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0.5rem;
+        
+        .info-reference {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            
+            .info-reference-descriptions {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+                padding-left: 1.5rem;
+                list-style-position: outside;
+            }
+        }
+    }
+}

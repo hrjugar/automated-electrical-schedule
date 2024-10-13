@@ -2,7 +2,11 @@ namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class TransformerTable
 {
-    public const double TransformerPrimaryProtectionFactor = 2.5;
+    public const double SubBoardTransformerPrimaryProtectionFactor = 2.5;
+    public const double MainBoardTransformerPrimaryProtectionFactor = 3.0;
+    public const double MainBoardTransformerSecondaryProtectionFactor = 1.25;
+    public const double SubBoardTransformerSecondaryProtectionGreaterEqual9 = 1.25;
+    public const double SubBoardTransformerSecondaryProtectionLessThan9 = 1.67;
 
     public static readonly List<int> TransformerRatings =
     [
@@ -27,10 +31,5 @@ public static class TransformerTable
         if (value == 0) return 0;
 
         return TransformerRatings.First(rating => rating >= value);
-    }
-
-    public static double GetTransformerSecondaryProtectionFactor(double value)
-    {
-        return value >= 9 ? 1.25 : 1.67;
     }
 }

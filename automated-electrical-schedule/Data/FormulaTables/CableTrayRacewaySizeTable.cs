@@ -2,7 +2,7 @@ namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class CableTrayRacewaySizeTable
 {
-    public static readonly Dictionary<int, int> cableTrayRacewayDict = new()
+    private static readonly Dictionary<int, int> cableTrayRacewayDict = new()
     {
         { 1400, 50 },
         { 2800, 100 },

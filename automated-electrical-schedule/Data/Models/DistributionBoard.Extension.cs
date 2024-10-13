@@ -288,8 +288,13 @@ public abstract partial class DistributionBoard
         {
             if (TransformerCurrent is null) return null;
 
+            var primaryProtectionFactor = ParentDistributionBoard is null
+                ? TransformerTable.MainBoardTransformerPrimaryProtectionFactor
+                : TransformerTable.SubBoardTransformerPrimaryProtectionFactor;
+            
             var value = TransformerCurrent.Value / (Math.Sqrt(3) * (int)Voltage) *
-                        TransformerTable.TransformerPrimaryProtectionFactor;
+                        primaryProtectionFactor;
+            
             return DataUtils.GetAmpereTrip(value);
         }
     }
@@ -299,8 +304,15 @@ public abstract partial class DistributionBoard
         get
         {
             if (TransformerCurrent is null) return null;
-
-            var value = Current * TransformerTable.GetTransformerSecondaryProtectionFactor(Current);
+            
+            var secondaryProtectionFactor = ParentDistributionBoard is null
+                ? TransformerTable.MainBoardTransformerSecondaryProtectionFactor
+                : Current >= 9
+                    ? TransformerTable.SubBoardTransformerSecondaryProtectionGreaterEqual9
+                    : TransformerTable.SubBoardTransformerSecondaryProtectionLessThan9;
+            
+            var value = Current * secondaryProtectionFactor;
+            
             return DataUtils.GetAmpereTrip(value);
         }
     }

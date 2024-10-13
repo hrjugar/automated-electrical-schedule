@@ -1,0 +1,9 @@
+.info-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    
+    path {
+        color: var(--clr-neutral-500);
+    }
+}

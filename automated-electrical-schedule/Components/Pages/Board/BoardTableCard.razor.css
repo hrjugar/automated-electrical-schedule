@@ -241,6 +241,18 @@
                             grid-column: span 4;
                         }
                     }
+                    
+                    &.cell--info {
+                        .info-btn {
+                            opacity: 0;
+                        }
+                        
+                        &:hover {
+                            .info-btn {
+                                opacity: 1;
+                            }
+                        }
+                    }
 
                     &.cell--error {
                         p {
