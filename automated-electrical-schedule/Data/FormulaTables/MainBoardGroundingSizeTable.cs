@@ -5,7 +5,7 @@ namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class MainBoardGroundingSizeTable
 {
-    public static Dictionary<ConductorMaterial, List<double>> CopperConductorGroundingSizeTable = new()
+    private static Dictionary<ConductorMaterial, List<double>> CopperConductorGroundingSizeTable = new()
     {
         {
             ConductorMaterial.Copper,
@@ -70,7 +70,7 @@ public static class MainBoardGroundingSizeTable
         }
     };
 
-    public static Dictionary<ConductorMaterial, List<double>> AluminumConductorGroundingSizeTable = new()
+    private static Dictionary<ConductorMaterial, List<double>> AluminumConductorGroundingSizeTable = new()
     {
         {
             ConductorMaterial.Copper,
@@ -144,7 +144,6 @@ public static class MainBoardGroundingSizeTable
             ? CopperConductorGroundingSizeTable
             : AluminumConductorGroundingSizeTable;
 
-        return DataConstants.ConductorSizes[
-            table[groundingMaterial].FindIndex(size => size.IsRoughlyEqualTo(conductorSize))];
+        return table[groundingMaterial][DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize))];
     }
 }
