@@ -36,14 +36,12 @@ public abstract partial class Circuit
         {
             CircuitType.LightingOutlet or CircuitType.ConvenienceOutlet =>
             [
-                Enums.LineToLineVoltage.A,
-                Enums.LineToLineVoltage.B,
-                Enums.LineToLineVoltage.C
+                LineToLineVoltage.A,
+                LineToLineVoltage.B,
+                LineToLineVoltage.C
             ],
-            CircuitType.MotorOutlet or CircuitType.ApplianceEquipmentOutlet =>
-                parentDistributionBoard.Voltage == BoardVoltage.V230
-                    ? [Enums.LineToLineVoltage.A, Enums.LineToLineVoltage.B, Enums.LineToLineVoltage.C]
-                    : [Enums.LineToLineVoltage.Abc],
+            CircuitType.MotorOutlet or CircuitType.ApplianceEquipmentOutlet => 
+                [LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C, LineToLineVoltage.Abc],
             _ => throw new ArgumentOutOfRangeException(nameof(parentDistributionBoard))
         };
     }

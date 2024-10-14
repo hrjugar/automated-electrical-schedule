@@ -35,8 +35,8 @@
 
                 @if (threePhaseBoard != null)
                 {
-                    <InputSelect 
-                        class="select-line-to-line" 
+                    <InputSelect
+                        class="select-line-to-line"
                         Value="_newCircuit.LineToLineVoltage"
                         ValueChanged="@((LineToLineVoltage lineToLineVoltage) => UpdateLineToLineVoltage(lineToLineVoltage))"
                         ValueExpression="@(() => _newCircuit.LineToLineVoltage)">
@@ -47,7 +47,7 @@
                     </InputSelect>
                 }
             </div>
-            
+
             <div class="create-or-edit-circuit-modal-content-buttons">
                 @if (_newCircuit.SetCount > 1)
                 {
@@ -61,18 +61,20 @@
             </div>
         </div>
         
-        @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize || 
+        <ValidationSummary />
+
+        @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize ||
              _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
         {
             <FormWarning
-                WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this." 
+                WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this."
                 WarningAction="@(() => _newCircuit.AdjustSetCountForSizes())"
                 WarningActionText="Adjust Number of Sets"/>
         }
-        
+
         @if (_newCircuit.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
         {
-            <FormWarning 
+            <FormWarning
                 WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
                 WarningAction="@(() => ConvertToCableTray())"
                 WarningActionText="Convert to Cable Tray"/>
@@ -174,7 +176,7 @@
                     </InputSelect>
                     <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
                 </div>
-                
+
                 <div class="create-or-edit-circuit-modal-field-row">
                     <div class="create-or-edit-circuit-modal-field">
                         <label>Conductor Type <span class="red-asterisk">*</span></label>
@@ -286,7 +288,7 @@
         <button
             class="btn-text create-or-edit-circuit-modal-create-btn btn-primary"
             type="submit"
-            disabled="@(!_editContext.Validate() || !_editContext.IsModified())">
+            disabled="@(!_editContext.Validate() || (OldCircuit is null && !_editContext.IsModified()))">
             @(OldCircuit == null ? "Create" : "Edit")
         </button>
     </div>

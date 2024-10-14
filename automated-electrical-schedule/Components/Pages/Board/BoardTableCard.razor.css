@@ -33,20 +33,20 @@
         grid-template-columns: repeat(var(--board-table-col-count), auto);
         grid-template-rows: min-content 1fr min-content;
         overflow: auto;
-        overscroll-behavior: none;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar,
-        &::-webkit-scrollbar-thumb,
-        &::-webkit-scrollbar-track,
-        &::-webkit-scrollbar-button,
-        &::-webkit-scrollbar-corner,
-        &::-webkit-scrollbar-track-piece,
-        &::-webkit-resizer {
-            width: 0;
-            height: 0;
-            display: none;
-        }
+        /*overscroll-behavior: none;*/
+        /*scrollbar-width: none;*/
+        
+        /*&::-webkit-scrollbar,*/
+        /*&::-webkit-scrollbar-thumb,*/
+        /*&::-webkit-scrollbar-track,*/
+        /*&::-webkit-scrollbar-button,*/
+        /*&::-webkit-scrollbar-corner,*/
+        /*&::-webkit-scrollbar-track-piece,*/
+        /*&::-webkit-resizer {*/
+        /*    width: 0;*/
+        /*    height: 0;*/
+        /*    display: none;*/
+        /*}*/
 
         button {
             &.btn-text {
