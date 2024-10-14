@@ -103,6 +103,9 @@ public abstract partial class DistributionBoard
             return AllowedCircuitProtections;
         }
     }
+    
+    public bool HasCircuitsRecursive =>
+        Circuits.Count > 0 || SubDistributionBoards.Any(subBoard => subBoard.HasCircuitsRecursive);
 
     public bool HasBreaker =>
         ParentDistributionBoard is not null &&
@@ -131,10 +134,17 @@ public abstract partial class DistributionBoard
 
     protected abstract CalculationResult<double> Current { get; }
 
-    public CalculationResult<int> AmpereTrip =>
-        Current.HasError 
-            ? CalculationResult<int>.Failure(Current.ErrorType) 
-            : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Current.Value / 0.8), 20);
+    public CalculationResult<int> AmpereTrip
+    {
+        get
+        {
+            if (!HasCircuitsRecursive) return CalculationResult<int>.Failure(CalculationErrorType.NoCircuits);
+            
+            return Current.HasError 
+                ? CalculationResult<int>.Failure(Current.ErrorType) 
+                : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Current.Value / 0.8), 20);
+        }
+    }
 
     public abstract double AmpereLoad { get; }
 
@@ -142,7 +152,6 @@ public abstract partial class DistributionBoard
     {
         get
         {
-            if (Circuits.Count == 0 && SubDistributionBoards.Count == 0) return CalculationResult<int>.Failure(CalculationErrorType.NoCircuits);
             return AmpereTrip.HasError
                 ? CalculationResult<int>.Failure(AmpereTrip.ErrorType)
                 : DataUtils.GetAmpereFrame(AmpereTrip);
@@ -236,6 +245,7 @@ public abstract partial class DistributionBoard
         get
         {
             if (!HasTransformer) return CalculationResult<double>.Failure(CalculationErrorType.NoTransformer);
+            if (!HasCircuitsRecursive) return CalculationResult<double>.Failure(CalculationErrorType.NoCircuits);
             if (Current.HasError) return CalculationResult<double>.Failure(Current.ErrorType);
             return CalculationResult<double>.Success(Math.Sqrt(3) * (int)Voltage * Current.Value);
         }

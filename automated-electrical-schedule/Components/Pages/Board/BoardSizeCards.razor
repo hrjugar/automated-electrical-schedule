@@ -27,15 +27,15 @@
 
         @if (DistributionBoard.ConductorSize.HasError) 
         {
-            <p>Conductor size error: @(DistributionBoard.ConductorSize.ErrorMessage)</p>
+            <p>@(DistributionBoard.ConductorSize.ErrorMessage)</p>
         }
         else if (DistributionBoard.GroundingSize.HasError)
         {
-            <p>Grounding size error: @DistributionBoard.GroundingSize.ErrorMessage</p>
+            <p>@DistributionBoard.GroundingSize.ErrorMessage</p>
         }
         else if (DistributionBoard.RacewaySize.HasError)
         {
-            <p>Raceway size error: @DistributionBoard.RacewaySize.ErrorMessage</p>
+            <p>@DistributionBoard.RacewaySize.ErrorMessage</p>
         }
         else if (DistributionBoard.ConductorSize.Value == 0 || DistributionBoard.GroundingSize.Value == 0 || DistributionBoard.RacewaySize.Value == 0)
         {
@@ -57,15 +57,15 @@
 
             @if (DistributionBoard.TransformerRating.HasError)
             {
-                <p>Transformer rating error: @(DistributionBoard.TransformerRating.ErrorMessage)</p>
+                <p>@(DistributionBoard.TransformerRating.ErrorMessage)</p>
             }
             else if (DistributionBoard.TransformerPrimaryProtectionAmpereTrip.HasError)
             {
-                <p>Transformer primary protection ampere trip error: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip.ErrorMessage)</p>
+                <p>@(DistributionBoard.TransformerPrimaryProtectionAmpereTrip.ErrorMessage)</p>
             }
             else if (DistributionBoard.TransformerSecondaryProtectionAmpereTrip.HasError)
             {
-                <p>Transformer secondary protection ampere trip error: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip.ErrorMessage)</p>
+                <p>@(DistributionBoard.TransformerSecondaryProtectionAmpereTrip.ErrorMessage)</p>
             }
             else if (DistributionBoard.TransformerRating.Value == 0)
             {
