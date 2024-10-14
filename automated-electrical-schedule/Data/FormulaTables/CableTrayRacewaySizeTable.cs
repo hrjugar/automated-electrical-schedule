@@ -21,7 +21,8 @@ public static class CableTrayRacewaySizeTable
         { 25200, 900 }
     };
 
-    public static CalculationResult<int> GetCableTrayRacewaySize(int setCount,
+    public static CalculationResult<int> GetCableTrayRacewaySize(
+        int setCount,
         int conductorWireCount,
         CalculationResult<double> conductorWireSize,
         int groundingWireCount,

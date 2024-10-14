@@ -12,10 +12,6 @@ public static class DataUtils
         
         int? result = DataConstants.StandardAmpereTripRatings
             .FirstOrDefault(columnAmpereTrip => columnAmpereTrip >= minimumAmpereTrip && columnAmpereTrip >= value.Value);
-
-        // if (result is null) return CalculationResult<int>.Failure(CalculationErrorType.NoFittingAmpereTrip);
-        //
-        // return CalculationResult<int>.Success(result.Value);
         
         return result is null
             ? CalculationResult<int>.Failure(CalculationErrorType.NoFittingAmpereTrip)

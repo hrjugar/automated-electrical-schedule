@@ -5,15 +5,31 @@
     align-items: stretch;
     gap: 2rem;
 
-    .create-or-edit-circuit-modal-content-categories {
+    .create-or-edit-circuit-modal-content-head {
         display: flex;
         flex-direction: row;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: flex-start;
         gap: 1rem;
+        
+        .create-or-edit-circuit-modal-content-categories {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 1rem;
+            
+            select {
+                width: 20rem;
+            }
+        }
 
-        select {
-            width: 20rem;
+        .create-or-edit-circuit-modal-content-buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            gap: 1rem;
         }
     }
 

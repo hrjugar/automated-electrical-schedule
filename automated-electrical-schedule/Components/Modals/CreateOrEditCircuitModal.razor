@@ -22,27 +22,52 @@
     }
 
     <div class="modal-content create-or-edit-circuit-modal-content">
-        <div class="create-or-edit-circuit-modal-content-categories">
-            <InputSelect
-                class="select-type"
-                @bind-Value:get=_newCircuit.CircuitType @bind-Value:set="UpdateCircuitType" disabled="@(OldCircuit is not null)">
-                @foreach (var circuitType in _newCircuit.AllowedCircuitTypes)
-                {
-                    <option value="@circuitType">@circuitType.GetDisplayName()</option>
-                }
-            </InputSelect>
-
-            @if (threePhaseBoard != null)
-            {
-                @* TODO: Update allowed motor types after updating line to line voltage*@
-                @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
-                <InputSelect class="select-line-to-line" @bind-Value=@_newCircuit.LineToLineVoltage>
-                    @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
+        <div class="create-or-edit-circuit-modal-content-head">
+            <div class="create-or-edit-circuit-modal-content-categories">
+                <InputSelect
+                    class="select-type"
+                    @bind-Value:get=_newCircuit.CircuitType @bind-Value:set="UpdateCircuitType" disabled="@(OldCircuit is not null)">
+                    @foreach (var circuitType in _newCircuit.AllowedCircuitTypes)
                     {
-                        <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
+                        <option value="@circuitType">@circuitType.GetDisplayName()</option>
                     }
                 </InputSelect>
-            }
+
+                @if (threePhaseBoard != null)
+                {
+                    @* TODO: Update allowed motor types after updating line to line voltage*@
+                    @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
+                    <InputSelect class="select-line-to-line" @bind-Value=@_newCircuit.LineToLineVoltage>
+                        @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
+                        {
+                            <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
+                        }
+                    </InputSelect>
+                }
+            </div>
+            
+            <div class="create-or-edit-circuit-modal-content-buttons">
+                @if (_newCircuit.SetCount > 1)
+                {
+                    <button
+                        type="button"
+                        class="btn-text btn-secondary"
+                        @onclick="ResetSetCount">
+                        Reset Sets
+                    </button>
+                }
+                
+                @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize 
+                     || _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+                {
+                    <button
+                        type="button"
+                        class="btn-text btn-secondary"
+                        @onclick="@(() => _newCircuit.AdjustSetCountForSizes())">
+                        Adjust Sets 
+                    </button>
+                }
+            </div>
         </div>
 
         <div class="create-or-edit-circuit-modal-content-main">
@@ -303,6 +328,12 @@
     {
         IsOpen = false;
         await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    void ResetSetCount()
+    {
+        _newCircuit!.SetCount = 1;
+        StateHasChanged();
     }
 
     void UpdateMotorType(MotorType newMotorType)

@@ -183,7 +183,7 @@ public abstract partial class DistributionBoard
             else
                 minConductorSize = 3.5;
 
-            return ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, minConductorSize);
+            return ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, minConductorSize);
         }
     }
 
@@ -283,4 +283,20 @@ public abstract partial class DistributionBoard
         BreakerGroundingId is null ? null : ConductorType.FindById(BreakerGroundingId);
 
     public abstract DistributionBoard Clone();
+    
+    public void AdjustAmpereTripForConductorSize()
+    {
+        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+        {
+            SetCount += 1;
+        }
+    }
+
+    public void AdjustAmpereTripForGroundingSize()
+    {
+        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+        {
+            SetCount += 1;
+        }
+    }
 }

@@ -144,7 +144,7 @@ public abstract partial class Circuit
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
-    public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip);
+    public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount);
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
@@ -173,5 +173,27 @@ public abstract partial class Circuit
     {
         if (VoltageDrop.HasError) return;
         while (VoltageDrop.Value * 100 >= 3) SetCount += 1;
+    }
+
+    public void AdjustSetCountForConductorSize()
+    {
+        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+        {
+            SetCount += 1;
+        }
+    }
+
+    public void AdjustSetCountForGroundingSize()
+    {
+        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+        {
+            SetCount += 1;
+        }
+    }
+
+    public void AdjustSetCountForSizes()
+    {
+        AdjustSetCountForConductorSize();
+        AdjustSetCountForGroundingSize();
     }
 }

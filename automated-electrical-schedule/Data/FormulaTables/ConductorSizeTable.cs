@@ -183,6 +183,7 @@ public static class ConductorSizeTable
     public static CalculationResult<double> GetConductorSize(
         ConductorType conductorType, 
         CalculationResult<int> ampereTrip,
+        int setCount,
         double minimumConductorSize = 0)
     {
         if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
@@ -232,7 +233,11 @@ public static class ConductorSizeTable
         
         var index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip.Value);
 
-        if (index == -1) return CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForConductorSize);
+        if (index == -1)
+        {
+            index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip.Value / setCount);
+            if (index == -1) return CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForConductorSize);
+        }
 
         for (var i = index; i < DataConstants.ConductorSizes.Count; i++)
             if (DataConstants.ConductorSizes[i].IsRoughlyEqualTo(minimumConductorSize) ||
