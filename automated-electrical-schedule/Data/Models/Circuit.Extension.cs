@@ -9,26 +9,25 @@ public abstract partial class Circuit
 {
     public const int GroundingWireCount = 1;
 
-    public List<CircuitType> AllowedCircuitTypes
+    public static List<CircuitType> GetAllowedCircuitTypesStatic(BoardVoltage voltage)
     {
-        get
-        {
-            if (ParentDistributionBoard.Voltage is BoardVoltage.V460 or BoardVoltage.V575)
-                return
-                [
-                    CircuitType.MotorOutlet,
-                    CircuitType.ApplianceEquipmentOutlet
-                ];
-
+        if (voltage is BoardVoltage.V460 or BoardVoltage.V575)
             return
             [
-                CircuitType.LightingOutlet,
                 CircuitType.MotorOutlet,
-                CircuitType.ConvenienceOutlet,
                 CircuitType.ApplianceEquipmentOutlet
             ];
-        }
+
+        return
+        [
+            CircuitType.LightingOutlet,
+            CircuitType.MotorOutlet,
+            CircuitType.ConvenienceOutlet,
+            CircuitType.ApplianceEquipmentOutlet
+        ];
     }
+
+    public List<CircuitType> AllowedCircuitTypes => GetAllowedCircuitTypesStatic(ParentDistributionBoard.Voltage);
 
     public virtual List<CircuitProtection> AllowedCircuitProtections =>
     [
@@ -112,17 +111,16 @@ public abstract partial class Circuit
     public abstract CalculationResult<int> AmpereTrip { get; }
 
     public CalculationResult<int> AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
+    
+    public CalculationResult<double> R => 
+        RacewayType == RacewayType.CableTray
+            ? CalculationResult<double>.Success(0)
+            : VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
 
-    public CalculationResult<double> R => VoltageDropTable.GetR(
-        RacewayType,
-        ConductorType.Material,
-        ConductorSize
-    );
-
-    public CalculationResult<double> X => VoltageDropTable.GetX(
-        RacewayType,
-        ConductorSize
-    );
+    public CalculationResult<double> X => 
+        RacewayType == RacewayType.CableTray
+            ? CalculationResult<double>.Success(0)
+            : VoltageDropTable.GetX(RacewayType, ConductorSize);
 
     public CalculationResult<double> VoltageDrop
     {
@@ -156,6 +154,15 @@ public abstract partial class Circuit
     {
         get
         {
+            if (RacewayType == RacewayType.CableTray)
+                return CableTrayRacewaySizeTable.GetCableTrayRacewaySize(
+                    SetCount,
+                    ConductorWireCount,
+                    ConductorSize,
+                    GroundingWireCount,
+                    GroundingSize
+                );
+            
             var wireCount = ConductorWireCount + GroundingWireCount;
             return RacewaySizeTable.GetRacewaySize(
                 ConductorType.WireType,

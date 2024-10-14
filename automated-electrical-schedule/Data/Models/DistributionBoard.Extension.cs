@@ -149,9 +149,15 @@ public abstract partial class DistributionBoard
         }
     }
 
-    protected CalculationResult<double> R => VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
+    protected CalculationResult<double> R => 
+        RacewayType == RacewayType.CableTray
+            ? CalculationResult<double>.Success(0)
+            : VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
 
-    protected CalculationResult<double> X => VoltageDropTable.GetX(RacewayType, ConductorSize);
+    protected CalculationResult<double> X => 
+        RacewayType == RacewayType.CableTray
+            ? CalculationResult<double>.Success(0)
+            : VoltageDropTable.GetX(RacewayType, ConductorSize);
 
     public CalculationResult<double> VoltageDrop
     {

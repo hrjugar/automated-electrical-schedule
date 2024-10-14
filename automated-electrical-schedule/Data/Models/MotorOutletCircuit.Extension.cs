@@ -7,18 +7,7 @@ public partial class MotorOutletCircuit
 {
     public List<MotorType> AllowedMotorTypes => GetAllowedMotorTypesStatic(ParentDistributionBoard, LineToLineVoltage);
 
-    public List<double> AllowedHorsepowerValues
-    {
-        get
-        {
-            if (ParentDistributionBoard.Phase == BoardPhase.SinglePhase)
-                return DataConstants.SinglePhaseHorsepowerValues;
-
-            return MotorType == MotorType.Synchronous
-                ? DataConstants.SynchronousThreePhaseHorsepowerValues
-                : DataConstants.GeneralThreePhaseHorsepowerValues;
-        }
-    }
+    public List<double> AllowedHorsepowerValues => GetAllowedHorsepowerValuesStatic(MotorType, LineToLineVoltage);
 
     public override List<CircuitProtection> AllowedCircuitProtections =>
     [
@@ -221,5 +210,15 @@ public partial class MotorOutletCircuit
             MotorType.WoundRotor,
             MotorType.InductionMotorFirePump
         ];
+    }
+    
+    public static List<double> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage? lineToLineVoltage)
+    {
+        if (lineToLineVoltage != Enums.LineToLineVoltage.Abc)
+            return DataConstants.SinglePhaseHorsepowerValues;
+
+        return motorType == MotorType.Synchronous
+            ? DataConstants.SynchronousThreePhaseHorsepowerValues
+            : DataConstants.GeneralThreePhaseHorsepowerValues;
     }
 }

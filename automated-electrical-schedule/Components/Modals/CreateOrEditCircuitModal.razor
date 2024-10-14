@@ -56,19 +56,25 @@
                         Reset Sets
                     </button>
                 }
-                
-                @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize 
-                     || _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
-                {
-                    <button
-                        type="button"
-                        class="btn-text btn-secondary"
-                        @onclick="@(() => _newCircuit.AdjustSetCountForSizes())">
-                        Adjust Sets 
-                    </button>
-                }
             </div>
         </div>
+        
+        @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize || 
+             _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+        {
+            <FormWarning
+                WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this." 
+                WarningAction="@(() => _newCircuit.AdjustSetCountForSizes())"
+                WarningActionText="Adjust Number of Sets"/>
+        }
+        
+        @if (_newCircuit.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
+        {
+            <FormWarning 
+                WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
+                WarningAction="@(() => ConvertToCableTray())"
+                WarningActionText="Convert to Cable Tray"/>
+        }
 
         <div class="create-or-edit-circuit-modal-content-main">
             <div class="create-or-edit-circuit-modal-content-fields">
@@ -308,16 +314,58 @@
         }
         else
         {
-            _newCircuit = new LightingOutletCircuit
+            var allowedCircuitTypes = Circuit.GetAllowedCircuitTypesStatic(DistributionBoard.Voltage);
+            if (allowedCircuitTypes.Contains(CircuitType.LightingOutlet))
             {
-                ParentDistributionBoard = DistributionBoard,
-                ConductorTypeId = ConductorType.All[0].Id,
-                GroundingId = ConductorType.All[0].Id
-            };
+                _newCircuit = new LightingOutletCircuit
+                {
+                    CircuitType = CircuitType.LightingOutlet
+                };
+            } else if (allowedCircuitTypes.Contains(CircuitType.MotorOutlet))
+            {
+                _newCircuit = new MotorOutletCircuit
+                {
+                    CircuitType = CircuitType.MotorOutlet,
+                };
+            } else if (allowedCircuitTypes.Contains(CircuitType.ConvenienceOutlet))
+            {
+                _newCircuit = new ConvenienceOutletCircuit
+                {
+                    CircuitType = CircuitType.ConvenienceOutlet
+                };
+            }
+            else
+            {
+                _newCircuit = new ApplianceEquipmentOutletCircuit
+                {
+                    CircuitType = CircuitType.ApplianceEquipmentOutlet
+                };
+            }
+
+            _newCircuit.ParentDistributionBoard = DistributionBoard;
+            _newCircuit.ConductorTypeId = ConductorType.All[0].Id;
+            _newCircuit.GroundingId = ConductorType.All[0].Id;
 
             if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
             {
                 _newCircuit.LineToLineVoltage = _newCircuit.AllowedLineToLineVoltages[0];
+            }
+
+            if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
+            {
+                var initialMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
+                    DistributionBoard,
+                    _newCircuit.LineToLineVoltage
+                )[0];
+
+                var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
+                    initialMotorType,
+                    _newCircuit.LineToLineVoltage
+                )[0];
+                
+                motorOutletCircuit.MotorType = initialMotorType;
+                motorOutletCircuit.Horsepower = initialHorsepower;
+                motorOutletCircuit.CircuitProtection = motorOutletCircuit.AllowedCircuitProtections[0];
             }
         }
 
@@ -336,21 +384,6 @@
         StateHasChanged();
     }
 
-    void UpdateMotorType(MotorType newMotorType)
-    {
-        var motorOutletCircuit = _newCircuit as MotorOutletCircuit;
-        motorOutletCircuit!.MotorType = newMotorType;
-
-        var allowedHorsepowerValues = motorOutletCircuit.AllowedHorsepowerValues;
-
-        if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
-        {
-            motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
-        }
-
-        StateHasChanged();
-    }
-
     void UpdateCircuitType(CircuitType circuitType)
     {
         Circuit updatedNewCircuit;
@@ -362,14 +395,23 @@
                 break;
             default:
             case CircuitType.MotorOutlet:
+                var initialMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
+                    _newCircuit!.ParentDistributionBoard,
+                    _newCircuit.LineToLineVoltage
+                )[0];
+
+                var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
+                    initialMotorType,
+                    _newCircuit.LineToLineVoltage
+                )[0];
+                
                 updatedNewCircuit = new MotorOutletCircuit
                 {
-                    Horsepower = 1,
-                    MotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
-                        _newCircuit!.ParentDistributionBoard,
-                        _newCircuit.LineToLineVoltage
-                    )[0]
+                    MotorType = initialMotorType,
+                    Horsepower = initialHorsepower
                 };
+                
+                updatedNewCircuit.CircuitProtection = updatedNewCircuit.AllowedCircuitProtections[0];
                 break;
             case CircuitType.ConvenienceOutlet:
                 updatedNewCircuit = new ConvenienceOutletCircuit();
@@ -406,6 +448,27 @@
     void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
     {
         _newCircuit!.LineToLineVoltage = lineToLineVoltage;
+        StateHasChanged();
+    }
+
+    void ConvertToCableTray()
+    {
+        _newCircuit!.RacewayType = RacewayType.CableTray;
+        StateHasChanged();
+    }
+    
+    void UpdateMotorType(MotorType newMotorType)
+    {
+        var motorOutletCircuit = _newCircuit as MotorOutletCircuit;
+        motorOutletCircuit!.MotorType = newMotorType;
+
+        var allowedHorsepowerValues = motorOutletCircuit.AllowedHorsepowerValues;
+
+        if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
+        {
+            motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
+        }
+
         StateHasChanged();
     }
 
