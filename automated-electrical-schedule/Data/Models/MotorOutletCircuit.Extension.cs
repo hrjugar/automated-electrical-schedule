@@ -28,66 +28,148 @@ public partial class MotorOutletCircuit
         CircuitProtection.InverseTimeBreaker
     ];
 
-    public override double VoltAmpere => Voltage * AmpereLoad;
+    public override CalculationResult<double> VoltAmpere => 
+        AmpereLoad.HasError
+            ? CalculationResult<double>.Failure(AmpereLoad.ErrorType)
+            : CalculationResult<double>.Success(Voltage * AmpereLoad.Value);
 
-    public override double AmpereLoad => ParentDistributionBoard.Phase == BoardPhase.SinglePhase ||
-                                         MotorType == MotorType.SinglePhaseMotor
+    public override CalculationResult<double> AmpereLoad => ParentDistributionBoard.Phase == BoardPhase.SinglePhase ||
+                                                            MotorType == MotorType.SinglePhaseMotor
         ? DataUtils.GetMotorOutlet230VoltAmpereLoad(Horsepower)
         : ThreePhaseMotorLoadTable.GetMotorLoad(ParentDistributionBoard.Voltage, MotorType, Horsepower);
 
-    public override int AmpereTrip
+    public override CalculationResult<int> AmpereTrip
     {
         get
         {
-            if (MotorType == MotorType.InductionMotorFirePump) return DataUtils.GetAmpereTrip(AmpereLoad / 0.8);
+            if (AmpereLoad.HasError) return CalculationResult<int>.Failure(AmpereLoad.ErrorType);
+            if (MotorType == MotorType.InductionMotorFirePump) return DataUtils.GetAmpereTrip(CalculationResult<double>.Success(AmpereLoad.Value / 0.8));
 
-            var factor = CircuitProtection switch
+            double factor;
+            switch (CircuitProtection)
             {
-                CircuitProtection.NonTimeDelayFuse =>
-                    MotorType switch
+                case CircuitProtection.NonTimeDelayFuse:
+                    switch (MotorType)
                     {
-                        MotorType.SinglePhaseMotor or
-                            MotorType.SquirrelCage or
-                            MotorType.DesignBEnergyEfficient or
-                            MotorType.Synchronous => 3,
-                        MotorType.WoundRotor => 1.5,
-                        _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                    },
-                CircuitProtection.DualElement =>
-                    MotorType switch
+                        case MotorType.SinglePhaseMotor:
+                        case MotorType.SquirrelCage:
+                        case MotorType.DesignBEnergyEfficient:
+                        case MotorType.Synchronous:
+                            factor = 3;
+                            break;
+                        case MotorType.WoundRotor:
+                            factor = 1.5;
+                            break;
+                        case MotorType.InductionMotorFirePump:
+                        default:
+                            return CalculationResult<int>.Failure(CalculationErrorType.InvalidMotorType);
+                    }
+                    
+                    break;
+                case CircuitProtection.DualElement:
+                    switch (MotorType)
                     {
-                        MotorType.SinglePhaseMotor or
-                            MotorType.SquirrelCage or
-                            MotorType.DesignBEnergyEfficient or
-                            MotorType.Synchronous => 1.75,
-                        MotorType.WoundRotor => 1.5,
-                        _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                    },
-                CircuitProtection.InstantaneousTripBreaker =>
-                    MotorType switch
-                    {
-                        MotorType.DesignBEnergyEfficient => 11,
-                        MotorType.SinglePhaseMotor or
-                            MotorType.SquirrelCage or
-                            MotorType.Synchronous or
-                            MotorType.WoundRotor => 8,
-                        _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                    },
-                CircuitProtection.InverseTimeBreaker =>
-                    MotorType switch
-                    {
-                        MotorType.SinglePhaseMotor or
-                            MotorType.SquirrelCage or
-                            MotorType.DesignBEnergyEfficient or
-                            MotorType.Synchronous => 2.5,
-                        MotorType.WoundRotor => 1.5,
-                        _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
-                    },
-                _ =>
-                    throw new ArgumentOutOfRangeException(nameof(CircuitProtection))
-            };
+                        case MotorType.SinglePhaseMotor:
+                        case MotorType.SquirrelCage:
+                        case MotorType.DesignBEnergyEfficient:
+                        case MotorType.Synchronous:
+                            factor = 1.75;
+                            break;
+                        case MotorType.WoundRotor:
+                            factor = 1.5;
+                            break;
+                        case MotorType.InductionMotorFirePump:
+                        default:
+                            return CalculationResult<int>.Failure(CalculationErrorType.InvalidMotorType);
+                    }
 
-            var value = AmpereLoad * factor;
+                    break;
+                case CircuitProtection.InstantaneousTripBreaker:
+                    switch (MotorType)
+                    {
+                        case MotorType.DesignBEnergyEfficient:
+                            factor = 11;
+                            break;
+                        case MotorType.SinglePhaseMotor:
+                        case MotorType.SquirrelCage:
+                        case MotorType.Synchronous:
+                        case MotorType.WoundRotor:
+                            factor = 8;
+                            break;
+                        case MotorType.InductionMotorFirePump:
+                        default:
+                            return CalculationResult<int>.Failure(CalculationErrorType.InvalidMotorType);
+                    }
+
+                    break;
+                case CircuitProtection.InverseTimeBreaker:
+                    switch (MotorType)
+                    {
+                        case MotorType.SinglePhaseMotor:
+                        case MotorType.SquirrelCage:
+                        case MotorType.DesignBEnergyEfficient:
+                        case MotorType.Synchronous:
+                            factor = 2.5;
+                            break;
+                        case MotorType.WoundRotor:
+                            factor = 1.5;
+                            break;
+                        case MotorType.InductionMotorFirePump:
+                        default:
+                            return CalculationResult<int>.Failure(CalculationErrorType.InvalidMotorType);
+                    }
+                    break;
+                default:
+                    return CalculationResult<int>.Failure(CalculationErrorType.InvalidCircuitProtection);
+            }
+            
+            // var factor = CircuitProtection switch
+            // {
+            //     CircuitProtection.NonTimeDelayFuse =>
+            //         MotorType switch
+            //         {
+            //             MotorType.SinglePhaseMotor or
+            //                 MotorType.SquirrelCage or
+            //                 MotorType.DesignBEnergyEfficient or
+            //                 MotorType.Synchronous => 3,
+            //             MotorType.WoundRotor => 1.5,
+            //             _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
+            //         },
+            //     CircuitProtection.DualElement =>
+            //         MotorType switch
+            //         {
+            //             MotorType.SinglePhaseMotor or
+            //                 MotorType.SquirrelCage or
+            //                 MotorType.DesignBEnergyEfficient or
+            //                 MotorType.Synchronous => 1.75,
+            //             MotorType.WoundRotor => 1.5,
+            //             _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
+            //         },
+            //     CircuitProtection.InstantaneousTripBreaker =>
+            //         MotorType switch
+            //         {
+            //             MotorType.DesignBEnergyEfficient => 11,
+            //             MotorType.SinglePhaseMotor or
+            //                 MotorType.SquirrelCage or
+            //                 MotorType.Synchronous or
+            //                 MotorType.WoundRotor => 8,
+            //             _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
+            //         },
+            //     CircuitProtection.InverseTimeBreaker =>
+            //         MotorType switch
+            //         {
+            //             MotorType.SinglePhaseMotor or
+            //                 MotorType.SquirrelCage or
+            //                 MotorType.DesignBEnergyEfficient or
+            //                 MotorType.Synchronous => 2.5,
+            //             MotorType.WoundRotor => 1.5,
+            //             _ => throw new ArgumentOutOfRangeException(nameof(MotorType))
+            //         },
+            //     _ =>
+            //         throw new ArgumentOutOfRangeException(nameof(CircuitProtection))
+            // };
+
+            var value = CalculationResult<double>.Success(AmpereLoad.Value * factor);
             return DataUtils.GetAmpereTrip(value);
         }
     }

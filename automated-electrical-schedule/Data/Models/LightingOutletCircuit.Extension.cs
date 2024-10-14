@@ -2,11 +2,14 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class LightingOutletCircuit
 {
-    public override double VoltAmpere => Quantity * WattagePerFixture;
+    public override CalculationResult<double> VoltAmpere => CalculationResult<double>.Success(Quantity * WattagePerFixture);
 
-    public override double AmpereLoad => Quantity * WattagePerFixture * DemandFactor / 100 / Voltage;
+    public override CalculationResult<double> AmpereLoad => 
+        CalculationResult<double>.Success(Quantity * WattagePerFixture * DemandFactor / 100 / Voltage);
 
-    public override int AmpereTrip => DataUtils.GetAmpereTrip(AmpereLoad / 0.8, 15);
+    public override CalculationResult<int> AmpereTrip => 
+        DataUtils.GetAmpereTrip(
+            CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 15);
 
     public override Circuit Clone()
     {

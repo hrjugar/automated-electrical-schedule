@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -22,20 +23,18 @@ public partial class SinglePhaseDistributionBoard
         }
     }
 
-    protected override double Current
+    protected override CalculationResult<double> Current
     {
         get
         {
             double highestMotorLoad = 0;
             if (Circuits.Count > 0)
             {
-                var motorWithHighestLoad =
-                    Circuits.Where(c => c is MotorOutletCircuit).MaxBy(c => c.AmpereLoad);
-
-                if (motorWithHighestLoad is MotorOutletCircuit) highestMotorLoad = motorWithHighestLoad.AmpereLoad;
+                highestMotorLoad =
+                    Circuits.OfType<MotorOutletCircuit>().Select(c => c.AmpereLoad).Max();
             }
 
-            return AmpereLoad + 0.25 * highestMotorLoad;
+            return CalculationResult<double>.Success(AmpereLoad + 0.25 * highestMotorLoad);
         }
     }
 
@@ -43,7 +42,7 @@ public partial class SinglePhaseDistributionBoard
     {
         get
         {
-            var childCircuitsAmpereLoad = Circuits.Sum(circuit => circuit.AmpereLoad);
+            var childCircuitsAmpereLoad = Circuits.Select(circuit => circuit.AmpereLoad).Sum();
             var subBoardsAmpereLoad = SubDistributionBoards
                 .OfType<SinglePhaseDistributionBoard>()
                 .Sum(subBoard => subBoard.AmpereLoad);

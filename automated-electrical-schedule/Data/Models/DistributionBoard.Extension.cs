@@ -1,5 +1,6 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.FormulaTables;
+using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -87,7 +88,7 @@ public abstract partial class DistributionBoard
     {
         get
         {
-            return Circuits.Sum(circuit => circuit.VoltAmpere) +
+            return Circuits.Select(circuit => circuit.VoltAmpere).ToList().Sum() +
                    SubDistributionBoards.Sum(subBoard => subBoard.VoltAmpere);
         }
     }
@@ -128,89 +129,41 @@ public abstract partial class DistributionBoard
         }
     }
 
-    // public double AmpereLoad
-    // {
-    //     get
-    //     {
-    //         var childCircuitsAmpereLoad = Circuits.Sum(circuit => circuit.AmpereLoad);
-    //         var subBoardsAmpereLoad = SubDistributionBoards.Sum(subBoard => subBoard.AmpereLoad);
-    //         return childCircuitsAmpereLoad + subBoardsAmpereLoad;
-    //     }
-    // }
+    protected abstract CalculationResult<double> Current { get; }
 
-    // public double GetAmpereLoad(LineToLineVoltage? lineToLineVoltage = null)
-    // {
-    //     var childCircuitsAmpereLoad = lineToLineVoltage == null
-    //         ? Circuits
-    //             .Sum(circuit => circuit.GetAmpereLoad())
-    //         : Circuits
-    //             .Where(circuit => circuit.LineToLineVoltage == lineToLineVoltage)
-    //             .Sum(circuit => circuit.GetAmpereLoad());
-    //
-    //     // TODO: Fix sub board ampere load calculation, CURRENTLY NOT WORKINGGG 
-    //
-    //     double subBoardsAmpereLoad = 0;
-    //
-    //     foreach (var subBoard in SubDistributionBoards)
-    //         if (subBoard.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-    //             subBoardsAmpereLoad += subBoard.GetAmpereLoad(lineToLineVoltage);
-    //         else if (subBoard.LineToLineVoltage == lineToLineVoltage || subBoard.LineToLineVoltage is null)
-    //             subBoardsAmpereLoad += subBoard.GetAmpereLoad();
-    //
-    //
-    //     // var subBoardsAmpereLoad = lineToLineVoltage == null
-    //     //     ? SubDistributionBoards
-    //     //         .Sum(subBoard => subBoard.GetAmpereLoad())
-    //     //     : SubDistributionBoards
-    //     //         .Where(subBoard => subBoard.LineToLineVoltage == lineToLineVoltage)
-    //     //         .Sum(subBoard => subBoard.GetAmpereLoad());
-    //
-    //     return childCircuitsAmpereLoad + subBoardsAmpereLoad;
-    // }
-
-    // public int AmpereTrip
-    // {
-    //     get
-    //     {
-    //         double highestMotorLoad = 0;
-    //         if (Circuits.Count > 0)
-    //         {
-    //             var motorWithHighestLoad =
-    //                 Circuits.Where(c => c is MotorOutletCircuit).MaxBy(c => c.AmpereLoad);
-    //
-    //             if (motorWithHighestLoad is MotorOutletCircuit) highestMotorLoad = motorWithHighestLoad.AmpereLoad;
-    //         }
-    //         
-    //         var value = (AmpereLoad + 0.25 * highestMotorLoad) / 0.8;
-    //         return DataUtils.GetAmpereTrip(value, 20);
-    //     }
-    // }
-
-    protected abstract double Current { get; }
-
-    public int AmpereTrip => DataUtils.GetAmpereTrip(Current / 0.8, 20);
+    public CalculationResult<int> AmpereTrip =>
+        Current.HasError 
+            ? CalculationResult<int>.Failure(Current.ErrorType) 
+            : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Current.Value / 0.8), 20);
 
     public abstract double AmpereLoad { get; }
 
-    public int AmpereFrame => Circuits.Count == 0 && SubDistributionBoards.Count == 0
-        ? 0
-        : DataUtils.GetAmpereFrame(AmpereTrip);
-
-    public double R => VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
-
-    public double X => VoltageDropTable.GetX(RacewayType, ConductorSize);
-
-    public double VoltageDrop
+    public CalculationResult<int> AmpereFrame
     {
         get
         {
-            if (RacewayType == RacewayType.CableTray || WireLength is null) return 0;
+            if (Circuits.Count == 0 && SubDistributionBoards.Count == 0) return CalculationResult<int>.Failure(CalculationErrorType.NoCircuits);
+            return AmpereTrip.HasError
+                ? CalculationResult<int>.Failure(AmpereTrip.ErrorType)
+                : DataUtils.GetAmpereFrame(AmpereTrip);
+        }
+    }
+
+    protected CalculationResult<double> R => VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
+
+    protected CalculationResult<double> X => VoltageDropTable.GetX(RacewayType, ConductorSize);
+
+    public CalculationResult<double> VoltageDrop
+    {
+        get
+        {
+            if (RacewayType == RacewayType.CableTray || WireLength is null) return CalculationResult<double>.Success(0);
 
             return VoltageDropTable.GetVoltageDrop(
                 this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : null,
                 R,
                 X,
-                AmpereLoad,
+                CalculationResult<double>.Success(AmpereLoad),
                 WireLength.Value,
                 SetCount,
                 (int)Voltage
@@ -220,7 +173,7 @@ public abstract partial class DistributionBoard
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
-    public double ConductorSize
+    public CalculationResult<double> ConductorSize
     {
         get
         {
@@ -238,13 +191,13 @@ public abstract partial class DistributionBoard
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
-    public double GroundingSize => ParentDistributionBoard is null
+    public CalculationResult<double> GroundingSize => ParentDistributionBoard is null
         ? MainBoardGroundingSizeTable.GetGroundingSize(ConductorType.Material, Grounding.Material,
             ConductorSize)
         : CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
 
 
-    public int RacewaySize
+    public CalculationResult<int> RacewaySize
     {
         get
         {
@@ -268,51 +221,57 @@ public abstract partial class DistributionBoard
         }
     }
 
-    private double? TransformerCurrent
+    // private CalculationResult<double> TransformerCurrent => HasTransformer
+    //             ? CalculationResult<double>.Success(Math.Sqrt(3) * (int)Voltage * Current)
+    //             : CalculationResult<double>.Failure(CalculationErrorType.NoTransformer);
+
+    private CalculationResult<double> TransformerCurrent
     {
         get
         {
-            if (!HasTransformer) return null;
-
-            return Math.Sqrt(3) * (int)Voltage * Current;
+            if (!HasTransformer) return CalculationResult<double>.Failure(CalculationErrorType.NoTransformer);
+            if (Current.HasError) return CalculationResult<double>.Failure(Current.ErrorType);
+            return CalculationResult<double>.Success(Math.Sqrt(3) * (int)Voltage * Current.Value);
         }
     }
 
-    public int? TransformerRating => TransformerCurrent is null
-        ? null
-        : TransformerTable.GetTransformerRating(TransformerCurrent.Value);
-
-    public int? TransformerPrimaryProtectionAmpereTrip
+    public CalculationResult<int> TransformerRating => 
+        TransformerCurrent.HasError
+            ? CalculationResult<int>.Failure(TransformerCurrent.ErrorType)
+            : TransformerTable.GetTransformerRating(TransformerCurrent);
+    
+    public CalculationResult<int> TransformerPrimaryProtectionAmpereTrip
     {
         get
         {
-            if (TransformerCurrent is null) return null;
+            if (TransformerCurrent.HasError) return CalculationResult<int>.Failure(TransformerCurrent.ErrorType);
 
             var primaryProtectionFactor = ParentDistributionBoard is null
                 ? TransformerTable.MainBoardTransformerPrimaryProtectionFactor
                 : TransformerTable.SubBoardTransformerPrimaryProtectionFactor;
             
-            var value = TransformerCurrent.Value / (Math.Sqrt(3) * (int)Voltage) *
-                        primaryProtectionFactor;
+            var value = CalculationResult<double>.Success(
+                TransformerCurrent.Value / (Math.Sqrt(3) * (int)Voltage) * primaryProtectionFactor
+            );
             
             return DataUtils.GetAmpereTrip(value);
         }
     }
 
-    public int? TransformerSecondaryProtectionAmpereTrip
+    public CalculationResult<int> TransformerSecondaryProtectionAmpereTrip
     {
         get
         {
-            if (TransformerCurrent is null) return null;
+            if (TransformerCurrent.HasError) return CalculationResult<int>.Failure(TransformerCurrent.ErrorType);
+            if (Current.HasError) return CalculationResult<int>.Failure(Current.ErrorType);
             
             var secondaryProtectionFactor = ParentDistributionBoard is null
                 ? TransformerTable.MainBoardTransformerSecondaryProtectionFactor
-                : Current >= 9
+                : Current.Value >= 9
                     ? TransformerTable.SubBoardTransformerSecondaryProtectionGreaterEqual9
                     : TransformerTable.SubBoardTransformerSecondaryProtectionLessThan9;
             
-            var value = Current * secondaryProtectionFactor;
-            
+            var value = CalculationResult<double>.Success(Current.Value * secondaryProtectionFactor);
             return DataUtils.GetAmpereTrip(value);
         }
     }

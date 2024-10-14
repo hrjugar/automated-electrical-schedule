@@ -1,27 +1,44 @@
+using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data;
 
 public static class DataUtils
 {
-    public static int GetAmpereTrip(double value, int minimumAmpereTrip = 0)
+    public static CalculationResult<int> GetAmpereTrip(CalculationResult<double> value, int minimumAmpereTrip = 0)
     {
-        if (value == 0) return 0;
+        if (value.HasError) return CalculationResult<int>.Failure(value.ErrorType);
+        
+        int? result = DataConstants.StandardAmpereTripRatings
+            .FirstOrDefault(columnAmpereTrip => columnAmpereTrip >= minimumAmpereTrip && columnAmpereTrip >= value.Value);
 
-        return DataConstants.StandardAmpereTripRatings
-            .First(columnAmpereTrip => columnAmpereTrip >= minimumAmpereTrip && columnAmpereTrip >= value);
+        // if (result is null) return CalculationResult<int>.Failure(CalculationErrorType.NoFittingAmpereTrip);
+        //
+        // return CalculationResult<int>.Success(result.Value);
+        
+        return result is null
+            ? CalculationResult<int>.Failure(CalculationErrorType.NoFittingAmpereTrip)
+            : CalculationResult<int>.Success(result.Value);
     }
 
-    public static int GetAmpereFrame(int ampereTrip)
+    public static CalculationResult<int> GetAmpereFrame(CalculationResult<int> ampereTrip)
     {
-        if (ampereTrip == 0) return 0;
+        if (ampereTrip.HasError) return CalculationResult<int>.Failure(ampereTrip.ErrorType);
+        
+        int? result = DataConstants.StandardAmpereFrameRatings.FirstOrDefault(ampereFrame => ampereFrame >= ampereTrip.Value);
 
-        return DataConstants.StandardAmpereFrameRatings.First(ampereFrame => ampereFrame >= ampereTrip);
+        return result is null
+            ? CalculationResult<int>.Failure(CalculationErrorType.NoFittingAmpereFrame)
+            : CalculationResult<int>.Success(result.Value);
     }
 
-    public static double GetMotorOutlet230VoltAmpereLoad(double horsepower)
+    public static CalculationResult<double> GetMotorOutlet230VoltAmpereLoad(double horsepower)
     {
-        return DataConstants.SinglePhaseMotorOutletAmpereLoadRatings[
-            DataConstants.SinglePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))];
+        var index = DataConstants.SinglePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower));
+        
+        return index == -1
+            ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingHorsepower)
+            : CalculationResult<double>.Success(DataConstants.SinglePhaseMotorOutletAmpereLoadRatings[index]);
     }
 }

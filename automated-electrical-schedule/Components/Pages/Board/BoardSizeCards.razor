@@ -2,7 +2,15 @@
     <div class="board-size-card">
         <label>Size of Circuit Protection</label>
 
-        @if (DistributionBoard.AmpereTrip == 0 || DistributionBoard.AmpereFrame == 0)
+        @if (DistributionBoard.AmpereTrip.HasError)
+        {
+            <p>@(DistributionBoard.AmpereTrip.ErrorMessage)</p>
+        }
+        else if (DistributionBoard.AmpereFrame.HasError)
+        {
+            <p>@(DistributionBoard.AmpereFrame.HasError)</p>
+        }
+        else if (DistributionBoard.AmpereTrip.Value == 0 || DistributionBoard.AmpereFrame.Value == 0)
         {
             <p>Board has no circuits.</p>
         }
@@ -17,7 +25,19 @@
     <div class="board-size-card">
         <label>Size of Wire</label>
 
-        @if (DistributionBoard.RacewaySize == 0)
+        @if (DistributionBoard.ConductorSize.HasError) 
+        {
+            <p>Conductor size error: @(DistributionBoard.ConductorSize.ErrorMessage)</p>
+        }
+        else if (DistributionBoard.GroundingSize.HasError)
+        {
+            <p>Grounding size error: @DistributionBoard.GroundingSize.ErrorMessage</p>
+        }
+        else if (DistributionBoard.RacewaySize.HasError)
+        {
+            <p>Raceway size error: @DistributionBoard.RacewaySize.ErrorMessage</p>
+        }
+        else if (DistributionBoard.ConductorSize.Value == 0 || DistributionBoard.GroundingSize.Value == 0 || DistributionBoard.RacewaySize.Value == 0)
         {
             <p>Board has no circuits.</p>
         }
@@ -35,14 +55,26 @@
         <div class="board-size-card">
             <label>Transformer</label>
 
-            @if (DistributionBoard.TransformerRating == 0)
+            @if (DistributionBoard.TransformerRating.HasError)
+            {
+                <p>Transformer rating error: @(DistributionBoard.TransformerRating.ErrorMessage)</p>
+            }
+            else if (DistributionBoard.TransformerPrimaryProtectionAmpereTrip.HasError)
+            {
+                <p>Transformer primary protection ampere trip error: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip.ErrorMessage)</p>
+            }
+            else if (DistributionBoard.TransformerSecondaryProtectionAmpereTrip.HasError)
+            {
+                <p>Transformer secondary protection ampere trip error: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip.ErrorMessage)</p>
+            }
+            else if (DistributionBoard.TransformerRating.Value == 0)
             {
                 <p>Board has no circuits.</p>
             }
             else
             {
                 <ul class="board-size-content">
-                    <li>@(DistributionBoard.TransformerRating / 1000)kVA</li>
+                    <li>@(DistributionBoard.TransformerRating.Value / 1000)kVA</li>
                     <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip) @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
                     <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip) @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
                 </ul>

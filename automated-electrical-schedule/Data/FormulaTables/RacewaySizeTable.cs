@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.FormulaTables;
@@ -830,14 +831,13 @@ public static class RacewaySizeTable
         }
     };
 
-    public static int GetRacewaySize(
-        ConductorWireType conductorWireType,
+    public static CalculationResult<int> GetRacewaySize(ConductorWireType conductorWireType,
         RacewayType racewayType,
-        double conductorSize,
+        CalculationResult<double> conductorSize,
         int wireCount,
         int setCount)
     {
-        if (conductorSize == 0) return 0;
+        if (conductorSize.HasError) return CalculationResult<int>.Failure(conductorSize.ErrorType);
 
         Dictionary<RacewayType, List<List<int>>> conductorGroupWireCountTableDict;
         if (ConductorGroupOneWireTypes.Contains(conductorWireType))
@@ -849,12 +849,19 @@ public static class RacewaySizeTable
         else if (ConductorGroupFourWireTypes.Contains(conductorWireType))
             conductorGroupWireCountTableDict = ConductorGroupFourWireCountTableDict;
         else
-            throw new ArgumentException("Invalid conductor wire type");
+            return CalculationResult<int>.Failure(CalculationErrorType.InvalidConductorWireType);
 
         var wireCountTable = conductorGroupWireCountTableDict[racewayType];
-        var wireCountColumn =
-            wireCountTable[DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize))];
-
-        return RacewaySizes[racewayType][wireCountColumn.FindIndex(columnWireCount => columnWireCount >= (wireCount * setCount))];
+        
+        var conductorSizeIndex = DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize.Value));
+        if (conductorSizeIndex == -1) return CalculationResult<int>.Failure(CalculationErrorType.NoFittingConductorSize);
+        
+        var wireCountColumn = wireCountTable[conductorSizeIndex];
+        
+        var columnIndex = wireCountColumn.FindIndex(columnWireCount => columnWireCount >= (wireCount * setCount));
+        
+        return columnIndex == -1
+            ? CalculationResult<int>.Failure(CalculationErrorType.NoFittingRacewaySize)
+            : CalculationResult<int>.Success(RacewaySizes[racewayType][columnIndex]);
     }
 }

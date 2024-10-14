@@ -1,8 +1,10 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.FormulaTables;
+using automated_electrical_schedule.Data.Validators;
 
 namespace automated_electrical_schedule.Data.Models;
 
+[CircuitValidator]
 public abstract partial class Circuit
 {
     public const int GroundingWireCount = 1;
@@ -103,30 +105,30 @@ public abstract partial class Circuit
         }
     }
 
-    public abstract double VoltAmpere { get; }
+    public abstract CalculationResult<double> VoltAmpere { get; }
 
-    public abstract double AmpereLoad { get; }
+    public abstract CalculationResult<double> AmpereLoad { get; }
 
-    public abstract int AmpereTrip { get; }
+    public abstract CalculationResult<int> AmpereTrip { get; }
 
-    public int AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
+    public CalculationResult<int> AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
 
-    public double R => VoltageDropTable.GetR(
+    public CalculationResult<double> R => VoltageDropTable.GetR(
         RacewayType,
         ConductorType.Material,
         ConductorSize
     );
 
-    public double X => VoltageDropTable.GetX(
+    public CalculationResult<double> X => VoltageDropTable.GetX(
         RacewayType,
         ConductorSize
     );
 
-    public double VoltageDrop
+    public CalculationResult<double> VoltageDrop
     {
         get
         {
-            if (RacewayType == RacewayType.CableTray) return 0;
+            if (RacewayType == RacewayType.CableTray) return CalculationResult<double>.Success(0);
 
             return VoltageDropTable.GetVoltageDrop(
                 LineToLineVoltage,
@@ -142,15 +144,15 @@ public abstract partial class Circuit
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
-    public virtual double ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip);
+    public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip);
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
-    public double GroundingSize =>
+    public CalculationResult<double> GroundingSize =>
         CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
 
-    public int RacewaySize
+    public CalculationResult<int> RacewaySize
     {
         get
         {
@@ -169,6 +171,7 @@ public abstract partial class Circuit
 
     public void CorrectVoltageDrop()
     {
-        while (VoltageDrop * 100 >= 3) SetCount += 1;
+        if (VoltageDrop.HasError) return;
+        while (VoltageDrop.Value * 100 >= 3) SetCount += 1;
     }
 }

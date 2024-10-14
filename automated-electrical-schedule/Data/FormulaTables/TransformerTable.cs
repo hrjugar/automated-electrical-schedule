@@ -1,3 +1,6 @@
+using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
+
 namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class TransformerTable
@@ -26,10 +29,10 @@ public static class TransformerTable
         1000000
     ];
 
-    public static int GetTransformerRating(double value)
+    public static CalculationResult<int> GetTransformerRating(CalculationResult<double> value)
     {
-        if (value == 0) return 0;
-
-        return TransformerRatings.First(rating => rating >= value);
+        if (value.HasError) return CalculationResult<int>.Failure(value.ErrorType);
+        if (value.Value > TransformerRatings.Max()) return CalculationResult<int>.Failure(CalculationErrorType.NoFittingTransformerRating);
+        return CalculationResult<int>.Success(TransformerRatings.First(rating => rating >= value.Value));
     }
 }

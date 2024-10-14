@@ -2,11 +2,13 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ApplianceEquipmentOutletCircuit
 {
-    public override double VoltAmpere => Wattage;
+    public override CalculationResult<double> VoltAmpere => CalculationResult<double>.Success(Wattage);
 
-    public override double AmpereLoad => VoltAmpere * (DemandFactor / 100) / Voltage;
+    public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(VoltAmpere.Value * (DemandFactor / 100) / Voltage);
 
-    public override int AmpereTrip => DataUtils.GetAmpereTrip(AmpereLoad / 0.8, 20);
+    public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
+        CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 
+        20);
 
     public override Circuit Clone()
     {

@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.FormulaTables;
@@ -274,19 +275,50 @@ public static class ThreePhaseMotorLoadTable
 
 
     // Use if not fire pump
-    public static double GetMotorLoad(BoardVoltage voltage, MotorType motorType, double horsepower)
+    public static CalculationResult<double> GetMotorLoad(BoardVoltage voltage, MotorType motorType, double horsepower)
     {
-        return motorType switch
+        // return motorType switch
+        // {
+        //     MotorType.DesignBEnergyEfficient or
+        //         MotorType.SquirrelCage or
+        //         MotorType.WoundRotor => GroupOneLoadTable[voltage][
+        //             DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
+        //     MotorType.Synchronous => SynchronousLoadTable[voltage][
+        //         DataConstants.SynchronousThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
+        //     MotorType.InductionMotorFirePump => FirePumpLoadTable[voltage][
+        //         DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
+        //     _ => throw new ArgumentOutOfRangeException(nameof(motorType))
+        // };
+
+        int index;
+        List<double> column;
+        
+        switch (motorType)
         {
-            MotorType.DesignBEnergyEfficient or
-                MotorType.SquirrelCage or
-                MotorType.WoundRotor => GroupOneLoadTable[voltage][
-                    DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
-            MotorType.Synchronous => SynchronousLoadTable[voltage][
-                DataConstants.SynchronousThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
-            MotorType.InductionMotorFirePump => FirePumpLoadTable[voltage][
-                DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower))],
-            _ => throw new ArgumentOutOfRangeException(nameof(motorType))
-        };
+            case MotorType.DesignBEnergyEfficient:
+            case MotorType.SquirrelCage:
+            case MotorType.WoundRotor:
+                column = GroupOneLoadTable[voltage];
+                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp =>
+                    hp.IsRoughlyEqualTo(horsepower));
+                break;
+            case MotorType.Synchronous:
+                column = SynchronousLoadTable[voltage];
+                index = DataConstants.SynchronousThreePhaseHorsepowerValues.FindIndex(hp =>
+                    hp.IsRoughlyEqualTo(horsepower));
+                break;
+            case MotorType.InductionMotorFirePump:
+                column = FirePumpLoadTable[voltage];
+                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp =>
+                    hp.IsRoughlyEqualTo(horsepower));
+                break;
+            case MotorType.SinglePhaseMotor:
+            default:
+                return CalculationResult<double>.Failure(CalculationErrorType.InvalidMotorType);
+        }
+        
+        return index == -1
+            ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingHorsepower)
+            : CalculationResult<double>.Success(column[index]);
     }
 }

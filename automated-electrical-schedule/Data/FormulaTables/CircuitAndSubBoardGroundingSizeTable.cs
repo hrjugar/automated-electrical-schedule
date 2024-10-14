@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
 
 namespace automated_electrical_schedule.Data.FormulaTables;
 
@@ -97,13 +98,15 @@ public static class CircuitAndSubBoardGroundingSizeTable
         600
     ];
 
-    public static double GetGroundingSize(ConductorMaterial conductorMaterial, int ampereTrip)
+    public static CalculationResult<double> GetGroundingSize(ConductorMaterial conductorMaterial, CalculationResult<int> ampereTrip)
     {
-        if (ampereTrip == 0) return 0;
+        if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
 
         var column = conductorMaterial == ConductorMaterial.Copper ? CuColumn : AlColumn;
-        var index = AmpereTripRatings.FindIndex(at => at >= ampereTrip);
+        var index = AmpereTripRatings.FindIndex(at => at >= ampereTrip.Value);
 
-        return column[index];
+        return index == -1
+            ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+            : CalculationResult<double>.Success(column[index]);
     }
 }

@@ -180,42 +180,65 @@ public static class ConductorSizeTable
         485
     ];
 
-    private static List<int> GetColumn(ConductorType conductorType)
+    public static CalculationResult<double> GetConductorSize(
+        ConductorType conductorType, 
+        CalculationResult<int> ampereTrip,
+        double minimumConductorSize = 0)
     {
-        return conductorType.Material switch
+        if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
+
+        List<int> column;
+        switch (conductorType.Material)
         {
-            ConductorMaterial.Copper => conductorType.TemperatureRating switch
-            {
-                ConductorTemperatureRating.C60 => Cu60Column,
-                ConductorTemperatureRating.C75 => Cu75Column,
-                ConductorTemperatureRating.C90 => Cu90Column,
-                _ => throw new ArgumentOutOfRangeException(nameof(conductorType))
-            },
-            ConductorMaterial.Aluminum => conductorType.TemperatureRating switch
-            {
-                ConductorTemperatureRating.C60 => Al60Column,
-                ConductorTemperatureRating.C75 => Al75Column,
-                ConductorTemperatureRating.C90 => Al90Column,
-                _ => throw new ArgumentOutOfRangeException(nameof(conductorType))
-            },
-            _ => throw new ArgumentOutOfRangeException(nameof(conductorType))
-        };
-    }
+            case ConductorMaterial.Copper:
+                switch (conductorType.TemperatureRating)
+                {
+                    case ConductorTemperatureRating.C60:
+                        column = Cu60Column;
+                        break;
+                    case ConductorTemperatureRating.C75:
+                        column = Cu75Column;
+                        break;
+                    case ConductorTemperatureRating.C90:
+                        column = Cu90Column;
+                        break;
+                    default:
+                        return CalculationResult<double>.Failure(CalculationErrorType
+                            .InvalidConductorTemperatureRating);
+                }
 
-    public static double GetConductorSize(ConductorType conductorType, int ampereTrip, double minimumConductorSize = 0)
-    {
-        if (ampereTrip == 0) return 0;
+                break;
+            case ConductorMaterial.Aluminum:
+                switch (conductorType.TemperatureRating)
+                {
+                    case ConductorTemperatureRating.C60:
+                        column = Al60Column;
+                        break;
+                    case ConductorTemperatureRating.C75:
+                        column = Al75Column;
+                        break;
+                    case ConductorTemperatureRating.C90:
+                        column = Al90Column;
+                        break;
+                    default:
+                        return CalculationResult<double>.Failure(CalculationErrorType
+                            .InvalidConductorTemperatureRating);
+                }
 
-        var column = GetColumn(conductorType);
-        var index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip);
+                break;
+            default:
+                return CalculationResult<double>.Failure(CalculationErrorType.InvalidConductorMaterial);
+        }
+        
+        var index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip.Value);
 
-        if (index == -1) throw new ArgumentOutOfRangeException(nameof(ampereTrip));
+        if (index == -1) return CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForConductorSize);
 
         for (var i = index; i < DataConstants.ConductorSizes.Count; i++)
             if (DataConstants.ConductorSizes[i].IsRoughlyEqualTo(minimumConductorSize) ||
                 DataConstants.ConductorSizes[i] >= minimumConductorSize)
-                return DataConstants.ConductorSizes[i];
+                return CalculationResult<double>.Success(DataConstants.ConductorSizes[i]);
 
-        throw new ArgumentOutOfRangeException(nameof(ampereTrip));
+        return CalculationResult<double>.Failure(CalculationErrorType.NoFittingConductorSize);
     }
 }

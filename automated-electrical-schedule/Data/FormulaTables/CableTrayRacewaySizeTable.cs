@@ -1,3 +1,6 @@
+using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Models;
+
 namespace automated_electrical_schedule.Data.FormulaTables;
 
 public static class CableTrayRacewaySizeTable
@@ -18,19 +21,24 @@ public static class CableTrayRacewaySizeTable
         { 25200, 900 }
     };
 
-    public static int GetCableTrayRacewaySize(
-        int setCount,
+    public static CalculationResult<int> GetCableTrayRacewaySize(int setCount,
         int conductorWireCount,
-        double conductorWireSize,
+        CalculationResult<double> conductorWireSize,
         int groundingWireCount,
-        double groundingWireSize)
+        CalculationResult<double> groundingWireSize)
     {
-        if (setCount == 0 || conductorWireSize == 0 || groundingWireSize == 0) return 0;
+        if (conductorWireSize.HasError) return CalculationResult<int>.Failure(conductorWireSize.ErrorType);
+        if (groundingWireSize.HasError) return CalculationResult<int>.Failure(groundingWireSize.ErrorType);
 
         var allowableFillArea =
-            setCount * (conductorWireCount * conductorWireSize + groundingWireCount * groundingWireSize);
+            setCount * (conductorWireCount * conductorWireSize.Value + groundingWireCount * groundingWireSize.Value);
 
-        var closestMaxAllowableFillArea = cableTrayRacewayDict.Keys.First(fillArea => fillArea >= allowableFillArea);
-        return cableTrayRacewayDict[closestMaxAllowableFillArea];
+        if (allowableFillArea > cableTrayRacewayDict.Keys.Max()) return CalculationResult<int>.Failure(CalculationErrorType.NoFittingFillArea);
+        
+        int? closestMaxAllowableFillArea = cableTrayRacewayDict.Keys.FirstOrDefault(fillArea => fillArea >= allowableFillArea);
+        
+        return closestMaxAllowableFillArea is null
+            ? CalculationResult<int>.Failure(CalculationErrorType.NoFittingRacewaySize)
+            : CalculationResult<int>.Success(cableTrayRacewayDict[closestMaxAllowableFillArea.Value]);
     }
 }

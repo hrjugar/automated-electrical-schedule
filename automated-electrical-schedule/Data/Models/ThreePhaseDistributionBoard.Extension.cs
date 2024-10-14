@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -29,27 +30,7 @@ public partial class ThreePhaseDistributionBoard
 
     public override List<LineToLineVoltage> AllowedLineToLineVoltages => [Enums.LineToLineVoltage.Abc];
 
-    // public double AmpereLoadA
-    // {
-    //     get
-    //     {
-    //         var childCircuitsAmpereLoad = Circuits
-    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.A)
-    //             .Sum(circuit => circuit.AmpereLoad);
-    //         
-    //         var subBoardsAAmpereLoad = SubDistributionBoards
-    //             .OfType<ThreePhaseDistributionBoard>()
-    //             .Where(board => board.LineToLineVoltage == Enums.LineToLineVoltage.A)
-    //             .Sum(board => board.AmpereLoadA);
-    //         
-    //         var subBoardsAbcAmpereLoad = SubDistributionBoards
-    //             .OfType<ThreePhaseDistributionBoard>()
-    //             .Where(board => board.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-    //             .Sum(board => board.AmpereLoadAbc);
-    //     }
-    // }
-
-    protected override double Current
+    protected override CalculationResult<double> Current
     {
         get
         {
@@ -57,27 +38,32 @@ public partial class ThreePhaseDistributionBoard
 
             var totalAbcCircuitAmpereLoad = Circuits
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-                .Sum(circuit => circuit.AmpereLoad);
+                .Select(circuit => circuit.AmpereLoad)
+                .Sum();
 
             var highestMotorLoadA = Circuits
                 .OfType<MotorOutletCircuit>()
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.A)
-                .MaxBy(circuit => circuit.AmpereLoad)?.AmpereLoad ?? 0;
+                .Select(circuit => circuit.AmpereLoad)
+                .Max();
 
             var highestMotorLoadB = Circuits
                 .OfType<MotorOutletCircuit>()
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.B)
-                .MaxBy(circuit => circuit.AmpereLoad)?.AmpereLoad ?? 0;
+                .Select(circuit => circuit.AmpereLoad)
+                .Max();
 
             var highestMotorLoadC = Circuits
                 .OfType<MotorOutletCircuit>()
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.C)
-                .MaxBy(circuit => circuit.AmpereLoad)?.AmpereLoad ?? 0;
+                .Select(circuit => circuit.AmpereLoad)
+                .Max();
 
             var highestMotorLoadAbc = Circuits
                 .OfType<MotorOutletCircuit>()
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-                .MaxBy(circuit => circuit.AmpereLoad)?.AmpereLoad ?? 0;
+                .Select(circuit => circuit.AmpereLoad)
+                .Max();
 
             var highestMotorLoad = new[]
             {
@@ -88,8 +74,10 @@ public partial class ThreePhaseDistributionBoard
             }.Max();
 
             var factor = ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? Math.Sqrt(3) : 1;
-
-            return highestPhaseAmpereLoad * factor + totalAbcCircuitAmpereLoad + 0.25 * highestMotorLoad;
+            var value = highestPhaseAmpereLoad * factor + totalAbcCircuitAmpereLoad + 0.25 * highestMotorLoad;
+            return value == 0
+                ? CalculationResult<double>.Failure(CalculationErrorType.NoBoardCurrent)
+                : CalculationResult<double>.Success(value);
         }
     }
 
@@ -148,7 +136,8 @@ public partial class ThreePhaseDistributionBoard
 
         var childCircuitsAmpereLoad = Circuits
             .Where(circuit => circuit.LineToLineVoltage == lineToLineVoltage)
-            .Sum(circuit => circuit.AmpereLoad);
+            .Select(circuit => circuit.AmpereLoad)
+            .Sum();
 
         totalAmpereLoad += childCircuitsAmpereLoad;
 

@@ -255,6 +255,8 @@
                     }
 
                     &.cell--error {
+                        color: var(--clr-destructive-700);
+                        
                         p {
                             color: var(--clr-destructive-700);
                         }

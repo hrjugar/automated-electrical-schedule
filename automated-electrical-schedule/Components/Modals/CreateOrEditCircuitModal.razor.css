@@ -21,7 +21,7 @@
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 4rem;
 
         .create-or-edit-circuit-modal-content-fields {
@@ -59,6 +59,7 @@
 
         .create-or-edit-circuit-modal-content-values {
             min-width: 20rem;
+            width: 20rem;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -67,6 +68,7 @@
             padding: 1rem;
             background-color: var(--clr-neutral-50);
             border-radius: var(--radius-default);
+            overflow-y: auto;
 
             .create-or-edit-circuit-modal-content-value {
                 display: flex;
@@ -82,6 +84,12 @@
                 p {
                     color: var(--clr-neutral-600);
                     font-size: 1.5rem;
+                    line-height: 1.0;
+                    
+                    &.item-error {
+                        font-size: 1.25rem;
+                        color: var(--clr-destructive-600);
+                    }
                 }
             }
         }

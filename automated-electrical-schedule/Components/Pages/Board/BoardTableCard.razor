@@ -1,3 +1,4 @@
+@using System.Globalization
 @inject DatabaseContext DatabaseContext
 @inject NavigationManager Navigation
 
@@ -101,8 +102,10 @@
             var circuitTypeLabel = "Sub";
             var circuitTypeLabelClass = "circuit-type-label--sub";
             var voltageDrop = circuit.VoltageDrop;
-            var hasHighVoltageDrop = voltageDrop * 100 >= 3;
-            var ampereLoadDisplay = Math.Round(circuit.AmpereLoad, 4);
+            var hasHighVoltageDrop = !voltageDrop.HasError && voltageDrop.Value * 100 >= 3;
+            var ampereLoadDisplay = circuit.AmpereLoad.HasError 
+                ? circuit.AmpereLoad.ErrorMessage
+                : Math.Round(circuit.AmpereLoad.Value, 4).ToString(CultureInfo.InvariantCulture);
 
             switch (circuit)
             {
@@ -137,7 +140,7 @@
                     <p>@circuit.Quantity</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
                 </div>
-                <div class="cell cell--group cell--info">
+                <div class="@("cell cell--group cell--info " + (circuit.VoltAmpere.HasError ? "cell--error" : ""))">
                     <p>@circuit.VoltAmpere</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
                 </div>
@@ -152,7 +155,7 @@
 
                 @if (DistributionBoard.LineToLineVoltage is null)
                 {
-                    <div class="cell cell--group cell--info cell--load cell--load--no-line">
+                    <div class="@("cell cell--group cell--info cell--load cell--load--no-line " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                         <p>@ampereLoadDisplay</p>
                         <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
                     </div>
@@ -165,7 +168,7 @@
                     {
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
                         {
-                            <div class="cell cell--group cell--info cell--load">
+                            <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                                 <p>@ampereLoadDisplay</p>
                                 <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.A))"/>
                             </div>
@@ -177,7 +180,7 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
                         {
-                            <div class="cell cell--group cell--info cell--load">
+                            <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                                 <p>@ampereLoadDisplay</p>
                                 <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.B))"/>
                             </div>
@@ -189,7 +192,7 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
                         {
-                            <div class="cell cell--group cell--info cell--load">
+                            <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                                 <p>@ampereLoadDisplay</p>
                                 <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.C))"/>
                             </div>
@@ -201,7 +204,7 @@
 
                         @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
                         {
-                            <div class="cell cell--group cell--info cell--load">
+                            <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                                 <p>@ampereLoadDisplay</p>
                                 <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.Abc))"/>
                             </div>
@@ -213,7 +216,7 @@
                     }
                     else
                     {
-                        <div class="cell cell--group cell--info cell--load cell--load--line">
+                        <div class="@("cell cell--group cell--info cell--load cell--load--line " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                             <p>@ampereLoadDisplay</p>
                             <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
                         </div>
@@ -222,11 +225,11 @@
 
                 <div class="cell cell--separator"></div>
 
-                <div class="cell cell--group cell--info">
+                <div class="@("cell cell--group cell--info " + (circuit.AmpereTrip.HasError ? "cell--error" : ""))">
                     <p>@circuit.AmpereTrip</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereTripInfo(circuit.CircuitType))"/>
                 </div>
-                <p class="cell cell--text">@(circuit.AmpereFrame)</p>
+                <p class="@("cell cell--text " + (circuit.AmpereFrame.HasError ? "cell--error" : ""))">@(circuit.AmpereFrame)</p>
                 <div class="cell cell--group cell--info">
                     <p>@circuit.Phase</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePhaseInfo(circuit.Phase))"/>
@@ -236,8 +239,8 @@
                     <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePoleInfo(circuit.Pole))"/>
                 </div>
                 <p class="cell cell--text">@circuit.WireLength</p>
-                <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop ? "cell--error" : ""))">
-                    <p>@(Math.Round(voltageDrop, 4).ToPercentageString())</p>
+                <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop || voltageDrop.HasError ? "cell--error" : ""))">
+                    <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : Math.Round(voltageDrop.Value, 4).ToPercentageString())</p>
 
                     @if (hasHighVoltageDrop)
                     {
@@ -253,16 +256,40 @@
                 <div class="cell cell--separator"></div>
 
                 <p class="cell cell--text">@circuit.SetCount</p>
-                <div class="cell cell--group cell--info">
-                    <p>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
+                
+                <div class="@("cell cell--group cell--info " + (circuit.ConductorSize.HasError ? "cell--error" : ""))">
+                    @if (circuit.ConductorSize.HasError)
+                    {
+                        <p>@(circuit.ConductorSize.ErrorMessage)</p>
+                    }
+                    else
+                    {
+                        <p>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
+                    }
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateConductorInfo(circuit.ConductorType.WireType))"/>
                 </div>
-                <div class="cell cell--group cell--info">
-                    <p>1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
+                
+                <div class="@("cell cell--group cell--info " + (circuit.GroundingSize.HasError ? "cell--error" : ""))">
+                    @if (circuit.GroundingSize.HasError)
+                    {
+                        <p>@(circuit.GroundingSize.ErrorMessage)</p>
+                    }
+                    else
+                    {
+                        <p>1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
+                    }
                     <InfoButton OnClick="() => OpenInformationArea(Information.Grounding)"/>
                 </div>
-                <div class="cell cell--group cell--info">
-                    <p>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
+                
+                <div class="@("cell cell--group cell--info " + (circuit.RacewaySize.HasError ? "cell--error" : ""))">
+                    @if (circuit.RacewaySize.HasError)
+                    {
+                        <p>@(circuit.RacewaySize.ErrorMessage)</p>
+                    }
+                    else
+                    {
+                        <p>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
+                    }
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(circuit.RacewayType))"/>
                 </div>
 
@@ -394,24 +421,9 @@
                 }
 
                 <div class="cell cell--separator"></div>
-
-                @if (subDistributionBoard.AmpereTrip == 0)
-                {
-                    <div class="cell cell--empty"></div>
-                }
-                else
-                {
-                    <p class="cell cell--text">@(subDistributionBoard.AmpereTrip)</p>
-                }
-
-                @if (subDistributionBoard.AmpereFrame == 0)
-                {
-                    <div class="cell cell--empty"></div>
-                }
-                else
-                {
-                    <p class="cell cell--text">@(subDistributionBoard.AmpereFrame)</p>
-                }
+                
+                <p class="@("cell cell--text " + (subDistributionBoard.AmpereTrip.HasError ? "cell-error" : ""))">@(subDistributionBoard.AmpereTrip)</p>
+                <p class="@("cell cell--text " + (subDistributionBoard.AmpereFrame.HasError ? "cell-error" : ""))">@(subDistributionBoard.AmpereFrame)</p>
 
                 <p class="cell cell--text">@(DistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</p>
                 <p class="cell cell--text">@(subDistributionBoard.Pole)</p>
@@ -424,15 +436,15 @@
                 {
                     <div class="cell cell--empty"></div>
                 }
-
-                @if (subDistributionBoard.VoltageDrop == 0)
+                
+                @if (subDistributionBoard.VoltageDrop.Value == 0 && !subDistributionBoard.VoltageDrop.HasError)
                 {
                     <div class="cell cell--empty"></div>
                 }
                 else
                 {
-                    <div class="cell cell--group">
-                        <p>@(Math.Round(subDistributionBoard.VoltageDrop, 4).ToPercentageString())</p>
+                    <div class="@("cell cell--group " + (subDistributionBoard.VoltageDrop.HasError ? "cell--error" : ""))">
+                        <p>@(subDistributionBoard.VoltageDrop.HasError ? subDistributionBoard.VoltageDrop : Math.Round(subDistributionBoard.VoltageDrop.Value, 4).ToPercentageString())</p>
 
                         @* TODO: Implement voltage drop correction for sub boards *@
 
@@ -446,6 +458,7 @@
                         @* } *@
                     </div>
                 }
+                
 
                 <p class="cell cell--text">@subDistributionBoard.CircuitProtection.GetDisplayName()</p>
 
@@ -453,27 +466,27 @@
 
                 <p class="cell cell--text">@subDistributionBoard.SetCount</p>
 
-                @if (subDistributionBoard.ConductorSize == 0)
+                @if (subDistributionBoard.ConductorSize.HasError)
                 {
-                    <div class="cell cell--empty"></div>
+                    <p class="cell cell--text cell--error">@(subDistributionBoard.ConductorSize.ErrorMessage)</p>
                 }
                 else
                 {
                     <p class="cell cell--text">@(subDistributionBoard.ConductorWireCount)-@(subDistributionBoard.ConductorSize)mm² @(subDistributionBoard.ConductorType.ToString())</p>
                 }
 
-                @if (subDistributionBoard.GroundingSize == 0)
+                @if (subDistributionBoard.GroundingSize.HasError)
                 {
-                    <div class="cell cell--empty"></div>
+                    <p class="cell cell--text cell--error">@(subDistributionBoard.GroundingSize.ErrorMessage)</p>
                 }
                 else
                 {
                     <p class="cell cell--text">1-@(subDistributionBoard.GroundingSize)mm² @(subDistributionBoard.Grounding.ToString())</p>
                 }
 
-                @if (subDistributionBoard.RacewaySize == 0)
+                @if (subDistributionBoard.RacewaySize.HasError)
                 {
-                    <div class="cell cell--empty"></div>
+                    <p class="cell cell--text cell--error">@(subDistributionBoard.RacewaySize.ErrorMessage)</p>
                 }
                 else
                 {
@@ -640,7 +653,7 @@ else
     }
     else
     {
-        <p class="cell cell--text">@(Math.Round(DistributionBoard.VoltageDrop, 4).ToPercentageString())</p>
+        <p class="cell cell--text">@(DistributionBoard.VoltageDrop.HasError ? DistributionBoard.VoltageDrop.ErrorMessage : Math.Round(DistributionBoard.VoltageDrop.Value, 4).ToPercentageString())</p>
         @* <p>@(Math.Round(subDistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p> *@
     }
 

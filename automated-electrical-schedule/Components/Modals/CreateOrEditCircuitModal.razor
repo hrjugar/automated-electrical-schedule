@@ -18,6 +18,7 @@
 
     @{
         var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
+        var isAmpereLoadExceeding = _newCircuit is LightingOutletCircuit && _newCircuit.AmpereLoad.Value > 50;
     }
 
     <div class="modal-content create-or-edit-circuit-modal-content">
@@ -140,9 +141,7 @@
                     </InputSelect>
                     <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
                 </div>
-
-                @* TODO: Fix conductor type and grounding not updating on real time (It properly updates when submitting) *@
-
+                
                 <div class="create-or-edit-circuit-modal-field-row">
                     <div class="create-or-edit-circuit-modal-field">
                         <label>Conductor Type <span class="red-asterisk">*</span></label>
@@ -195,47 +194,49 @@
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Load</label>
-                    <p>@(Math.Round(_newCircuit.AmpereLoad, 4))</p>
+                    <p class="@(_newCircuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">
+                        @(_newCircuit.AmpereLoad.HasError ? _newCircuit.AmpereLoad.ErrorMessage : Math.Round(_newCircuit.AmpereLoad.Value, 4)) @(isAmpereLoadExceeding ? "(Cannot be >50)" : "")
+                    </p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Trip</label>
-                    <p>@(_newCircuit.AmpereTrip)</p>
+                    <p class="@(_newCircuit.AmpereTrip.HasError ? "item-error" : "")">@(_newCircuit.AmpereTrip)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ampere Frame</label>
-                    <p>@(_newCircuit.AmpereFrame)</p>
+                    <p class="@(_newCircuit.AmpereFrame.HasError ? "item-error" : "")">@(_newCircuit.AmpereFrame)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>R</label>
-                    <p>@(_newCircuit.R)</p>
+                    <p class="@(_newCircuit.R.HasError ? "item-error" : "")">@(_newCircuit.R)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>X</label>
-                    <p>@(_newCircuit.X)</p>
+                    <p class="@(_newCircuit.X.HasError ? "item-error" : "")">@(_newCircuit.X)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Voltage Drop</label>
-                    <p>@(Math.Round(_newCircuit.VoltageDrop, 4).ToPercentageString())</p>
+                    <p class="@(_newCircuit.VoltageDrop.HasError ? "item-error" : "")">@(_newCircuit.VoltageDrop.HasError ? _newCircuit.VoltageDrop.ErrorMessage : Math.Round(_newCircuit.VoltageDrop.Value, 4).ToPercentageString())</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Conductor Size</label>
-                    <p>@(_newCircuit.ConductorSize)</p>
+                    <p class="@(_newCircuit.ConductorSize.HasError ? "item-error" : "")">@(_newCircuit.ConductorSize)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Ground Size</label>
-                    <p>@(_newCircuit.GroundingSize)</p>
+                    <p class="@(_newCircuit.GroundingSize.HasError ? "item-error" : "")">@(_newCircuit.GroundingSize)</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Raceway Size</label>
-                    <p>@(_newCircuit.RacewaySize)</p>
+                    <p class="@(_newCircuit.RacewaySize.HasError ? "item-error" : "")">@(_newCircuit.RacewaySize)</p>
                 </div>
             </div>
         </div>
