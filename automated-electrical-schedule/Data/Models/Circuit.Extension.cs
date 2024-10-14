@@ -27,6 +27,27 @@ public abstract partial class Circuit
         ];
     }
 
+    public static List<LineToLineVoltage> GetAllowedLineToLineVoltagesStatic(
+        DistributionBoard parentDistributionBoard,
+        CircuitType circuitType)
+    {
+        if (parentDistributionBoard is SinglePhaseDistributionBoard) return [];
+        return circuitType switch
+        {
+            CircuitType.LightingOutlet or CircuitType.ConvenienceOutlet =>
+            [
+                Enums.LineToLineVoltage.A,
+                Enums.LineToLineVoltage.B,
+                Enums.LineToLineVoltage.C
+            ],
+            CircuitType.MotorOutlet or CircuitType.ApplianceEquipmentOutlet =>
+                parentDistributionBoard.Voltage == BoardVoltage.V230
+                    ? [Enums.LineToLineVoltage.A, Enums.LineToLineVoltage.B, Enums.LineToLineVoltage.C]
+                    : [Enums.LineToLineVoltage.Abc],
+            _ => throw new ArgumentOutOfRangeException(nameof(parentDistributionBoard))
+        };
+    }
+
     public List<CircuitType> AllowedCircuitTypes => GetAllowedCircuitTypesStatic(ParentDistributionBoard.Voltage);
 
     public virtual List<CircuitProtection> AllowedCircuitProtections =>
@@ -35,39 +56,8 @@ public abstract partial class Circuit
         CircuitProtection.MoldedCaseCircuitBreaker
     ];
 
-    public List<LineToLineVoltage> AllowedLineToLineVoltages
-    {
-        get
-        {
-            if (ParentDistributionBoard is ThreePhaseDistributionBoard threePhaseDistributionBoard)
-                return threePhaseDistributionBoard.LineToLineVoltage switch
-                {
-                    Enums.LineToLineVoltage.A => [Enums.LineToLineVoltage.A],
-                    Enums.LineToLineVoltage.B => [Enums.LineToLineVoltage.B],
-                    Enums.LineToLineVoltage.C => [Enums.LineToLineVoltage.C],
-                    Enums.LineToLineVoltage.Abc => this switch
-                    {
-                        ConvenienceOutletCircuit or LightingOutletCircuit =>
-                        [
-                            Enums.LineToLineVoltage.A,
-                            Enums.LineToLineVoltage.B,
-                            Enums.LineToLineVoltage.C
-                        ],
-                        ApplianceEquipmentOutletCircuit or MotorOutletCircuit =>
-                        [
-                            Enums.LineToLineVoltage.A,
-                            Enums.LineToLineVoltage.B,
-                            Enums.LineToLineVoltage.C,
-                            Enums.LineToLineVoltage.Abc
-                        ],
-                        _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
-                    },
-                    _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
-                };
-
-            return [];
-        }
-    }
+    public List<LineToLineVoltage> AllowedLineToLineVoltages =>
+        GetAllowedLineToLineVoltagesStatic(ParentDistributionBoard, CircuitType);
 
     public int Voltage
     {
@@ -182,7 +172,7 @@ public abstract partial class Circuit
         while (VoltageDrop.Value * 100 >= 3) SetCount += 1;
     }
 
-    public void AdjustSetCountForConductorSize()
+    private void AdjustSetCountForConductorSize()
     {
         while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
         {
@@ -190,7 +180,7 @@ public abstract partial class Circuit
         }
     }
 
-    public void AdjustSetCountForGroundingSize()
+    private void AdjustSetCountForGroundingSize()
     {
         while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
         {

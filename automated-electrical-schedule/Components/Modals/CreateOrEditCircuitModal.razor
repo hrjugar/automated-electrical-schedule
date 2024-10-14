@@ -348,7 +348,10 @@
 
             if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
             {
-                _newCircuit.LineToLineVoltage = _newCircuit.AllowedLineToLineVoltages[0];
+                _newCircuit.LineToLineVoltage = Circuit.GetAllowedLineToLineVoltagesStatic(
+                    _newCircuit.ParentDistributionBoard, 
+                    _newCircuit.CircuitType
+                )[0];
             }
 
             if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
@@ -387,6 +390,27 @@
     void UpdateCircuitType(CircuitType circuitType)
     {
         Circuit updatedNewCircuit;
+        var allowedLineToLineVoltages = Circuit.GetAllowedLineToLineVoltagesStatic(
+            _newCircuit!.ParentDistributionBoard,
+            circuitType
+        );
+
+        LineToLineVoltage? updatedNewLineToLineVoltage;
+        if (allowedLineToLineVoltages.Count > 0)
+        {
+            if (_newCircuit.LineToLineVoltage is not null && allowedLineToLineVoltages.Contains(_newCircuit.LineToLineVoltage.Value))
+            {
+                updatedNewLineToLineVoltage = _newCircuit.LineToLineVoltage;
+            }
+            else
+            {
+                updatedNewLineToLineVoltage = allowedLineToLineVoltages[0];
+            }
+        }
+        else
+        {
+            updatedNewLineToLineVoltage = null;
+        }
 
         switch (circuitType)
         {
@@ -397,12 +421,12 @@
             case CircuitType.MotorOutlet:
                 var initialMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
                     _newCircuit!.ParentDistributionBoard,
-                    _newCircuit.LineToLineVoltage
+                    updatedNewLineToLineVoltage
                 )[0];
 
                 var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
                     initialMotorType,
-                    _newCircuit.LineToLineVoltage
+                    updatedNewLineToLineVoltage
                 )[0];
                 
                 updatedNewCircuit = new MotorOutletCircuit
@@ -430,7 +454,7 @@
         updatedNewCircuit.WireLength = _newCircuit.WireLength;
         updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit ? 100 : _newCircuit.DemandFactor;
 
-        updatedNewCircuit.LineToLineVoltage = _newCircuit.LineToLineVoltage;
+        updatedNewCircuit.LineToLineVoltage = updatedNewLineToLineVoltage;
 
         updatedNewCircuit.CircuitProtection =
             updatedNewCircuit.AllowedCircuitProtections.Contains(_newCircuit.CircuitProtection) ? _newCircuit.CircuitProtection : updatedNewCircuit.AllowedCircuitProtections[0];
