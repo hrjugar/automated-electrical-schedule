@@ -20,6 +20,13 @@
                 <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
+                
+                @if (_distributionBoard is ThreePhaseDistributionBoard && _distributionBoard.Voltage == BoardVoltage.V230)
+                {
+                    <button class="btn-text btn-primary" @onclick="BalanceLoads" disabled="@(_distributionBoard.Circuits.Count < 2)">
+                        Balance Loads
+                    </button>
+                }
 
                 <button class="btn-icon btn-secondary" @onclick="OpenEditBoardModal">
                     <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -107,6 +114,18 @@
         _isCreateBoardModalOpen = true;
     }
 
+    async Task BalanceLoads()
+    {
+        if (
+            !(_distributionBoard is ThreePhaseDistributionBoard && _distributionBoard.Voltage == BoardVoltage.V230) ||
+            _distributionBoard.Circuits.Count < 2
+        ) return;
+        
+        ((ThreePhaseDistributionBoard) _distributionBoard).BalanceLoads();
+        StateHasChanged();
+        await DatabaseContext.SaveChangesAsync();
+    }
+
     async Task RefreshCircuitList()
     {
         _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
@@ -141,12 +160,7 @@
         await LoadSubDistributionBoardsRecursively(board);
         return board;
     }
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     _distributionBoard = await GetCompleteDistributionBoard(BoardId);
-    // }
-
+    
     protected override async Task OnParametersSetAsync()
     {
         _distributionBoard = await GetCompleteDistributionBoard(BoardId);
