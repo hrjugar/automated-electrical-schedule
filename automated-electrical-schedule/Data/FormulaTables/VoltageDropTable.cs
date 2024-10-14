@@ -296,7 +296,7 @@ public static class VoltageDropTable
             : CalculationResult<double>.Success(column[index]);
     }
 
-    public static CalculationResult<double> GetVoltageDrop(LineToLineVoltage? lineToLineVoltage,
+    public static CalculationResult<double> GetVoltageDrop(LineToLineVoltage lineToLineVoltage,
         CalculationResult<double> r,
         CalculationResult<double> x,
         CalculationResult<double> ampereLoad,

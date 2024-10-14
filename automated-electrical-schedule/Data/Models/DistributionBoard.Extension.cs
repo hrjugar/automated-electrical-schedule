@@ -44,8 +44,8 @@ public abstract partial class DistributionBoard
     {
         get
         {
-            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return "ABC";
-            if (LineToLineVoltage is null) return "";
+            if (LineToLineVoltage == LineToLineVoltage.Abc) return "ABC";
+            if (LineToLineVoltage is LineToLineVoltage.None) return "";
 
             var currentBoard = ParentDistributionBoard;
             ThreePhaseConfiguration? threePhaseConfiguration = null;
@@ -175,7 +175,7 @@ public abstract partial class DistributionBoard
             if (RacewayType == RacewayType.CableTray || WireLength is null) return CalculationResult<double>.Success(0);
 
             return VoltageDropTable.GetVoltageDrop(
-                this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : null,
+                this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : LineToLineVoltage.None,
                 R,
                 X,
                 CalculationResult<double>.Success(AmpereLoad),

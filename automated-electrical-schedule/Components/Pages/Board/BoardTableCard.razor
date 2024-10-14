@@ -21,7 +21,7 @@
     <p class="cell cell--text">Voltage</p>
     <p class="cell cell--text">DF</p>
 
-    @if (DistributionBoard.LineToLineVoltage == null)
+    @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
     {
         <p class="cell cell--text cell--load">Ampere Load</p>
     }
@@ -153,7 +153,7 @@
                     <InfoButton OnClick="() => OpenInformationArea(Information.DemandFactor)"/>
                 </div>
 
-                @if (DistributionBoard.LineToLineVoltage is null)
+                @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
                 {
                     <div class="@("cell cell--group cell--info cell--load cell--load--no-line " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
                         <p>@ampereLoadDisplay</p>
@@ -354,7 +354,7 @@
                 @*     <p class="cell cell--text cell--load">@Math.Round(subDistributionBoard.GetAmpereLoad(threePhaseBoard?.LineToLineVoltage), 4)</p> *@
                 @* } *@
 
-                @if (subDistributionBoard.LineToLineVoltage is null)
+                @if (subDistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
                 {
                     @if (subDistributionBoard.AmpereLoad == 0)
                     {
@@ -552,7 +552,7 @@ else
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
 
-    @if (DistributionBoard.LineToLineVoltage is null)
+    @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
     {
         @if (DistributionBoard.AmpereLoad == 0)
         {
@@ -617,27 +617,6 @@ else
             }
         }
     }
-
-    @* @if (DistributionBoard.LineToLineVoltage is null) *@
-    @* { *@
-    @*     <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(DistributionBoard.GetAmpereLoad(), 4)</p> *@
-    @* } *@
-    @* else *@
-    @* { *@
-    @*     if (DistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc) *@
-    @*     { *@
-    @*         <div class="cell cell--separator"></div> *@
-    @* *@
-    @*         <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Ab), 4)</p> *@
-    @*         <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Bc), 4)</p> *@
-    @*         <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Ca), 4)</p> *@
-    @*         <p class="cell cell--text">@Math.Round(DistributionBoard.GetAmpereLoad(LineToLineVoltage.Ca), 4)</p> *@
-    @*     } *@
-    @*     else *@
-    @*     { *@
-    @*         <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.GetAmpereLoad(), 4)</p> *@
-    @*     } *@
-    @* } *@
 
     <div class="cell cell--separator"></div>
 

@@ -51,7 +51,7 @@ public abstract partial class DistributionBoard
 
     [Display(Name = "line-to-line voltage")]
     [Column("line_to_line_voltage")]
-    public LineToLineVoltage? LineToLineVoltage { get; set; }
+    public LineToLineVoltage LineToLineVoltage { get; set; } = LineToLineVoltage.None;
 
     [Required]
     [Display(Name = "sets")]

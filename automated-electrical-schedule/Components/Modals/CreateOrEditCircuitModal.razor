@@ -36,8 +36,11 @@
                 @if (threePhaseBoard != null)
                 {
                     @* TODO: Update allowed motor types after updating line to line voltage*@
-                    @* Nullable enums currently not compatible with ValueChanged and ValueExpression*@
-                    <InputSelect class="select-line-to-line" @bind-Value=@_newCircuit.LineToLineVoltage>
+                    <InputSelect 
+                        class="select-line-to-line" 
+                        Value="_newCircuit.LineToLineVoltage"
+                        ValueChanged="@((LineToLineVoltage lineToLineVoltage) => UpdateLineToLineVoltage(lineToLineVoltage))"
+                        ValueExpression="@(() => _newCircuit.LineToLineVoltage)">
                         @foreach (var lineToLineVoltage in _newCircuit.AllowedLineToLineVoltages)
                         {
                             <option value="@lineToLineVoltage">@lineToLineVoltage.GetDisplayName(threePhaseBoard.ThreePhaseConfiguration)</option>
@@ -395,10 +398,10 @@
             circuitType
         );
 
-        LineToLineVoltage? updatedNewLineToLineVoltage;
+        LineToLineVoltage updatedNewLineToLineVoltage;
         if (allowedLineToLineVoltages.Count > 0)
         {
-            if (_newCircuit.LineToLineVoltage is not null && allowedLineToLineVoltages.Contains(_newCircuit.LineToLineVoltage.Value))
+            if (_newCircuit.LineToLineVoltage is not LineToLineVoltage.None && allowedLineToLineVoltages.Contains(_newCircuit.LineToLineVoltage))
             {
                 updatedNewLineToLineVoltage = _newCircuit.LineToLineVoltage;
             }
@@ -409,7 +412,7 @@
         }
         else
         {
-            updatedNewLineToLineVoltage = null;
+            updatedNewLineToLineVoltage = LineToLineVoltage.None;
         }
 
         switch (circuitType)
@@ -472,6 +475,27 @@
     void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
     {
         _newCircuit!.LineToLineVoltage = lineToLineVoltage;
+
+        if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
+        {
+            var newMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
+                _newCircuit.ParentDistributionBoard,
+                lineToLineVoltage
+            )[0];
+            
+            motorOutletCircuit.MotorType = newMotorType;
+            
+            var allowedHorsepowerValues = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
+                newMotorType,
+                lineToLineVoltage
+            );
+            
+            if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
+            {
+                motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
+            }
+        }
+        
         StateHasChanged();
     }
 

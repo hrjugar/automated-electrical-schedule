@@ -446,7 +446,7 @@ public partial class Information
         };
     }
 
-    public static Information GenerateAmpereLoadInfo(CircuitType circuitType, LineToLineVoltage? lineToLineVoltage)
+    public static Information GenerateAmpereLoadInfo(CircuitType circuitType, LineToLineVoltage lineToLineVoltage)
     {
         return circuitType switch
         {

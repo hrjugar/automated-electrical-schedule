@@ -188,9 +188,9 @@ public partial class MotorOutletCircuit
     }
 
     public static List<MotorType> GetAllowedMotorTypesStatic(DistributionBoard parentDistributionBoard,
-        LineToLineVoltage? lineToLineVoltage)
+        LineToLineVoltage lineToLineVoltage)
     {
-        if (parentDistributionBoard.Phase == BoardPhase.SinglePhase || lineToLineVoltage != Enums.LineToLineVoltage.Abc)
+        if (parentDistributionBoard.Phase == BoardPhase.SinglePhase || lineToLineVoltage != LineToLineVoltage.Abc)
             return [MotorType.SinglePhaseMotor];
 
         if (parentDistributionBoard.Voltage == BoardVoltage.V400)
@@ -212,9 +212,9 @@ public partial class MotorOutletCircuit
         ];
     }
     
-    public static List<double> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage? lineToLineVoltage)
+    public static List<double> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage lineToLineVoltage)
     {
-        if (lineToLineVoltage != Enums.LineToLineVoltage.Abc)
+        if (lineToLineVoltage != LineToLineVoltage.Abc)
             return DataConstants.SinglePhaseHorsepowerValues;
 
         return motorType == MotorType.Synchronous
