@@ -168,18 +168,45 @@ public partial class ThreePhaseDistributionBoard
                 circuit.Voltage == 230)
             .OrderByDescending(circuit => circuit.AmpereLoad.Value)
             .ToList();
-
+        
         if (toBeBalancedCircuits.Count < 2) return;
         
         var possibleLineToLineVoltages = new[] { LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C};
 
         var lineToLineVoltageLoads = new Dictionary<LineToLineVoltage, double>();
+        
         foreach (var lineToLineVoltage in possibleLineToLineVoltages)
         {
             lineToLineVoltageLoads[lineToLineVoltage] = 0;
         }
+
+        var subBoardLineToLineVoltageLoads = new Dictionary<LineToLineVoltage, double>();
+
+        foreach (var lineToLineVoltage in possibleLineToLineVoltages)
+        {
+            var singlePhaseSubBoardLineToLineVoltageLoad = SubDistributionBoards
+                .OfType<SinglePhaseDistributionBoard>()
+                .Where(subBoard => subBoard.LineToLineVoltage == lineToLineVoltage)
+                .Select(subBoard => subBoard.AmpereLoad)
+                .Sum();
+            
+            var threePhaseSubBoardLineToLineVoltageLoad = SubDistributionBoards
+                .OfType<ThreePhaseDistributionBoard>()
+                .Select(subBoard => lineToLineVoltage switch
+                {
+                    LineToLineVoltage.A => subBoard.AmpereLoadA,
+                    LineToLineVoltage.B => subBoard.AmpereLoadB,
+                    LineToLineVoltage.C => subBoard.AmpereLoadC,
+                    LineToLineVoltage.Abc => subBoard.AmpereLoad,
+                    _ => 0
+                })
+                .Sum();
+
+            subBoardLineToLineVoltageLoads[lineToLineVoltage] =
+                singlePhaseSubBoardLineToLineVoltageLoad + threePhaseSubBoardLineToLineVoltageLoad;
+        }
         
-        UpdateTypeLoads();
+        UpdateLineToLineVoltageLoads();
         var currentStandingDeviation = CalculateStandardDeviation();
 
         foreach (var circuit in toBeBalancedCircuits)
@@ -193,7 +220,7 @@ public partial class ThreePhaseDistributionBoard
                 if (lineToLineVoltage == originalLineToLineVoltage) continue;
                 
                 circuit.LineToLineVoltage = lineToLineVoltage;
-                UpdateTypeLoads();
+                UpdateLineToLineVoltageLoads();
                 var newStandingDeviation = CalculateStandardDeviation();
                 
                 if (newStandingDeviation < bestStandingDeviation)
@@ -203,36 +230,39 @@ public partial class ThreePhaseDistributionBoard
                 }
                 
                 circuit.LineToLineVoltage = originalLineToLineVoltage;
-                UpdateTypeLoads();
+                UpdateLineToLineVoltageLoads();
             }
             
             if (bestLineToLineVoltage != originalLineToLineVoltage)
             {
                 circuit.LineToLineVoltage = bestLineToLineVoltage;
                 currentStandingDeviation = bestStandingDeviation;
-                UpdateTypeLoads();
+                UpdateLineToLineVoltageLoads();
             }
         }
 
         return;
+        
+        void UpdateLineToLineVoltageLoads()
+        {
+            foreach (var lineToLineVoltage in possibleLineToLineVoltages)
+            {
+                var circuitsLoad =
+                    toBeBalancedCircuits
+                        .Where(circuit => circuit.LineToLineVoltage == lineToLineVoltage)
+                        .Select(circuit => circuit.AmpereLoad)
+                        .Sum();
+
+                lineToLineVoltageLoads[lineToLineVoltage] =
+                    subBoardLineToLineVoltageLoads[lineToLineVoltage] + circuitsLoad;
+            }
+        }
         
         double CalculateStandardDeviation()
         {
             var mean = lineToLineVoltageLoads.Values.Average();
             var differenceSquaresSum = lineToLineVoltageLoads.Values.Sum(load => Math.Pow(load - mean, 2));
             return Math.Sqrt(differenceSquaresSum / lineToLineVoltageLoads.Count);
-        }
-
-        void UpdateTypeLoads()
-        {
-            foreach (var lineToLineVoltage in lineToLineVoltageLoads.Keys.ToList())
-            {
-                lineToLineVoltageLoads[lineToLineVoltage] =
-                    toBeBalancedCircuits
-                        .Where(circuit => circuit.LineToLineVoltage == lineToLineVoltage)
-                        .Select(circuit => circuit.AmpereLoad)
-                        .Sum();
-            }
         }
     }
 }
