@@ -160,15 +160,16 @@ public partial class ThreePhaseDistributionBoard
 
     public void BalanceLoads()
     {
-        if (Voltage != BoardVoltage.V230) return;
-
         var toBeBalancedCircuits = Circuits
             .Where(circuit =>
-                circuit.LineToLineVoltage == LineToLineVoltage.A
+                (circuit.LineToLineVoltage == LineToLineVoltage.A
                 || circuit.LineToLineVoltage == LineToLineVoltage.B
-                || circuit.LineToLineVoltage == LineToLineVoltage.C)
+                || circuit.LineToLineVoltage == LineToLineVoltage.C) &&
+                circuit.Voltage == 230)
             .OrderByDescending(circuit => circuit.AmpereLoad.Value)
             .ToList();
+
+        if (toBeBalancedCircuits.Count < 2) return;
         
         var possibleLineToLineVoltages = new[] { LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C};
 

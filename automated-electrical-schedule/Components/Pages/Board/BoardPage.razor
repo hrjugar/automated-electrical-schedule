@@ -21,7 +21,7 @@
                     Add New Circuit
                 </button>
                 
-                @if (_distributionBoard is ThreePhaseDistributionBoard && _distributionBoard.Voltage == BoardVoltage.V230)
+                @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {
                     <button class="btn-text btn-primary" @onclick="BalanceLoads" disabled="@(_distributionBoard.Circuits.Count < 2)">
                         Balance Loads
@@ -116,12 +116,9 @@
 
     async Task BalanceLoads()
     {
-        if (
-            !(_distributionBoard is ThreePhaseDistributionBoard && _distributionBoard.Voltage == BoardVoltage.V230) ||
-            _distributionBoard.Circuits.Count < 2
-        ) return;
+        if (_distributionBoard is not ThreePhaseDistributionBoard threePhaseBoard) return;
         
-        ((ThreePhaseDistributionBoard) _distributionBoard).BalanceLoads();
+        threePhaseBoard.BalanceLoads();
         StateHasChanged();
         await DatabaseContext.SaveChangesAsync();
     }
