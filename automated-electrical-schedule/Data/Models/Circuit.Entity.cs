@@ -19,9 +19,10 @@ public abstract partial class Circuit
     public int ParentDistributionBoardId { get; set; }
 
     // TODO: Check later if cascade delete works as intended
+    [Required]
     [ForeignKey(nameof(ParentDistributionBoardId))]
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public DistributionBoard ParentDistributionBoard { get; set; } = null!;
+    public DistributionBoard ParentDistributionBoard { get; set; } = default!;
 
     [Required]
     [Display(Name = "circuit type")]

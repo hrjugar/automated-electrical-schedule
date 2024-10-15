@@ -64,6 +64,7 @@
 
     async Task DeleteBoard()
     {
+        DatabaseContext.Circuits.RemoveRange(DistributionBoard.Circuits);
         DatabaseContext.DistributionBoards.Remove(DistributionBoard);
 
         if (_parentProject is not null)
