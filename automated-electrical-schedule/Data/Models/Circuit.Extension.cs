@@ -141,8 +141,26 @@ public abstract partial class Circuit
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
-    public CalculationResult<double> GroundingSize =>
-        CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
+    // public CalculationResult<double> GroundingSize =>
+    //     CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
+
+    public CalculationResult<double> GroundingSize
+    {
+        get
+        {
+            var conductorSizeWithoutSetCountIncluded =
+                ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, 0, false);
+
+            return
+                CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(
+                    Grounding.Material, 
+                    AmpereTrip,
+                    conductorSizeWithoutSetCountIncluded.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize 
+                        ? SetCount 
+                        : 1
+                );
+        }
+    }
 
     public CalculationResult<int> RacewaySize
     {

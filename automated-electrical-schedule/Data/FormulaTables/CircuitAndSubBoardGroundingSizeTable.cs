@@ -98,12 +98,12 @@ public static class CircuitAndSubBoardGroundingSizeTable
         600
     ];
 
-    public static CalculationResult<double> GetGroundingSize(ConductorMaterial conductorMaterial, CalculationResult<int> ampereTrip)
+    public static CalculationResult<double> GetGroundingSize(ConductorMaterial conductorMaterial, CalculationResult<int> ampereTrip, int setCount = 1)
     {
         if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
 
         var column = conductorMaterial == ConductorMaterial.Copper ? CuColumn : AlColumn;
-        var index = AmpereTripRatings.FindIndex(at => at >= ampereTrip.Value);
+        var index = AmpereTripRatings.FindIndex(at => at >= ampereTrip.Value / setCount);
 
         return index == -1
             ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForGroundingSize)

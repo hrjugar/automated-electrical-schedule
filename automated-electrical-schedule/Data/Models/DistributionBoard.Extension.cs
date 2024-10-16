@@ -206,11 +206,32 @@ public abstract partial class DistributionBoard
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
-    public CalculationResult<double> GroundingSize => ParentDistributionBoard is null
-        ? MainBoardGroundingSizeTable.GetGroundingSize(ConductorType.Material, Grounding.Material,
-            ConductorSize)
-        : CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
+    // public CalculationResult<double> GroundingSize => ParentDistributionBoard is null
+    //     ? MainBoardGroundingSizeTable.GetGroundingSize(ConductorType.Material, Grounding.Material,
+    //         ConductorSize)
+    //     : CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(Grounding.Material, AmpereTrip);
 
+    public CalculationResult<double> GroundingSize
+    {
+        get
+        {
+            if (ParentDistributionBoard is null)
+                return MainBoardGroundingSizeTable.GetGroundingSize(ConductorType.Material, Grounding.Material,
+                    ConductorSize);
+            
+            var conductorSizeWithoutSetCountIncluded = 
+                ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, 3.5);
+            
+            return
+                CircuitAndSubBoardGroundingSizeTable.GetGroundingSize(
+                    Grounding.Material, 
+                    AmpereTrip,
+                    conductorSizeWithoutSetCountIncluded.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize 
+                        ? SetCount 
+                        : 1
+                );
+        }
+    }
 
     public CalculationResult<int> RacewaySize
     {

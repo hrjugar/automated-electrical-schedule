@@ -184,7 +184,8 @@ public static class ConductorSizeTable
         ConductorType conductorType, 
         CalculationResult<int> ampereTrip,
         int setCount,
-        double minimumConductorSize = 0)
+        double minimumConductorSize = 0,
+        bool isSetCountConsidered = true)
     {
         if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
 
@@ -235,7 +236,10 @@ public static class ConductorSizeTable
 
         if (index == -1)
         {
+            if (!isSetCountConsidered) return CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForConductorSize);
+            
             index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip.Value / setCount);
+            
             if (index == -1) return CalculationResult<double>.Failure(CalculationErrorType.NoFittingAmpereTripForConductorSize);
         }
 
