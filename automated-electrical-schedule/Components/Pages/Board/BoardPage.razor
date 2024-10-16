@@ -23,7 +23,14 @@
                 
                 @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {
-                    <button class="btn-text btn-primary" @onclick="BalanceLoads" disabled="@(_distributionBoard.Circuits.Count < 2)">
+                    var toBeBalancedCircuitsCount = _distributionBoard.Circuits
+                        .Count(circuit =>
+                            (circuit.LineToLineVoltage == LineToLineVoltage.A
+                             || circuit.LineToLineVoltage == LineToLineVoltage.B
+                             || circuit.LineToLineVoltage == LineToLineVoltage.C) &&
+                            circuit.Voltage == 230);
+                    
+                    <button class="btn-text btn-primary" @onclick="BalanceLoads" disabled="@(toBeBalancedCircuitsCount < 2)">
                         Balance Loads
                     </button>
                 }
