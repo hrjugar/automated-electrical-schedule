@@ -332,7 +332,7 @@
             updatedNewDistributionBoard = new ThreePhaseDistributionBoard
             {
                 LineToLineVoltage = LineToLineVoltage.Abc,
-                ThreePhaseConfiguration = ThreePhaseConfiguration.Delta
+                ThreePhaseConfiguration = ((ThreePhaseDistributionBoard) DistributionBoard).ThreePhaseConfiguration
             };
         }
 

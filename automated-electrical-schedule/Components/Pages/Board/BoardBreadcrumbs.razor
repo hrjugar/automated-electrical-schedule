@@ -4,6 +4,12 @@
 <div class="board-breadcrumbs">
     <a href="/">Projects</a>
 
+    <svg class="icon-sm crumb-separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
+        <path fill="currentColor" d="M4.47 2.22a.75.75 0 0 0 0 1.06L7.19 6L4.47 8.72a.75.75 0 0 0 1.06 1.06l3.25-3.25a.75.75 0 0 0 0-1.06L5.53 2.22a.75.75 0 0 0-1.06 0"/>
+    </svg>
+    
+    <p class="project-crumb">@_projectName</p>
+    
     @foreach (var crumb in breadcrumbs)
     {
         <svg class="icon-sm crumb-separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
@@ -27,6 +33,7 @@
     // TODO: Implement the breadcrumbs
 
     List<DistributionBoard> breadcrumbs = [];
+    string _projectName = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -57,6 +64,17 @@
             currentBoard = await DatabaseContext.DistributionBoards
                 .Include(b => b.ParentDistributionBoard)
                 .SingleAsync(b => b.Id == currentBoard.ParentDistributionBoard.Id);
+        }
+
+        if (currentBoard.ParentDistributionBoard == null)
+        {
+            var currentProject = await DatabaseContext.Projects
+                .FirstOrDefaultAsync(project => project.MainDistributionBoardId == currentBoard.Id);
+
+            if (currentProject is not null)
+            {
+                _projectName = currentProject.ProjectName;
+            }
         }
 
         boards.Reverse();

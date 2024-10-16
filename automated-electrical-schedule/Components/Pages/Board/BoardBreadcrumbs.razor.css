@@ -5,7 +5,7 @@
     align-items: center;
     gap: 0.25rem;
 
-    .current-crumb {
+    .current-crumb, .project-crumb {
         color: var(--clr-neutral-400);
         font-weight: 600;
     }
