@@ -222,7 +222,7 @@
 
                 <div class="create-or-edit-circuit-modal-content-value">
                     <label>Volt Amps</label>
-                    <p>@(_newCircuit.VoltAmpere)</p>
+                    <p>@(_newCircuit.VoltAmpere.HasError ? _newCircuit.VoltAmpere.ErrorMessage : Math.Round(_newCircuit.VoltAmpere.Value, 4))</p>
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-value">

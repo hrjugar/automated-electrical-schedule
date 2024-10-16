@@ -141,7 +141,7 @@
                     <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
                 </div>
                 <div class="@("cell cell--group cell--info " + (circuit.VoltAmpere.HasError ? "cell--error" : ""))">
-                    <p>@circuit.VoltAmpere</p>
+                    <p>@(circuit.VoltAmpere.HasError ? circuit.VoltAmpere.ErrorMessage : Math.Round(circuit.VoltAmpere.Value, 4))</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
                 </div>
                 <div class="cell cell--group cell--info">
@@ -334,7 +334,7 @@
                 }
                 else
                 {
-                    <p class="cell cell--text">@(subDistributionBoard.VoltAmpere)</p>
+                    <p class="cell cell--text">@(Math.Round(subDistributionBoard.VoltAmpere, 4))</p>
                 }
 
                 <p class="cell cell--text">@((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage ? $"{(int)DistributionBoard.Voltage}/" : "")@((int)subDistributionBoard.Voltage)</p>
