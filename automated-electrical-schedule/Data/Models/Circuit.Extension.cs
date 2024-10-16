@@ -202,17 +202,8 @@ public abstract partial class Circuit
         }
     }
 
-    private void AdjustSetCountForGroundingSize()
-    {
-        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
-        {
-            SetCount += 1;
-        }
-    }
-
     public void AdjustSetCountForSizes()
     {
         AdjustSetCountForConductorSize();
-        AdjustSetCountForGroundingSize();
     }
 }

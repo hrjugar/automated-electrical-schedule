@@ -321,19 +321,16 @@ public abstract partial class DistributionBoard
 
     public abstract DistributionBoard Clone();
     
-    public void AdjustAmpereTripForConductorSize()
+    private void AdjustSetCountForConductorSize()
     {
         while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
         {
             SetCount += 1;
         }
     }
-
-    public void AdjustAmpereTripForGroundingSize()
+    
+    public void AdjustSetCountForSizes()
     {
-        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
-        {
-            SetCount += 1;
-        }
+        AdjustSetCountForConductorSize();
     }
 }

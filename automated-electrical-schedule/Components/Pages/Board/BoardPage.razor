@@ -27,6 +27,13 @@
                         Balance Loads
                     </button>
                 }
+                
+                @if (_distributionBoard.SetCount > 1)
+                {
+                    <button class="btn-text btn-secondary" @onclick="ResetSetCount">
+                        Reset Sets
+                    </button>
+                }
 
                 <button class="btn-icon btn-secondary" @onclick="OpenEditBoardModal">
                     <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -51,7 +58,7 @@
 
             <div class="board-content-main">
                 <BoardTableCard DistributionBoard="_distributionBoard" OnCircuitChange="RefreshCircuitList"/>
-                <BoardSizeCards DistributionBoard="_distributionBoard"/>
+                <BoardSizeCards DistributionBoard="_distributionBoard" OnBoardUpdate="RefreshBoard"/>
             </div>
             @* <div class="board-content-main"> *@
             @*     <BoardSizeCard DistributionBoard="_distributionBoard"/> *@
@@ -123,10 +130,23 @@
         await DatabaseContext.SaveChangesAsync();
     }
 
+    async Task ResetSetCount()
+    {
+        _distributionBoard!.SetCount = 1;
+        StateHasChanged();
+        await DatabaseContext.SaveChangesAsync();
+    }
+
     async Task RefreshCircuitList()
     {
         _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
 
+        StateHasChanged();
+    }
+
+    async Task RefreshBoard()
+    {
+        _distributionBoard = await GetCompleteDistributionBoard(BoardId);
         StateHasChanged();
     }
 

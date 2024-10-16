@@ -1,3 +1,5 @@
+@inject DatabaseContext DatabaseContext
+
 <div class="board-size-cards">
     <div class="board-size-card">
         <label>Size of Circuit Protection</label>
@@ -27,7 +29,17 @@
 
         @if (DistributionBoard.ConductorSize.HasError) 
         {
-            <p>@(DistributionBoard.ConductorSize.ErrorMessage)</p>
+            if (DistributionBoard.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+            {
+                <FormWarning
+                    WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this."
+                    WarningAction="@(() => AdjustSetCountForSizes())"
+                    WarningActionText="Adjust Number of Sets"/>
+            }
+            else
+            {
+                <p>@(DistributionBoard.ConductorSize.ErrorMessage)</p>
+            }
         }
         else if (DistributionBoard.GroundingSize.HasError)
         {
@@ -35,6 +47,13 @@
         }
         else if (DistributionBoard.RacewaySize.HasError)
         {
+            @if (DistributionBoard.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
+            {
+                <FormWarning
+                    WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
+                    WarningAction="@(() => ConvertToCableTray())"
+                    WarningActionText="Convert to Cable Tray"/>
+            }
             <p>@DistributionBoard.RacewaySize.ErrorMessage</p>
         }
         else if (DistributionBoard.ConductorSize.Value == 0 || DistributionBoard.GroundingSize.Value == 0 || DistributionBoard.RacewaySize.Value == 0)
@@ -85,4 +104,25 @@
 
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+
+    [Parameter] public EventCallback OnBoardUpdate { get; set; }
+    
+    async Task AdjustSetCountForSizes()
+    {
+        DistributionBoard.AdjustSetCountForSizes();
+        DatabaseContext.Update(DistributionBoard);
+        StateHasChanged();
+        await DatabaseContext.SaveChangesAsync();
+        await OnBoardUpdate.InvokeAsync();
+    }
+    
+    async Task ConvertToCableTray()
+    {
+        DistributionBoard.RacewayType = RacewayType.CableTray;
+        DatabaseContext.Update(DistributionBoard);
+        StateHasChanged();
+        await DatabaseContext.SaveChangesAsync();
+        await OnBoardUpdate.InvokeAsync();
+    }
+
 }
