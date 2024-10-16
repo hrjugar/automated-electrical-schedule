@@ -45,10 +45,12 @@
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+    
+    [Parameter] public EventCallback OnBoardDelete { get; set; }
 
     Project? _parentProject;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (DistributionBoard.ParentDistributionBoard is null)
         {
@@ -74,6 +76,8 @@
 
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();
+        
+        await OnBoardDelete.InvokeAsync();
 
         Navigation.NavigateTo(
             _parentProject is null ? $"/board/{DistributionBoard.ParentDistributionBoardId}" : "/"

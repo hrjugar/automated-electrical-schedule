@@ -1,3 +1,10 @@
+.board-page-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .board-page {
     display: flex;
     flex-direction: column;

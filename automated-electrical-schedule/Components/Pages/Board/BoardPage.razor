@@ -3,7 +3,13 @@
 @layout MainLayout
 @inject DatabaseContext DatabaseContext
 
-@if (_distributionBoard is not null)
+@if (_distributionBoard is null)
+{
+    <main class="board-page-loading">
+        <Spinner />
+    </main>
+}
+else
 {
     <main class="board-page">
         <header>
@@ -81,7 +87,10 @@
 
 @if (_isDeleteBoardModalOpen)
 {
-    <DeleteBoardModal @bind-IsOpen="@_isDeleteBoardModalOpen" DistributionBoard="@_distributionBoard"/>
+    <DeleteBoardModal 
+        @bind-IsOpen="@_isDeleteBoardModalOpen" 
+        DistributionBoard="@_distributionBoard" 
+        OnBoardDelete="ClearBoard"/>
 }
 
 @if (_isCreateCircuitModalOpen)
@@ -102,7 +111,7 @@
     DistributionBoard? _distributionBoard;
 
     List<Circuit> _circuits = [];
-
+    
     private bool _isEditBoardModalOpen;
     private bool _isDeleteBoardModalOpen;
     private bool _isCreateCircuitModalOpen;
@@ -155,6 +164,11 @@
     {
         _distributionBoard = await GetCompleteDistributionBoard(BoardId);
         StateHasChanged();
+    }
+
+    void ClearBoard()
+    {
+        _distributionBoard = null;
     }
 
     async Task LoadSubDistributionBoardsRecursively(DistributionBoard board)
