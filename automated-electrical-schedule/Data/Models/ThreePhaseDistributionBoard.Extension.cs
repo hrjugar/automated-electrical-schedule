@@ -36,10 +36,17 @@ public partial class ThreePhaseDistributionBoard
         {
             var highestPhaseAmpereLoad = new[] { AmpereLoadA, AmpereLoadB, AmpereLoadC }.Max();
 
-            var totalAbcCircuitAmpereLoad = Circuits
+            var totalAbcCircuitsAmpereLoad = Circuits
                 .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
                 .Select(circuit => circuit.AmpereLoad)
                 .Sum();
+
+            var totalAbcSubBoardsAmpereLoad = SubDistributionBoards
+                .OfType<ThreePhaseDistributionBoard>()
+                .Select(board => board.AmpereLoadAbc)
+                .Sum();
+
+            var totalAbcAmpereLoad = totalAbcCircuitsAmpereLoad + totalAbcSubBoardsAmpereLoad;
 
             var highestMotorLoadA = Circuits
                 .OfType<MotorOutletCircuit>()
@@ -74,7 +81,7 @@ public partial class ThreePhaseDistributionBoard
             }.Max();
 
             var factor = ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? Math.Sqrt(3) : 1;
-            var value = highestPhaseAmpereLoad * factor + totalAbcCircuitAmpereLoad + 0.25 * highestMotorLoad;
+            var value = highestPhaseAmpereLoad * factor + totalAbcAmpereLoad + 0.25 * highestMotorLoad;
             return value == 0
                 ? CalculationResult<double>.Failure(CalculationErrorType.NoBoardCurrent)
                 : CalculationResult<double>.Success(value);
