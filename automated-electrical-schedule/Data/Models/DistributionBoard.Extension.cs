@@ -319,6 +319,19 @@ public abstract partial class DistributionBoard
     public ConductorType? BreakerGrounding =>
         BreakerGroundingId is null ? null : ConductorType.FindById(BreakerGroundingId);
 
+    public string ConductorHeaderDisplay
+    {
+        get
+        {
+            if (this is SinglePhaseDistributionBoard) return "Phase+Neutral";
+            if (this is ThreePhaseDistributionBoard
+                {
+                    ThreePhaseConfiguration: ThreePhaseConfiguration.Delta
+                }) return "Line";
+
+            return "Line+Neutral";
+        }
+    }
     public abstract DistributionBoard Clone();
     
     private void AdjustSetCountForConductorSize()
