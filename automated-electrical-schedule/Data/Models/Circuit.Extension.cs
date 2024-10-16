@@ -65,9 +65,9 @@ public abstract partial class Circuit
                 ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
                 parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Wye &&
                 (
-                    LineToLineVoltage == Enums.LineToLineVoltage.A ||
-                    LineToLineVoltage == Enums.LineToLineVoltage.B ||
-                    LineToLineVoltage == Enums.LineToLineVoltage.C
+                    LineToLineVoltage == LineToLineVoltage.A ||
+                    LineToLineVoltage == LineToLineVoltage.B ||
+                    LineToLineVoltage == LineToLineVoltage.C
                 )
             )
                 return (int)BoardVoltage.V230;
@@ -76,19 +76,25 @@ public abstract partial class Circuit
         }
     }
 
-    public int Phase => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 1;
+    public int Phase => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 1;
 
     public int Pole
     {
         get
         {
-            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return 3;
+            if (LineToLineVoltage == LineToLineVoltage.Abc) return 3;
 
-            if (ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
-                parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta)
-                return 2;
+            // if (ParentDistributionBoard is ThreePhaseDistributionBoard { ThreePhaseConfiguration: ThreePhaseConfiguration.Wye })
+            //     return 1;
+            //
+            // return 2;
 
-            return 1;
+            return ParentDistributionBoard is ThreePhaseDistributionBoard
+            {
+                ThreePhaseConfiguration: ThreePhaseConfiguration.Wye
+            }
+                ? 1
+                : 2;
         }
     }
 
@@ -131,7 +137,7 @@ public abstract partial class Circuit
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
     public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount);
-    public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
+    public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
