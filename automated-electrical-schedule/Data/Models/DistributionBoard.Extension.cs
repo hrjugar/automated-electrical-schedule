@@ -286,10 +286,13 @@ public abstract partial class DistributionBoard
             var primaryProtectionFactor = ParentDistributionBoard is null
                 ? TransformerTable.MainBoardTransformerPrimaryProtectionFactor
                 : TransformerTable.SubBoardTransformerPrimaryProtectionFactor;
-            
+
+            var primaryProtectionVoltage = ParentDistributionBoard is null
+                ? 13800
+                : (int)Voltage;
+
             var value = CalculationResult<double>.Success(
-                TransformerCurrent.Value / (Math.Sqrt(3) * (int)Voltage) * primaryProtectionFactor
-            );
+                TransformerCurrent.Value / (Math.Sqrt(3) * primaryProtectionVoltage) * primaryProtectionFactor);
             
             return DataUtils.GetAmpereTrip(value);
         }
