@@ -41,7 +41,9 @@ public abstract partial class Circuit
                 LineToLineVoltage.C
             ],
             CircuitType.MotorOutlet or CircuitType.ApplianceEquipmentOutlet => 
-                [LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C, LineToLineVoltage.Abc],
+                (parentDistributionBoard.Voltage is BoardVoltage.V460 or BoardVoltage.V575)
+                    ? [LineToLineVoltage.Abc]
+                    : [LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C, LineToLineVoltage.Abc],
             _ => throw new ArgumentOutOfRangeException(nameof(parentDistributionBoard))
         };
     }
