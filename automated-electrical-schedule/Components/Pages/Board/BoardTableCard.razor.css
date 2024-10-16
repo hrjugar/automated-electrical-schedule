@@ -297,23 +297,27 @@
             bottom: 0;
             padding-block: 1rem;
             border-top: 1px solid var(--clr-neutral-300);
-
-            .cell:first-child {
-                color: black;
-                font-weight: 700;
-            }
-
-            .cell--load {
+            
+            .cell {
+                &.cell--text {
+                    font-weight: 700;
+                    color: black;
+                }
+                
                 &.cell--load {
-                    &.cell--load--no-line {
-                        grid-column: span 5;
-                    }
-
-                    &.cell--load--line {
-                        grid-column: span 4;
+                    &.cell--load {
+                        &.cell--load--no-line {
+                            grid-column: span 5;
+                        }
+    
+                        &.cell--load--line {
+                            grid-column: span 4;
+                        }
                     }
                 }
             }
+            
+
         }
     }
 }
