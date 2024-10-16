@@ -407,6 +407,37 @@
                             <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadAbc, 4)</p>
                         }
                     }
+                    else if (DistributionBoard is ThreePhaseDistributionBoard)
+                    {
+                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A)
+                        {
+                            <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                        
+                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B)
+                        {
+                            <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                        
+                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C)
+                        {
+                            <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                        
+                        <div class="cell cell--empty"></div>
+                    }
                     else
                     {
                         @if (subDistributionBoard.AmpereLoad == 0)
