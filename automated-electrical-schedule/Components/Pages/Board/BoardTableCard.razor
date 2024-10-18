@@ -337,7 +337,31 @@
                     <p class="cell cell--text">@(Math.Round(subDistributionBoard.VoltAmpere, 4))</p>
                 }
 
-                <p class="cell cell--text">@((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage ? $"{(int)DistributionBoard.Voltage}/" : "")@((int)subDistributionBoard.Voltage)</p>
+                @* <p class="cell cell--text"> *@
+                @*     @if ((int) DistributionBoard.Voltage > (int) subDistributionBoard.Voltage && subThreePhaseBoard != null) *@
+                @*     { *@
+                @*         $"{(int)DistributionBoard.Voltage}/" *@
+                @*     }  *@
+                @*     else if (DistributionBoard.Voltage == BoardVoltage.V400) *@
+                @*     { *@
+                @*         $"{DistributionBoard.Voltage.GetDisplayName()}" *@
+                @*     } *@
+                @*     @((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subThreePhaseBoard != null ? $"{(int)DistributionBoard.Voltage}/" : "")@((int)subDistributionBoard.Voltage) *@
+                @* </p> *@
+
+                @if ((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subThreePhaseBoard != null)
+                {
+                    <p class="cell cell--text">@($"{(int)DistributionBoard.Voltage}/{(int) subDistributionBoard.Voltage}")</p>
+                } 
+                else if (subDistributionBoard.Voltage == BoardVoltage.V400)
+                {
+                    <p class="cell cell--text">@(subDistributionBoard.Voltage.GetDisplayName())</p>
+                }
+                else
+                {
+                    <p class="cell cell--text">@((int) subDistributionBoard.Voltage)</p>
+                }
+                
                 <div class="cell cell--empty"></div>
 
                 @* @if (threePhaseBoard?.LineToLineVoltage == LineToLineVoltage.Abc) *@

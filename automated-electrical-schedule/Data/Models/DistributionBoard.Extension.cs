@@ -122,13 +122,14 @@ public abstract partial class DistributionBoard
     {
         get
         {
-            if (LineToLineVoltage == Enums.LineToLineVoltage.Abc) return 3;
+            if (LineToLineVoltage == LineToLineVoltage.Abc) return 3;
 
-            if (ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
-                parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta)
-                return 2;
-
-            return 1;
+            return ParentDistributionBoard is ThreePhaseDistributionBoard
+            {
+                ThreePhaseConfiguration: ThreePhaseConfiguration.Wye
+            }
+                ? 1
+                : 2;
         }
     }
 
