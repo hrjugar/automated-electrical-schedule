@@ -349,7 +349,7 @@
                 @*     @((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subThreePhaseBoard != null ? $"{(int)DistributionBoard.Voltage}/" : "")@((int)subDistributionBoard.Voltage) *@
                 @* </p> *@
 
-                @if ((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subThreePhaseBoard != null)
+                @if ((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subDistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
                 {
                     <p class="cell cell--text">@($"{(int)DistributionBoard.Voltage}/{(int) subDistributionBoard.Voltage}")</p>
                 } 
