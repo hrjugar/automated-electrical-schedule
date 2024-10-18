@@ -93,9 +93,9 @@
             else
             {
                 <ul class="board-size-content">
-                    <li>@(DistributionBoard.TransformerRating.Value / 1000)kVA</li>
-                    <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)A @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
-                    <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)A @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
+                    <li>@(DistributionBoard.TransformerRating.Value / 1000)kVA, @(DistributionBoard.ParentDistributionBoard is null ? "13.8k" : ((int) DistributionBoard.ParentDistributionBoard.Voltage))V/@((int) DistributionBoard.Voltage)V</li>
+                    <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
+                    <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
                 </ul>
             }
         </div>

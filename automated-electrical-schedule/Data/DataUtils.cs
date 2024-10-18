@@ -37,4 +37,11 @@ public static class DataUtils
             ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingHorsepower)
             : CalculationResult<double>.Success(DataConstants.SinglePhaseMotorOutletAmpereLoadRatings[index]);
     }
+
+    public static double CalculateStandardDeviation(List<double> values)
+    {
+        var avg = values.Average();
+        var sumOfSquares = values.Sum(value => Math.Pow(value - avg, 2));
+        return Math.Sqrt(sumOfSquares / values.Count);
+    }
 }

@@ -290,7 +290,7 @@ public abstract partial class DistributionBoard
 
             var primaryProtectionVoltage = ParentDistributionBoard is null
                 ? 13800
-                : (int)Voltage;
+                : (int) ParentDistributionBoard.Voltage;
 
             var value = CalculationResult<double>.Success(
                 TransformerCurrent.Value / (Math.Sqrt(3) * primaryProtectionVoltage) * primaryProtectionFactor);
