@@ -217,7 +217,7 @@
         updatedNewDistributionBoard.RacewayType = _newProject.MainDistributionBoard.RacewayType;
 
         _newProject.MainDistributionBoard = updatedNewDistributionBoard;
-        _editContext = new EditContext(_newProject);
+        StateHasChanged();
     }
 
     void UpdateThreePhaseConfiguration(ThreePhaseConfiguration newConfiguration)
