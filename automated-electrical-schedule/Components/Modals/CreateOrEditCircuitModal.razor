@@ -469,6 +469,8 @@
 
         _newCircuit = updatedNewCircuit;
         _editContext = new EditContext(_newCircuit);
+        
+        StateHasChanged();
     }
 
     void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
