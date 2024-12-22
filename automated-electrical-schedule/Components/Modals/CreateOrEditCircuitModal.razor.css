@@ -85,6 +85,10 @@
             background-color: var(--clr-neutral-50);
             border-radius: var(--radius-default);
             overflow-y: auto;
+            
+            h4 {
+                color: var(--clr-neutral-500);
+            }
 
             .create-or-edit-circuit-modal-content-value {
                 display: flex;
