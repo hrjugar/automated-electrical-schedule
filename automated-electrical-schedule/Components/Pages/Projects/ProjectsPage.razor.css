@@ -55,6 +55,34 @@
             h5 {
                 font-weight: 500;
             }
+            
+            .project-descriptors {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 0.5rem;
+                
+                .project-badge {
+                    border-radius: 0.5rem;
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.9rem;
+                    
+                    &.badge-single-phase {
+                        background-color: springgreen;
+                    }
+                    
+                    &.badge-delta {
+                        background-color: gold;
+                    }
+                    
+                    &.badge-wye {
+                        background-color: orange;
+                    }
+                }
+            }
+            
+            
 
             &:hover {
                 background-color: var(--clr-neutral-100);

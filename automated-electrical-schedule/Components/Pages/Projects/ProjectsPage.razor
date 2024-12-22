@@ -16,9 +16,38 @@
         {
             @foreach (var project in _projects)
             {
+                var board = project.MainDistributionBoard;
+                
+                string badgeConfigClass;
+                string badgeText;
+                if (board is ThreePhaseDistributionBoard threePhaseBoard)
+                {
+                    if (threePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta)
+                    {
+                        badgeConfigClass = "badge-delta";
+                        badgeText = "3Φ Δ | ";
+                    }
+                    else
+                    {
+                        badgeConfigClass = "badge-wye";
+                        badgeText = "3Φ Y | ";
+                    }
+                }
+                else
+                {
+                    badgeConfigClass = "badge-single-phase";
+                    badgeText = "1Φ | ";
+                }
+
+                badgeText += board.Voltage.GetDisplayName();
+                
                 <a href="/board/@project.MainDistributionBoardId" class="project">
                     <h5>@project.ProjectName</h5>
-                    <p>Last created @project.DateCreated.ToRelativeDateString()</p>
+                    
+                    <div class="project-descriptors">
+                        <p>Last created @project.DateCreated.ToRelativeDateString()</p>
+                        <span class="project-badge @badgeConfigClass">@badgeText</span>
+                    </div>
                 </a>
             }
         }
@@ -49,7 +78,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await DatabaseContext.Projects.ToListAsync();
+        _projects = await DatabaseContext.Projects
+            .Include(p => p.MainDistributionBoard)
+            .ToListAsync();
         _projects.Reverse();
     }
 
@@ -58,7 +89,7 @@
         _projects = await
             DatabaseContext.Projects
                 .Where(p => p.ProjectName.Contains(searchText))
+                .Include(p => p.MainDistributionBoard)
                 .ToListAsync();
     }
-
 }
