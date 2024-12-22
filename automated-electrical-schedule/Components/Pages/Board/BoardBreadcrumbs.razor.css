@@ -4,10 +4,19 @@
     justify-content: flex-start;
     align-items: center;
     gap: 0.25rem;
+    font-size: 1.125rem;
+    white-space: nowrap;
 
-    .current-crumb, .project-crumb {
-        color: var(--clr-neutral-400);
+    .project-crumb, .current-crumb {
         font-weight: 600;
+    }
+    
+    .project-crumb {
+        color: rgb(0, 128, 0, 0.8);
+    }
+    
+    .current-crumb {
+        text-decoration: underline;
     }
 
     .crumb-separator {

@@ -1,4 +1,5 @@
 ﻿using automated_electrical_schedule.Data;
+using automated_electrical_schedule.Data.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
