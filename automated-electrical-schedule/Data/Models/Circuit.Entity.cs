@@ -50,12 +50,6 @@ public abstract partial class Circuit
     [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
     public double WireLength { get; set; } = 1;
 
-    [Required]
-    [Display(Name = "demand factor")]
-    [Column("demand_factor")]
-    [Range(0d, 100d, ErrorMessage = "The demand factor must be between 0 and 100 percent.")]
-    public double DemandFactor { get; set; } = 100;
-
     // TODO: Limit allowed circuit protections depending on circuit type
     [Required]
     [Display(Name = "circuit protection")]

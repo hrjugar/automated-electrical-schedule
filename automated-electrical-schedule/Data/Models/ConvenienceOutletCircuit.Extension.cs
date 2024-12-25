@@ -11,8 +11,8 @@ public partial class ConvenienceOutletCircuit
 
     public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(
         OutletType == OutletType.FourGang
-            ? 4 * 360 * DemandFactor / 100 / Voltage
-            : 180 * Quantity * (DemandFactor / 100) / Voltage
+            ? 4.0 * 360 / Voltage
+            : 180.0 * Quantity / Voltage
     );
 
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
@@ -34,7 +34,6 @@ public partial class ConvenienceOutletCircuit
             Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
-            DemandFactor = DemandFactor,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,

@@ -19,7 +19,6 @@
     <p class="cell cell--text">Qty</p>
     <p class="cell cell--text">VA</p>
     <p class="cell cell--text">Voltage</p>
-    <p class="cell cell--text">DF</p>
 
     @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
     {
@@ -147,10 +146,6 @@
                 <div class="cell cell--group cell--info">
                     <p>@circuit.Voltage</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltageInfo(circuit.Phase))"/>
-                </div>
-                <div class="cell cell--group cell--info">
-                    <p>@circuit.DemandFactor%</p>
-                    <InfoButton OnClick="() => OpenInformationArea(Information.DemandFactor)"/>
                 </div>
 
                 @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
@@ -588,7 +583,6 @@ else
     </div>
 }
 
-@* TODO: Consider subdistribution boards in footer values *@
 <div class="board-table-footer">
     <p class="cell cell--text cell--sticky cell--sticky--left">Total</p>
     <div class="cell cell--empty"></div>
@@ -604,7 +598,6 @@ else
         <p class="cell cell--text">@(Math.Round(DistributionBoard.VoltAmpere, 4))</p>
     }
 
-    <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
 
     @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)

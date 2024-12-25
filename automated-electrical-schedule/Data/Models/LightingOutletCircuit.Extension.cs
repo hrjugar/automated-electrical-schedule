@@ -5,7 +5,7 @@ public partial class LightingOutletCircuit
     public override CalculationResult<double> VoltAmpere => CalculationResult<double>.Success(Quantity * WattagePerFixture);
 
     public override CalculationResult<double> AmpereLoad => 
-        CalculationResult<double>.Success(Quantity * WattagePerFixture * DemandFactor / 100 / Voltage);
+        CalculationResult<double>.Success(Quantity * WattagePerFixture / Voltage);
 
     public override CalculationResult<int> AmpereTrip => 
         DataUtils.GetAmpereTrip(
@@ -23,7 +23,6 @@ public partial class LightingOutletCircuit
             Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
-            DemandFactor = DemandFactor,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,

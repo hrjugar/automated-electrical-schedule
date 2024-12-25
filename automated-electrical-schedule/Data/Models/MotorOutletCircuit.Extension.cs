@@ -175,7 +175,6 @@ public partial class MotorOutletCircuit
             Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
-            DemandFactor = DemandFactor,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,

@@ -9,7 +9,6 @@ public partial class Information
     private const string QuantityTitle = "Quantity";
     private const string VoltAmpereTitle = "Volt Ampere";
     private const string VoltageTitle = "Voltage";
-    private const string DemandFactorTitle = "Demand Factor";
     private const string AmpereLoadTitle = "Ampere Load";
     private const string AmpereTripTitle = "Ampere Trip";
     private const string PhaseTitle = "Phase";
@@ -120,13 +119,6 @@ public partial class Information
         VoltageTitle,
         ThreePhaseSubtitle,
         "Voltage, also known as electric potential difference, is a measure of the potential energy per unit charge between two points in an electrical field. Since the program is in a Three Phase, the Schedule of Loads can be 230, 400, 460, and 575 Volts."
-    );
-    
-    /* --- DEMAND FACTOR --- */
-
-    public static readonly Information DemandFactor = new(
-        DemandFactorTitle,
-        "The demand factor is used to estimate the load that will be drawn on an electrical system during peak usage periods. It is the ratio of the maximum demand of a system or component to the total connected load of the system or component."
     );
     
     /* --- AMPERE LOAD --- */

@@ -159,12 +159,6 @@
                 </div>
 
                 <div class="create-or-edit-circuit-modal-field">
-                    <label>Demand Factor (%) <span class="red-asterisk">*</span></label>
-                    <InputNumber class="input-primary" @bind-Value="_newCircuit.DemandFactor" disabled="@(_newCircuit is MotorOutletCircuit)"/>
-                    <ValidationMessage For=@(() => _newCircuit.DemandFactor)/>
-                </div>
-
-                <div class="create-or-edit-circuit-modal-field">
                     <label>Circuit Protection <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newCircuit.CircuitProtection>
                         @foreach (var circuitProtection in _newCircuit.AllowedCircuitProtections)
@@ -456,7 +450,6 @@
         updatedNewCircuit.Description = _newCircuit!.Description;
         updatedNewCircuit.Quantity = updatedNewCircuit is MotorOutletCircuit ? 1 : _newCircuit.Quantity;
         updatedNewCircuit.WireLength = _newCircuit.WireLength;
-        updatedNewCircuit.DemandFactor = updatedNewCircuit is MotorOutletCircuit ? 100 : _newCircuit.DemandFactor;
 
         updatedNewCircuit.LineToLineVoltage = updatedNewLineToLineVoltage;
 

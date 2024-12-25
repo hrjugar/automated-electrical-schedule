@@ -4,7 +4,7 @@ public partial class ApplianceEquipmentOutletCircuit
 {
     public override CalculationResult<double> VoltAmpere => CalculationResult<double>.Success(Wattage);
 
-    public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(VoltAmpere.Value * (DemandFactor / 100) / Voltage);
+    public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(VoltAmpere.Value / Voltage);
 
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
         CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 
@@ -22,7 +22,6 @@ public partial class ApplianceEquipmentOutletCircuit
             Description = Description,
             Quantity = Quantity,
             WireLength = WireLength,
-            DemandFactor = DemandFactor,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,
