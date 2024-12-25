@@ -73,6 +73,13 @@ public abstract partial class DistributionBoard
     [Display(Name = "raceway type")]
     [Column("raceway_type")]
     public RacewayType RacewayType { get; set; }
+    
+    /* USE WHEN THIS IS MAIN BOARD */
+    
+    [Required]
+    [Display(Name = "building classification")]
+    [Column("building_classification")]
+    public BuildingClassification BuildingClassification { get; set; } = BuildingClassification.None;
 
     /* USE WHEN THIS OR PARENT BOARD IS THREE PHASE */
 

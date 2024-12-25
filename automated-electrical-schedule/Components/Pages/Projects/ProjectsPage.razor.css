@@ -86,6 +86,10 @@
                         &.badge-wye {
                             background-color: orange;
                         }
+                        
+                        &.badge-building {
+                            background-color: var(--clr-neutral-300);
+                        }
                     }
                 }
             }

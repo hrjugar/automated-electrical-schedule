@@ -6,7 +6,7 @@
 <main class="projects-page">
     <header>
         <div class="projects-controls">
-            <ProjectsSearch Search="SearchProjects"/>
+            <ProjectsSearch Search="SearchProjects" @bind-SearchText="_searchText"/>
             <button class="btn-text btn-primary" @onclick="OpenCreateProjectModal">Add New Project</button>
         </div>
     </header>
@@ -48,6 +48,7 @@
                         <div class="project-descriptors">
                             <p>Last created @project.DateCreated.ToRelativeDateString()</p>
                             <span class="project-badge @badgeConfigClass">@badgeText</span>
+                            <span class="project-badge badge-building">@project.MainDistributionBoard.BuildingClassification.GetDisplayName()</span>
                         </div>
                     </div>
                     

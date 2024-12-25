@@ -35,6 +35,26 @@ public abstract partial class DistributionBoard
             }
         }
     }
+    
+    public BuildingClassification[] AllowedBuildingClassifications
+    {
+        get
+        {
+            if (Phase == BoardPhase.SinglePhase)
+            {
+                return [BuildingClassification.DwellingUnit];
+            }
+            
+            return
+            [
+                BuildingClassification.DwellingUnit,
+                BuildingClassification.Hospital,
+                BuildingClassification.HotelMotelApartment,
+                BuildingClassification.Warehouse,
+                BuildingClassification.Other
+            ];
+        }
+    }
 
     public abstract List<BoardVoltage> AllowedVoltages { get; }
 

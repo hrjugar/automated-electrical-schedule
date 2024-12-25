@@ -61,6 +61,17 @@
                         </div>
                     }
                 </div>
+                
+                <div class="create-project-modal-field">
+                    <label>Building Classification <span class="red-asterisk">*</span></label>
+                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.BuildingClassification>
+                        @foreach (var buildingClassification in _newProject.MainDistributionBoard.AllowedBuildingClassifications)
+                        {
+                            <option value="@buildingClassification">@buildingClassification.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.BuildingClassification)/>
+                </div>
 
                 <div class="create-project-modal-field">
                     <label>Voltage <span class="red-asterisk">*</span></label>
@@ -173,7 +184,13 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    Project _newProject = new() { MainDistributionBoard = new SinglePhaseDistributionBoard() };
+    Project _newProject = new() { 
+        MainDistributionBoard = new SinglePhaseDistributionBoard
+        {
+            BuildingClassification = BuildingClassification.DwellingUnit
+        } 
+    };
+    
     EditContext? _editContext = null;
 
     protected override void OnInitialized()
@@ -209,6 +226,10 @@
         updatedNewDistributionBoard.Id = _newProject.MainDistributionBoard.Id;
         updatedNewDistributionBoard.BoardName = _newProject.MainDistributionBoard.BoardName;
         updatedNewDistributionBoard.Phase = phase;
+        updatedNewDistributionBoard.BuildingClassification = 
+            updatedNewDistributionBoard.AllowedBuildingClassifications.Contains(_newProject.MainDistributionBoard.BuildingClassification)
+                ? _newProject.MainDistributionBoard.BuildingClassification
+                : updatedNewDistributionBoard.AllowedBuildingClassifications[0];
         updatedNewDistributionBoard.Voltage = updatedNewDistributionBoard.AllowedVoltages[0];
         updatedNewDistributionBoard.CircuitProtection = _newProject.MainDistributionBoard.CircuitProtection;
         updatedNewDistributionBoard.SetCount = _newProject.MainDistributionBoard.SetCount;

@@ -14,8 +14,16 @@
             <h5>@threePhaseBoard.ThreePhaseConfiguration.GetDisplayName()</h5>
         </div>
     }
+    
+    @if (DistributionBoard.BuildingClassification != BuildingClassification.None)
+    {
+        <div class="board-spec">
+            <label>Building Classification</label>
+            <h5>@DistributionBoard.BuildingClassification.GetDisplayName()</h5>
+        </div>
+    }
 
-    @if (DistributionBoard.LineToLineVoltage != null)
+    @if (DistributionBoard.LineToLineVoltage != LineToLineVoltage.None)
     {
         <div class="board-spec">
             <label>Line-to-Line Voltage</label>
