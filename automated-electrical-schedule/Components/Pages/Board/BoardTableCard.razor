@@ -560,13 +560,18 @@
                 <div class="cell cell--separator"></div>
 
                 <div class="cell cell--buttongroup cell--sticky cell--sticky--right">
-                    <button
-                        class="link-btn btn-icon btn-primary"
-                        @onclick="@(() => GoToSubBoardPage(subDistributionBoard.Id))">
-                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
-                        </svg>
-                    </button>
+                    <TooltipWrapper
+                        Title="Open"
+                        Description="Access this distribution board to add, delete, or modify circuits"
+                        Placement="TooltipWrapper.TooltipPlacement.BottomLeft">
+                        <button
+                            class="link-btn btn-icon btn-primary"
+                            @onclick="@(() => GoToSubBoardPage(subDistributionBoard.Id))">
+                            <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
+                            </svg>
+                        </button>
+                    </TooltipWrapper>
 
                     @* <button *@
                     @*     class="btn-icon btn-secondary" *@
