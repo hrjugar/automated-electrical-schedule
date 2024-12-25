@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using automated_electrical_schedule.Data.Validators;
 using Microsoft.EntityFrameworkCore;
 
 namespace automated_electrical_schedule.Data.Models;
@@ -37,6 +38,7 @@ public class Project
     [Display(Name = "project name")]
     [Column("project_name")]
     [MaxLength(255)]
+    [ProjectNameValidator]
     public string ProjectName { get; set; } = string.Empty;
 
     [Column("date_created")]

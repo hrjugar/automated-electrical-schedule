@@ -21,6 +21,10 @@ public class DatabaseContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Project>()
+            .HasIndex(p => p.ProjectName)
+            .IsUnique();
+
         modelBuilder.Entity<DistributionBoard>()
             .HasDiscriminator(b => b.Phase)
             .HasValue<SinglePhaseDistributionBoard>(BoardPhase.SinglePhase)
