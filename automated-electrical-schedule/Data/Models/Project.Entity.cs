@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public class Project
+public partial class Project
 {
     private const string TableName = "projects";
 

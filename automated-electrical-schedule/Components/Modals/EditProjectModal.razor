@@ -1,0 +1,74 @@
+@inject DatabaseContext DatabaseContext
+
+@if (IsOpen && _editContext != null && _newProject != null)
+{
+    <div class="modal-wrapper" @onclick="@CloseModal">
+        <EditForm
+            class="modal edit-project-modal"
+            @onclick:stopPropagation="true"
+            EditContext="_editContext"
+            OnValidSubmit="@HandleValidFormSubmit">
+
+            <ObjectGraphDataAnnotationsValidator/>
+
+            <div class="modal-header">
+                <h5>Edit Project</h5>
+            </div>
+
+            <div class="modal-content edit-project-modal-fields">
+                <div class="edit-project-modal-field">
+                    <label>Project Name <span class="red-asterisk">*</span></label>
+                    <InputText class="input-primary" @bind-Value="_newProject.ProjectName" placeholder="Bedroom Elec. SOL"/>
+                    <ValidationMessage For=@(() => _newProject.ProjectName)/>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text edit-project-modal-cancel-btn"
+                    type="button"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn-text edit-project-modal-create-btn btn-primary"
+                    type="submit"
+                    disabled="@(!_editContext.Validate() || !_editContext.IsModified())">
+                    Create
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    
+    [Parameter] public Project Project { get; set; } = default!;
+    
+    EditContext? _editContext;
+    
+    Project? _newProject;
+
+    protected override void OnParametersSet()
+    {
+        _newProject = Project.Clone();
+        _editContext = new EditContext(_newProject);
+    }
+    
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task HandleValidFormSubmit()
+    {
+        DatabaseContext.Entry(Project).CurrentValues.SetValues(_newProject!);
+        DatabaseContext.Update(Project);
+        await DatabaseContext.SaveChangesAsync();
+        await CloseModal();
+    }
+}

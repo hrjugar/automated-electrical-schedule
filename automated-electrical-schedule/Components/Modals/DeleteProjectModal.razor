@@ -1,0 +1,60 @@
+@inject NavigationManager Navigation
+@inject DatabaseContext DatabaseContext
+
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        @{
+            var projectName = Project.ProjectName;
+        }
+
+        <div class="modal delete-project-modal">
+            <div class="modal-header">
+                <h5>Delete project?</h5>
+            </div>
+
+            <div class="modal-content delete-project-modal-content">
+                <p class="delete-confirmation">Are you sure you want to delete <em>@projectName</em>? This action cannot be undone.</p>
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text delete-project-modal-cancel-btn"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn-text delete-project-modal-edit-btn btn-destructive"
+                    @onclick="DeleteProject">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    
+    [Parameter] public Project Project { get; set; } = default!;
+    
+    [Parameter] public EventCallback OnProjectDelete { get; set; }
+    
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task DeleteProject()
+    {
+        DatabaseContext.Projects.Remove(Project);
+        DatabaseContext.DistributionBoards.Remove(Project.MainDistributionBoard);
+        await DatabaseContext.SaveChangesAsync();
+        await CloseModal();
+        await OnProjectDelete.InvokeAsync();
+    }
+}

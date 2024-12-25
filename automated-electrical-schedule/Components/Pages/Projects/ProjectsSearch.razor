@@ -10,11 +10,14 @@
 @code {
     [Parameter] public EventCallback<string> Search { get; set; }
 
-    string SearchText { get; set; } = string.Empty;
+    [Parameter] public string SearchText { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SearchTextChanged { get; set; }
+    
 
     private async Task HandleSearch()
     {
-        await Search.InvokeAsync(SearchText);
+        await SearchTextChanged.InvokeAsync(SearchText);
+        await Search.InvokeAsync();
     }
 
 }
