@@ -1,0 +1,38 @@
+<div class="tooltip-wrapper">
+    @ChildContent
+    
+    <div class="tooltip-second-wrapper">
+        <div class="tooltip @PlacementClass">
+            <p class="tooltip-title">@Title</p>
+            <p class="tooltip-description">@Description</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    public enum TooltipPlacement
+    {
+        Top,
+        Bottom,
+        Left,
+        Right,
+        BottomLeft,
+        BottomRight
+    }
+    
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Description { get; set; } = string.Empty;
+    [Parameter] public TooltipPlacement Placement { get; set; } = TooltipPlacement.Right;
+    
+    string PlacementClass => Placement switch
+    {
+        TooltipPlacement.Top => "tooltip--top",
+        TooltipPlacement.Bottom => "tooltip--bottom",
+        TooltipPlacement.Left => "tooltip--left",
+        TooltipPlacement.Right => "tooltip--right",
+        TooltipPlacement.BottomLeft => "tooltip--bottom-left",
+        TooltipPlacement.BottomRight => "tooltip--bottom-right",
+        _ => "tooltip-right"
+    };
+}
