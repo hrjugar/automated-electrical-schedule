@@ -18,7 +18,6 @@ public abstract partial class Circuit
     [Column("parent_distribution_board_id")]
     public int ParentDistributionBoardId { get; set; }
 
-    // TODO: Check later if cascade delete works as intended
     [Required]
     [ForeignKey(nameof(ParentDistributionBoardId))]
     [DeleteBehavior(DeleteBehavior.Cascade)]
@@ -39,12 +38,6 @@ public abstract partial class Circuit
     public string Description { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "quantity")]
-    [Column("quantity")]
-    [Range(1, int.MaxValue, ErrorMessage = "The quantity must be at least 1.")]
-    public int Quantity { get; set; } = 1;
-
-    [Required]
     [Display(Name = "wire length")]
     [Column("wire_length")]
     [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
@@ -59,7 +52,7 @@ public abstract partial class Circuit
     [Required]
     [Display(Name = "sets")]
     [Column("set_count")]
-    [Range(1, int.MaxValue, ErrorMessage = "The quantity must be at least 1.")]
+    [Range(1, int.MaxValue, ErrorMessage = "The set count must be at least 1.")]
     public int SetCount { get; set; } = 1;
 
     [Required]

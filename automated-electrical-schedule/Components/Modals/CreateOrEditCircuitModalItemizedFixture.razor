@@ -1,0 +1,37 @@
+<div class="fixture">
+
+    <label>Description</label>
+    <InputText class="input-primary" @bind-Value="Fixture.Description" @bind-Value:after="OnFixturePropertyChange"/>
+
+    <label>Wattage <span class="red-asterisk">*</span></label>
+    <InputNumber class="input-primary" @bind-Value="Fixture.Wattage" @bind-Value:after="OnFixturePropertyChange" />
+
+    <label>Quantity <span class="red-asterisk">*</span></label>
+    <InputNumber class="input-primary" @bind-Value="Fixture.Quantity" @bind-Value:after="OnFixturePropertyChange" />
+
+    <button
+        type="button"
+        class="btn-icon btn-destructive"
+        @onclick="RemoveFixture"
+        disabled="@(!IsRemovable)">-</button>
+</div>
+
+<div class="fixture-validation">
+    <ValidationMessage For="@(() => Fixture.Description)"/>
+    <ValidationMessage For="@(() => Fixture.Wattage)"/>
+    <ValidationMessage For="@(() => Fixture.Quantity)"/>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Fixture Fixture { get; set; } = default!;
+    
+    [Parameter, EditorRequired] public EventCallback RemoveFixture { get; set; }
+    [Parameter, EditorRequired] public bool IsRemovable { get; set; } = false;
+    
+    [Parameter, EditorRequired] public EventCallback OnFixtureChange { get; set; }
+    
+    private Task OnFixturePropertyChange()
+    {
+        return OnFixtureChange.InvokeAsync();
+    }
+}

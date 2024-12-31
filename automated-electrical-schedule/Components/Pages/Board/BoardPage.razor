@@ -187,9 +187,38 @@ else
     {
         foreach (var subBoard in board.SubDistributionBoards)
         {
-            await DatabaseContext.Entry(subBoard).Reference(b => b.ParentDistributionBoard).LoadAsync();
-            await DatabaseContext.Entry(subBoard).Collection(b => b.Circuits).LoadAsync();
-            await DatabaseContext.Entry(subBoard).Collection(b => b.SubDistributionBoards).LoadAsync();
+            await DatabaseContext
+                .Entry(subBoard)
+                .Reference(b => b.ParentDistributionBoard)
+                .LoadAsync();
+            
+            await DatabaseContext
+                .Entry(subBoard)
+                .Collection(b => b.Circuits)
+                .LoadAsync();
+
+            foreach (var circuit in subBoard.Circuits)
+            {
+                if (circuit is ApplianceEquipmentOutletCircuit ac)
+                {
+                    await DatabaseContext
+                        .Entry(ac)
+                        .Collection(c => c.Fixtures)
+                        .LoadAsync();
+                }
+                else if (circuit is LightingOutletCircuit lc)
+                {
+                    await DatabaseContext
+                        .Entry(lc)
+                        .Collection(c => c.Fixtures)
+                        .LoadAsync();
+                }
+            }
+            
+            await DatabaseContext
+                .Entry(subBoard)
+                .Collection(b => b.SubDistributionBoards)
+                .LoadAsync();
 
             if (subBoard.SubDistributionBoards.Count > 0)
             {
@@ -203,10 +232,12 @@ else
         var board = await DatabaseContext.DistributionBoards
             .Include(b => b.ParentDistributionBoard)
             .Include(b => b.Circuits)
+                .ThenInclude(c => ((ApplianceEquipmentOutletCircuit) c).Fixtures)
             .Include(b => b.Circuits)
+                .ThenInclude(c => ((LightingOutletCircuit) c).Fixtures)
             .Include(b => b.SubDistributionBoards)
             .SingleAsync(b => b.Id == boardId);
-
+        
         await LoadSubDistributionBoardsRecursively(board);
         return board;
     }

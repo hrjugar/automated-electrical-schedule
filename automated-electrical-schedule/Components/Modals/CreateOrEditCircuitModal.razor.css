@@ -47,6 +47,14 @@
             justify-content: flex-start;
             align-items: stretch;
             gap: 1rem;
+            
+            .create-or-edit-circuit-modal-checkbox {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 0.25rem;
+            }
 
             .create-or-edit-circuit-modal-field-row {
                 display: flex;
@@ -69,6 +77,26 @@
 
                 label {
                     color: var(--clr-neutral-500);
+                }
+            }
+        }
+        
+        .create-or-edit-circuit-modal-fixtures {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 0.5rem;
+            
+            .create-or-edit-circuit-modal-fixtures-head {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 0.5rem;
+
+                button {
+                    padding-block: 0.25rem;
                 }
             }
         }

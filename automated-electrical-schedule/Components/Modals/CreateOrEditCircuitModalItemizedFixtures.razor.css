@@ -1,0 +1,27 @@
+.fixtures-itemized {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0.5rem;
+
+    .fixtures-itemized-head {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5rem;
+
+        button {
+            padding-block: 0.25rem;
+        }
+    }
+    
+    .fixtures-itemized-list {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+}

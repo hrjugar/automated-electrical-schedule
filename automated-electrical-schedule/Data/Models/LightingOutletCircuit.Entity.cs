@@ -3,11 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public partial class LightingOutletCircuit : Circuit
+public partial class LightingOutletCircuit : FixtureCircuit
 {
-    [Required]
-    [Display(Name = "wattage per fixture")]
-    [Column("wattage_per_fixture")]
-    [Range(0d, double.PositiveInfinity)]
-    public double WattagePerFixture { get; set; }
 }

@@ -5,14 +5,16 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ConvenienceOutletCircuit
 {
+    // TODO: Change this later
     public override CalculationResult<double> VoltAmpere => OutletType == OutletType.FourGang
-        ? CalculationResult<double>.Success(Quantity * 360)
-        : CalculationResult<double>.Success(Quantity * 180);
+        ? CalculationResult<double>.Success(360)
+        : CalculationResult<double>.Success(180);
 
+    // TODO: Change this later
     public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(
         OutletType == OutletType.FourGang
             ? 4.0 * 360 / Voltage
-            : 180.0 * Quantity / Voltage
+            : 180.0 / Voltage
     );
 
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
@@ -32,7 +34,6 @@ public partial class ConvenienceOutletCircuit
             CircuitType = CircuitType,
             LineToLineVoltage = LineToLineVoltage,
             Description = Description,
-            Quantity = Quantity,
             WireLength = WireLength,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,

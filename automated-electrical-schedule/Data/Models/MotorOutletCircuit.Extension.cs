@@ -173,7 +173,6 @@ public partial class MotorOutletCircuit
             CircuitType = CircuitType,
             LineToLineVoltage = LineToLineVoltage,
             Description = Description,
-            Quantity = Quantity,
             WireLength = WireLength,
             CircuitProtection = CircuitProtection,
             SetCount = SetCount,

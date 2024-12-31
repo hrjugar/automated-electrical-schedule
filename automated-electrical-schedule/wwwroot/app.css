@@ -57,6 +57,11 @@
     outline: none;
 }
 
+*[disabled=disabled], *:disabled {
+    cursor: not-allowed;
+    opacity: 0.25;
+}
+
 .layout {
     height: 100vh;
     overflow: auto;
@@ -148,11 +153,6 @@ button, .link-btn {
     cursor: pointer;
     border: none;
     border-radius: var(--radius-default);
-}
-
-button[disabled=disabled], button:disabled, select[disabled=disabled], select:disabled {
-    cursor: not-allowed;
-    opacity: 0.25;
 }
 
 .btn-icon {

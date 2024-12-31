@@ -1,0 +1,69 @@
+<div class="fixtures-itemized">
+    
+    <div class="fixtures-itemized-head">
+        <p>Fixtures</p>
+        <button type="button" class="btn-text btn-secondary" @onclick="@AddFixture">Add</button>
+    </div>
+    
+    @foreach (var oldFixture in OldFixtures)
+    {
+        <p>Fixture @oldFixture.Id | Desc: @oldFixture.Description | Qty: @oldFixture.Quantity | W: @oldFixture.Wattage</p>
+    }
+    
+    @foreach (var newFixture in NewFixtures)
+    {
+        <p>Fixture @newFixture.Id | Desc: @newFixture.Description | Qty: @newFixture.Quantity | W: @newFixture.Wattage</p>
+    }
+    
+    <div class="fixtures-itemized-list">
+        @{
+            var hasMoreThanOneFixture = OldFixtures.Count + NewFixtures.Count > 1;
+        }
+
+        @foreach (var oldFixture in OldFixtures)
+        {
+            <CreateOrEditCircuitModalItemizedFixture
+                Fixture="@oldFixture"
+                RemoveFixture="@(() => RemoveFixture(false, oldFixture))"
+                IsRemovable="hasMoreThanOneFixture"
+                OnFixtureChange="@(() => OnFixtureChange.InvokeAsync())"/>
+        }
+
+        @foreach (var newFixture in NewFixtures)
+        {
+            <CreateOrEditCircuitModalItemizedFixture
+                Fixture="@newFixture"
+                RemoveFixture="@(() => RemoveFixture(true, newFixture))"
+                IsRemovable="hasMoreThanOneFixture"
+                OnFixtureChange="@(() => OnFixtureChange.InvokeAsync())"/>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public List<Fixture> OldFixtures { get; set; } = [];
+    
+    [Parameter, EditorRequired] public List<Fixture> NewFixtures { get; set; } = [];
+    
+    [Parameter, EditorRequired] public EventCallback OnFixtureChange { get; set; }
+    
+    private async Task AddFixture()
+    {
+        NewFixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
+        await OnFixtureChange.InvokeAsync();
+    }
+    
+    private async Task RemoveFixture(bool isNew, Fixture fixture)
+    {
+        if (isNew)
+        {
+            NewFixtures.Remove(fixture);
+        }
+        else
+        {
+            OldFixtures.Remove(fixture);
+        }
+        
+        await OnFixtureChange.InvokeAsync();
+    }
+}
