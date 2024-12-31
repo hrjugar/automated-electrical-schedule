@@ -12,7 +12,7 @@
     <button
         type="button"
         class="btn-icon btn-destructive"
-        @onclick="RemoveFixture"
+        @onclick="@(() => RemoveFixture(Fixture))"
         disabled="@(!IsRemovable)">-</button>
 </div>
 
@@ -25,7 +25,7 @@
 @code {
     [Parameter, EditorRequired] public Fixture Fixture { get; set; } = default!;
     
-    [Parameter, EditorRequired] public EventCallback RemoveFixture { get; set; }
+    [Parameter, EditorRequired] public Action<Fixture> RemoveFixture { get; set; }
     [Parameter, EditorRequired] public bool IsRemovable { get; set; } = false;
     
     [Parameter, EditorRequired] public EventCallback OnFixtureChange { get; set; }

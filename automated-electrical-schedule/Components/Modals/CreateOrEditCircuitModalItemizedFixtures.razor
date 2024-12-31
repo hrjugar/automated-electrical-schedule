@@ -5,35 +5,21 @@
         <button type="button" class="btn-text btn-secondary" @onclick="@AddFixture">Add</button>
     </div>
     
-    @foreach (var oldFixture in OldFixtures)
+    @foreach (var fixture in Fixtures)
     {
-        <p>Fixture @oldFixture.Id | Desc: @oldFixture.Description | Qty: @oldFixture.Quantity | W: @oldFixture.Wattage</p>
-    }
-    
-    @foreach (var newFixture in NewFixtures)
-    {
-        <p>Fixture @newFixture.Id | Desc: @newFixture.Description | Qty: @newFixture.Quantity | W: @newFixture.Wattage</p>
+        <p>Fixture @fixture.Id | Desc: @fixture.Description | Qty: @fixture.Quantity | W: @fixture.Wattage</p>
     }
     
     <div class="fixtures-itemized-list">
         @{
-            var hasMoreThanOneFixture = OldFixtures.Count + NewFixtures.Count > 1;
+            var hasMoreThanOneFixture = Fixtures.Count > 1;
         }
-
-        @foreach (var oldFixture in OldFixtures)
+        
+        @foreach (var fixture in Fixtures)
         {
             <CreateOrEditCircuitModalItemizedFixture
-                Fixture="@oldFixture"
-                RemoveFixture="@(() => RemoveFixture(false, oldFixture))"
-                IsRemovable="hasMoreThanOneFixture"
-                OnFixtureChange="@(() => OnFixtureChange.InvokeAsync())"/>
-        }
-
-        @foreach (var newFixture in NewFixtures)
-        {
-            <CreateOrEditCircuitModalItemizedFixture
-                Fixture="@newFixture"
-                RemoveFixture="@(() => RemoveFixture(true, newFixture))"
+                Fixture="@fixture"
+                RemoveFixture="RemoveFixture"
                 IsRemovable="hasMoreThanOneFixture"
                 OnFixtureChange="@(() => OnFixtureChange.InvokeAsync())"/>
         }
@@ -41,29 +27,11 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] public List<Fixture> OldFixtures { get; set; } = [];
+    [Parameter, EditorRequired] public List<Fixture> Fixtures { get; set; }
     
-    [Parameter, EditorRequired] public List<Fixture> NewFixtures { get; set; } = [];
+    [Parameter, EditorRequired] public Action AddFixture { get; set; }
+    
+    [Parameter, EditorRequired] public Action<Fixture> RemoveFixture { get; set; }
     
     [Parameter, EditorRequired] public EventCallback OnFixtureChange { get; set; }
-    
-    private async Task AddFixture()
-    {
-        NewFixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
-        await OnFixtureChange.InvokeAsync();
-    }
-    
-    private async Task RemoveFixture(bool isNew, Fixture fixture)
-    {
-        if (isNew)
-        {
-            NewFixtures.Remove(fixture);
-        }
-        else
-        {
-            OldFixtures.Remove(fixture);
-        }
-        
-        await OnFixtureChange.InvokeAsync();
-    }
 }

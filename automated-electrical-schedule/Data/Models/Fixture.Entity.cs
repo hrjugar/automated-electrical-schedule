@@ -17,7 +17,6 @@ public partial class Fixture
     [Column("parent_outlet_id")]
     public int ParentCircuitId { get; set; }
     
-    [Required]
     [ForeignKey(nameof(ParentCircuitId))]
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public FixtureCircuit ParentCircuit { get; set; } = default!;

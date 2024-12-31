@@ -1,3 +1,4 @@
+@using System.Text.Json.Serialization
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
@@ -24,7 +25,11 @@
                 var fixtureCircuit = _newCircuit as FixtureCircuit;
             }
 
+            
         <div class="modal-content create-or-edit-circuit-modal-content">
+            
+            <ValidationSummary/>
+            
             <div class="create-or-edit-circuit-modal-content-head">
                 <div class="create-or-edit-circuit-modal-content-categories">
                     <InputSelect
@@ -63,7 +68,7 @@
                     }
                 </div>
             </div>
-            
+
             @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize ||
                  _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
             {
@@ -92,9 +97,7 @@
                             <label>Itemized</label>
                         </div>
 
-                        var fixtures = _keptOldFixtures.Concat(_newFixtures);
-
-                        foreach (var fixture in fixtures)
+                        foreach (var fixture in fixtureCircuit.Fixtures)
                         {
                             <p>Fixture @fixture.Id | Desc: @fixture.Description | Qty: @fixture.Quantity | W: @fixture.Wattage</p>
                         }
@@ -168,13 +171,14 @@
                         @if (fixtureCircuit.IsItemized)
                         {
                             <CreateOrEditCircuitModalItemizedFixtures
-                                OldFixtures="_keptOldFixtures"
-                                NewFixtures="_newFixtures"
+                                Fixtures="@fixtureCircuit.Fixtures"
+                                AddFixture="AddFixture"
+                                RemoveFixture="RemoveFixture"
                                 OnFixtureChange="StateHasChanged"/>
                         }
                         else
                         {
-                            var nonItemizedFixture = OldCircuit is null ? _newFixtures[0] : _keptOldFixtures[0];
+                            var nonItemizedFixture = fixtureCircuit.Fixtures[0];
 
                             <div class="create-or-edit-circuit-modal-field">
                                 <label>Wattage <span class="red-asterisk">*</span></label>
@@ -307,7 +311,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
 
         <div class="modal-footer modal-footer-btns">
             <button
@@ -342,19 +346,11 @@
 
     Circuit? _newCircuit;
 
-    List<Fixture> _keptOldFixtures = [];
-    List<Fixture> _newFixtures = [];
-
     protected override void OnInitialized()
     {
         if (OldCircuit != null)
         {
             _newCircuit = OldCircuit.Clone();
-
-            if (OldCircuit is FixtureCircuit oldFixtureCircuit)
-            {
-                _keptOldFixtures = oldFixtureCircuit.Fixtures.Select(oldFixture => oldFixture.Clone()).ToList();
-            }
         }
         else
         {
@@ -415,9 +411,9 @@
                 motorOutletCircuit.CircuitProtection = motorOutletCircuit.AllowedCircuitProtections[0];
             }
 
-            if (_newCircuit is FixtureCircuit)
+            if (_newCircuit is FixtureCircuit newFixtureCircuit)
             {
-                _newFixtures = [new Fixture { Quantity = 1, Wattage = 0 }];
+                newFixtureCircuit.Fixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
             }
         }
 
@@ -511,9 +507,9 @@
         updatedNewCircuit.GroundingId = _newCircuit.GroundingId;
         updatedNewCircuit.RacewayType = _newCircuit.RacewayType;
 
-        if (updatedNewCircuit is FixtureCircuit)
+        if (updatedNewCircuit is FixtureCircuit updatedNewFixtureCircuit)
         {
-            _newFixtures = [new Fixture { Quantity = 1, Wattage = 0}];
+            updatedNewFixtureCircuit.Fixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
         }
         
         _newCircuit = updatedNewCircuit;
@@ -570,6 +566,26 @@
         StateHasChanged();
     }
 
+    void AddFixture()
+    {
+        if (_newCircuit is FixtureCircuit fixtureCircuit)
+        {
+            fixtureCircuit.Fixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
+        }
+        
+        StateHasChanged();
+    }
+
+    void RemoveFixture(Fixture fixture)
+    {
+        if (_newCircuit is FixtureCircuit fixtureCircuit)
+        {
+            fixtureCircuit.Fixtures.Remove(fixture);
+        }
+        
+        StateHasChanged();
+    }
+
     // void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
     // {
     //     _newCircuit!.LineToLineVoltage = lineToLineVoltage;
@@ -587,68 +603,43 @@
 
     async Task HandleValidFormSubmit()
     {
-        Circuit newCircuit;
-        
         if (OldCircuit is null)
         {
-            var result = await DatabaseContext.Circuits.AddAsync(_newCircuit!);
+            DatabaseContext.Circuits.Add(_newCircuit!);
             await DatabaseContext.SaveChangesAsync();
-            newCircuit = result.Entity;
         }
         else
         {
-            newCircuit = _newCircuit!;
             DatabaseContext.Entry(OldCircuit).CurrentValues.SetValues(_newCircuit!);
-            DatabaseContext.Update(OldCircuit);
 
-            if (OldCircuit is FixtureCircuit oldFixtureCircuit)
+            if (OldCircuit is FixtureCircuit oldFixtureCircuit && _newCircuit is FixtureCircuit newFixtureCircuit)
             {
                 foreach (var oldFixture in oldFixtureCircuit.Fixtures.ToList())
                 {
-                    var keptOldFixture = _keptOldFixtures.FirstOrDefault(f => f.Id == oldFixture.Id);
-
-                    if (keptOldFixture == null)
+                    if (!newFixtureCircuit.Fixtures.ToList().Any(nf => nf.Id == oldFixture.Id))
                     {
-                        DatabaseContext.Fixtures.Remove(oldFixture);
+                        DatabaseContext.Remove(oldFixture);
+                    }
+                }
+            
+                foreach (var existingFixture in newFixtureCircuit.Fixtures)
+                {
+                    await JsRuntime.InvokeVoidAsync("console.log", existingFixture.ToString());
+                    
+                    if (existingFixture.Id == 0)
+                    {
+                        existingFixture.ParentCircuitId = newFixtureCircuit.Id;
+                        DatabaseContext.Fixtures.Add(existingFixture);
                     }
                     else
                     {
-                        DatabaseContext.Entry(oldFixture).CurrentValues.SetValues(keptOldFixture);
-                        DatabaseContext.Update(oldFixture);
+                        var keptOldFixture = oldFixtureCircuit.Fixtures.First(f => f.Id == existingFixture.Id);
+                        DatabaseContext.Entry(keptOldFixture).CurrentValues.SetValues(existingFixture);
                     }
                 }
             }
             
-            await DatabaseContext.SaveChangesAsync();
-        }
-
-        
-        if (newCircuit is FixtureCircuit newFixtureCircuit)
-        {
-            foreach (var entry in DatabaseContext.ChangeTracker.Entries<Fixture>())
-            {
-                if (entry.State == EntityState.Added)
-                {
-                    entry.State = EntityState.Detached;
-                }
-            }
-            
-            await JsRuntime.InvokeVoidAsync("console.log", $"new fixture circuit if block");
-            foreach (var newFixture in _newFixtures)
-            {
-                var newFixtureClone = newFixture.Clone();
-                newFixtureClone.ParentCircuitId = newFixtureCircuit.Id;
-                
-                // var newFixtureCopy = new Fixture
-                // {
-                //     Description = newFixture.Description,
-                //     Quantity = newFixture.Quantity,
-                //     Wattage = newFixture.Wattage,
-                //     ParentCircuitId = newFixtureCircuit.Id
-                // };
-                await DatabaseContext.Fixtures.AddAsync(newFixtureClone);
-            }
-            
+            DatabaseContext.Update(OldCircuit);
             await DatabaseContext.SaveChangesAsync();
         }
         

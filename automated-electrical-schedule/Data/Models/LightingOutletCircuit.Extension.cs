@@ -23,7 +23,8 @@ public partial class LightingOutletCircuit
             GroundingId = GroundingId,
             RacewayType = RacewayType,
             
-            IsItemized = IsItemized
+            IsItemized = IsItemized,
+            Fixtures = Fixtures.Select(fixture => fixture.Clone()).ToList()
         };
     }
 }

@@ -24,7 +24,8 @@ public partial class ApplianceEquipmentOutletCircuit
             RacewayType = RacewayType,
             
             ApplianceType = ApplianceType,
-            IsItemized = IsItemized
+            IsItemized = IsItemized,
+            Fixtures = Fixtures.Select(fixture => fixture.Clone()).ToList()
         };
     }
 }
