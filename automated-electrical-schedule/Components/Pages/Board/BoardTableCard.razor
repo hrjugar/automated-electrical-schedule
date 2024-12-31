@@ -98,6 +98,13 @@
         @for (var i = 0; i < _circuits.Count; i++)
         {
             var circuit = _circuits[i];
+            
+            var fixtureCircuit = circuit as FixtureCircuit;
+            var lightingCircuit = circuit as LightingOutletCircuit;
+            var motorCircuit = circuit as MotorOutletCircuit;
+            var applianceCircuit = circuit as ApplianceEquipmentOutletCircuit;
+            var convenienceCircuit = circuit as ConvenienceOutletCircuit;
+            
             var circuitTypeLabel = "Sub";
             var circuitTypeLabelClass = "circuit-type-label--sub";
             var voltageDrop = circuit.VoltageDrop;
@@ -135,10 +142,29 @@
                 </div>
                 <p class="cell cell--text">@circuit.Description</p>
                 
-                <div class="cell cell--group cell--info">
-                    <p>QTY PLACEHOLDER</p>
-                    <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
-                </div>
+                @if (fixtureCircuit?.IsItemized ?? false)
+                {
+                    <div class="cell cell--separator"></div>
+                }
+                else
+                {
+                    <div class="cell cell--group cell--info">
+                        @if (fixtureCircuit != null)
+                        {
+                            <p>@(fixtureCircuit.Fixtures[0].Quantity)</p>
+                        }
+                        else if (convenienceCircuit != null)
+                        {
+                            <p>TODO</p> // TODO: Convenience circuit quantity
+                        }
+                        else
+                        {
+                            <p>1</p>
+                        }
+                        
+                        <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
+                    </div>
+                }
                 <div class="@("cell cell--group cell--info " + (circuit.VoltAmpere.HasError ? "cell--error" : ""))">
                     <p>@(circuit.VoltAmpere.HasError ? circuit.VoltAmpere.ErrorMessage : Math.Round(circuit.VoltAmpere.Value, 4))</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
@@ -321,6 +347,15 @@
                         </button>
                     </TooltipWrapper>
                 </div>
+                
+                @if (fixtureCircuit?.IsItemized ?? false)
+                {
+                    foreach (var fixture in fixtureCircuit.Fixtures)
+                    {
+                        <p class="cell cell--text cell--desc">@fixture.Description (@(Math.Round(fixture.Wattage, 2)) Watts)</p>
+                        <p class="cell cell--text cell--qty">@fixture.Quantity</p>
+                    }
+                }
             </div>
         }
 

@@ -23,6 +23,7 @@
                 var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
                 var isAmpereLoadExceeding = _newCircuit is LightingOutletCircuit && _newCircuit.AmpereLoad.Value > 50;
                 var fixtureCircuit = _newCircuit as FixtureCircuit;
+                var applianceCircuit = _newCircuit as ApplianceEquipmentOutletCircuit;
             }
 
             
@@ -88,7 +89,7 @@
 
             <div class="create-or-edit-circuit-modal-content-main">
                 <div class="create-or-edit-circuit-modal-content-fields">
-                    @if (fixtureCircuit is not null)
+                    @if (fixtureCircuit is not null && !(applianceCircuit is not null && applianceCircuit.ApplianceType == ApplianceType.Dryer))
                     {
                         <div class="create-or-edit-circuit-modal-checkbox">
                             <InputCheckbox
@@ -155,7 +156,7 @@
                             <div class="create-or-edit-circuit-modal-field">
                                 <label>Appliance Type <span class="red-asterisk">*</span></label>
                                 <InputSelect @bind-Value="applianceEquipmentOutletCircuit.ApplianceType">
-                                    @foreach (ApplianceType applianceType in Enum.GetValues(typeof(ApplianceType)))
+                                    @foreach (ApplianceType applianceType in applianceEquipmentOutletCircuit.AllowedApplianceTypes)
                                     {
                                         <option value="@applianceType">@applianceType.GetDisplayName()</option>
                                     }
@@ -257,6 +258,18 @@
                         <label>Sets</label>
                         <p>@(_newCircuit.SetCount)</p>
                     </div>
+                    
+                    <div class="create-or-edit-circuit-modal-content-value">
+                        <label>Load Description</label>
+                        <p>@(_newCircuit.Description)</p>
+                        @if (fixtureCircuit?.IsItemized ?? false)
+                        {
+                            foreach (var fixture in fixtureCircuit.Fixtures)
+                            {
+                                <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
+                            }
+                        }
+                    </div>
 
                     <div class="create-or-edit-circuit-modal-content-value">
                         <label>Volt Amps</label>
@@ -265,9 +278,11 @@
 
                     <div class="create-or-edit-circuit-modal-content-value">
                         <label>Ampere Load</label>
-                        <p class="@(_newCircuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">
-                            @(_newCircuit.AmpereLoad.HasError ? _newCircuit.AmpereLoad.ErrorMessage : Math.Round(_newCircuit.AmpereLoad.Value, 4)) @(isAmpereLoadExceeding ? "(Cannot be >50)" : "")
-                        </p>
+                        <p class="@(_newCircuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(_newCircuit.AmpereLoad)</p>
+                        @if (isAmpereLoadExceeding)
+                        {
+                            <p class="item-error item-sub">*As per PEC Part 1 2017 2.10.2.6 (D) p.45, it cannot be greater than 50 A</p>
+                        }
                     </div>
 
                     <div class="create-or-edit-circuit-modal-content-value">

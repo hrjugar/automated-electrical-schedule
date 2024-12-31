@@ -134,10 +134,21 @@
                     font-size: 1.5rem;
                     line-height: 1.0;
                     
+                    &.item-sub {
+                        font-size: 1.25rem;
+                        color: var(--clr-neutral-500);
+                    }
+                    
                     &.item-error {
                         font-size: 1.25rem;
                         color: var(--clr-destructive-600);
+                        
+                        &.item-sub {
+                            font-size: 1.0rem;
+                            color: var(--clr-destructive-400);
+                        }
                     }
+                    
                 }
             }
         }

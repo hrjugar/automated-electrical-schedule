@@ -1,7 +1,28 @@
+using automated_electrical_schedule.Data.Enums;
+
 namespace automated_electrical_schedule.Data.Models;
 
 public partial class ApplianceEquipmentOutletCircuit
 {
+    public List<ApplianceType> AllowedApplianceTypes
+    {
+        get
+        {
+            List<ApplianceType> applianceTypes = [];
+
+            if (!IsItemized)
+            {
+                applianceTypes.Add(ApplianceType.Dryer);
+            }
+            
+            applianceTypes.AddRange([
+                ApplianceType.KitchenEquipment, 
+                ApplianceType.Other
+            ]);
+
+            return applianceTypes;
+        }
+    }
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
         CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 
         20);

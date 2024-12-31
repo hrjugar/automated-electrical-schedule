@@ -24,7 +24,7 @@
     }
 
     .board-table {
-        --board-table-col-count: 28;
+        --board-table-col-count: 26;
 
         flex-grow: 1;
         flex-basis: 1px;
@@ -230,6 +230,16 @@
 
                     &.cell--text {
                         color: var(--clr-neutral-700);
+                    }
+                    
+                    &.cell--desc {
+                        grid-column: 3 / span 1;
+                        margin-left: 1rem;
+                        font-style: italic;
+                    }
+                    
+                    &.cell--qty {
+                        grid-column: 4 / span 1;
                     }
 
                     &.cell--load {
