@@ -5,17 +5,17 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ConvenienceOutletCircuit
 {
-    // TODO: Change this later
-    public override CalculationResult<double> VoltAmpere => OutletType == OutletType.FourGang
-        ? CalculationResult<double>.Success(360)
-        : CalculationResult<double>.Success(180);
+    public override CalculationResult<double> VoltAmpere =>
+        CalculationResult<double>.Success(
+            GfciReceptacleQuantity * GfciReceptacleYoke +
+            OneGangQuantity * OneGangYoke +
+            TwoGangQuantity * TwoGangYoke +
+            ThreeGangQuantity * ThreeGangYoke +
+            FourGangQuantity * FourGangYoke
+        );
 
-    // TODO: Change this later
-    public override CalculationResult<double> AmpereLoad => CalculationResult<double>.Success(
-        OutletType == OutletType.FourGang
-            ? 4.0 * 360 / Voltage
-            : 180.0 / Voltage
-    );
+    public override CalculationResult<double> AmpereLoad => 
+        CalculationResult<double>.Success(VoltAmpere.Value / Voltage);
 
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
         CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 
@@ -40,8 +40,17 @@ public partial class ConvenienceOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
-
-            OutletType = OutletType
+            
+            GfciReceptacleQuantity = GfciReceptacleQuantity,
+            GfciReceptacleYoke = GfciReceptacleYoke,
+            OneGangQuantity = OneGangQuantity,
+            OneGangYoke = OneGangYoke,
+            TwoGangQuantity = TwoGangQuantity,
+            TwoGangYoke = TwoGangYoke,
+            ThreeGangQuantity = ThreeGangQuantity,
+            ThreeGangYoke = ThreeGangYoke,
+            FourGangQuantity = FourGangQuantity,
+            FourGangYoke = FourGangYoke
         };
     }
 }

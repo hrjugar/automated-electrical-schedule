@@ -63,6 +63,39 @@ public sealed class CircuitValidator : ValidationAttribute
         {
             return new ValidationResult("Ampere load cannot exceed 50 for lighting outlet circuits.");
         }
+
+        // if (circuit is ConvenienceOutletCircuit convenienceOutletCircuit)
+        // {
+        //     if (convenienceOutletCircuit.GfciReceptacleQuantity > 0 &&
+        //         convenienceOutletCircuit.GfciReceptacleYoke < 180)
+        //     {
+        //         return new ValidationResult("If GFCI receptacle exists, its VA must be at least 180.");
+        //     }
+        //     
+        //     if (convenienceOutletCircuit.OneGangQuantity > 0 &&
+        //              convenienceOutletCircuit.OneGangYoke < 180)
+        //     {
+        //         return new ValidationResult("If one-gang receptacle exists, its VA must be at least 180.");
+        //     }
+        //     
+        //     if (convenienceOutletCircuit.TwoGangQuantity > 0 &&
+        //              convenienceOutletCircuit.TwoGangYoke < 180)
+        //     {
+        //         return new ValidationResult("If two-gang receptacle exists, its VA must be at least 180.");
+        //     }
+        //     
+        //     if (convenienceOutletCircuit.ThreeGangQuantity > 0 &&
+        //              convenienceOutletCircuit.ThreeGangYoke < 180)
+        //     {
+        //         return new ValidationResult("If three-gang receptacle exists, its VA must be at least 180.");
+        //     }
+        //     
+        //     if (convenienceOutletCircuit.FourGangQuantity > 0 &&
+        //              convenienceOutletCircuit.FourGangYoke < 360)
+        //     {
+        //         return new ValidationResult("If four-gang receptacle exists, its VA must be at least 360.");
+        //     }
+        // }
         
         return ValidationResult.Success;
     }

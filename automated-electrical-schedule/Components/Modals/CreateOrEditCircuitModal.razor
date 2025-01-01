@@ -21,9 +21,9 @@
 
             @{
                 var threePhaseBoard = DistributionBoard as ThreePhaseDistributionBoard;
-                var isAmpereLoadExceeding = _newCircuit is LightingOutletCircuit && _newCircuit.AmpereLoad.Value > 50;
                 var fixtureCircuit = _newCircuit as FixtureCircuit;
                 var applianceCircuit = _newCircuit as ApplianceEquipmentOutletCircuit;
+                var convenienceCircuit = _newCircuit as ConvenienceOutletCircuit;
             }
 
             
@@ -140,16 +140,10 @@
 
                             break;
                         case ConvenienceOutletCircuit convenienceOutletCircuit:
-                            <div class="create-or-edit-circuit-modal-field">
-                                <label>Outlet Type <span class="red-asterisk">*</span></label>
-                                <InputSelect @bind-Value="convenienceOutletCircuit.OutletType">
-                                    @foreach (OutletType outletType in Enum.GetValues(typeof(OutletType)))
-                                    {
-                                        <option value="@outletType">@outletType.GetDisplayName()</option>
-                                    }
-                                </InputSelect>
-                                <ValidationMessage For=@(() => convenienceOutletCircuit.OutletType)/>
-                            </div>
+                            // TODO: Add fields for convenience outlet circuit
+                            <CreateOrEditCircuitModalConvenienceYokes
+                                Circuit="convenienceOutletCircuit"
+                                OnCircuitChange="StateHasChanged"/>
 
                             break;
                         case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
@@ -251,82 +245,9 @@
                     </div>
                 </div>
 
-                <div class="create-or-edit-circuit-modal-content-values">
-                    <h4>Preview</h4>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Sets</label>
-                        <p>@(_newCircuit.SetCount)</p>
-                    </div>
-                    
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Load Description</label>
-                        <p>@(_newCircuit.Description)</p>
-                        @if (fixtureCircuit?.IsItemized ?? false)
-                        {
-                            foreach (var fixture in fixtureCircuit.Fixtures)
-                            {
-                                <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
-                            }
-                        }
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Volt Amps</label>
-                        <p>@(_newCircuit.VoltAmpere.HasError ? _newCircuit.VoltAmpere.ErrorMessage : Math.Round(_newCircuit.VoltAmpere.Value, 4))</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Ampere Load</label>
-                        <p class="@(_newCircuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(_newCircuit.AmpereLoad)</p>
-                        @if (isAmpereLoadExceeding)
-                        {
-                            <p class="item-error item-sub">*As per PEC Part 1 2017 2.10.2.6 (D) p.45, it cannot be greater than 50 A</p>
-                        }
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Ampere Trip</label>
-                        <p class="@(_newCircuit.AmpereTrip.HasError ? "item-error" : "")">@(_newCircuit.AmpereTrip)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Ampere Frame</label>
-                        <p class="@(_newCircuit.AmpereFrame.HasError ? "item-error" : "")">@(_newCircuit.AmpereFrame)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>R</label>
-                        <p class="@(_newCircuit.R.HasError ? "item-error" : "")">@(_newCircuit.R)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>X</label>
-                        <p class="@(_newCircuit.X.HasError ? "item-error" : "")">@(_newCircuit.X)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Voltage Drop</label>
-                        <p class="@(_newCircuit.VoltageDrop.HasError ? "item-error" : "")">@(_newCircuit.VoltageDrop.HasError ? _newCircuit.VoltageDrop.ErrorMessage : Math.Round(_newCircuit.VoltageDrop.Value, 4).ToPercentageString())</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Conductor Size</label>
-                        <p class="@(_newCircuit.ConductorSize.HasError ? "item-error" : "")">@(_newCircuit.ConductorSize)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Ground Size</label>
-                        <p class="@(_newCircuit.GroundingSize.HasError ? "item-error" : "")">@(_newCircuit.GroundingSize)</p>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-content-value">
-                        <label>Raceway Size</label>
-                        <p class="@(_newCircuit.RacewaySize.HasError ? "item-error" : "")">@(_newCircuit.RacewaySize)</p>
-                    </div>
-                </div>
+                <CreateOrEditCircuitModalPreview Circuit="_newCircuit" OnCircuitChange="StateHasChanged" />
             </div>
-            </div>
+        </div>
 
         <div class="modal-footer modal-footer-btns">
             <button

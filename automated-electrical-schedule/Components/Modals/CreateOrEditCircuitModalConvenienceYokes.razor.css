@@ -1,0 +1,28 @@
+.convenience-yokes {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0.5rem;
+    
+    .convenience-yokes-inputs {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: auto 1fr 1fr;
+        grid-template-columns: auto repeat(5, 1fr);
+        grid-column-gap: 1rem;
+        grid-row-gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .convenience-yokes-validation {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        
+        p {
+            color: var(--clr-destructive-500);
+        }
+    }
+}

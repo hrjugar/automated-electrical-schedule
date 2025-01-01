@@ -1,0 +1,94 @@
+@{
+    var fixtureCircuit = Circuit as FixtureCircuit;
+    var convenienceCircuit = Circuit as ConvenienceOutletCircuit;
+    var isAmpereLoadExceeding = Circuit is LightingOutletCircuit && Circuit.AmpereLoad.Value > 50;
+}
+
+<div class="circuit-preview">
+    <h4>Preview</h4>
+
+    <div class="circuit-preview-value">
+        <label>Sets</label>
+        <p>@(Circuit.SetCount)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Load Description</label>
+        <p>@(Circuit.Description)</p>
+        @if (fixtureCircuit?.IsItemized ?? false)
+        {
+        foreach (var fixture in fixtureCircuit.Fixtures)
+        {
+        <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
+        }
+        } else if (convenienceCircuit != null)
+        {
+        // TODO: Add description for GFCI, 1-gang, 2-gang, 3-gang, 4-gang, if qty > 0
+        }
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Volt Amps</label>
+        <p>@(Circuit.VoltAmpere.HasError ? Circuit.VoltAmpere.ErrorMessage : Math.Round(Circuit.VoltAmpere.Value, 4))</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Ampere Load</label>
+        <p class="@(Circuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(Circuit.AmpereLoad)</p>
+        @if (isAmpereLoadExceeding)
+        {
+        <p class="item-error item-sub">*As per PEC Part 1 2017 2.10.2.6 (D) p.45, it cannot be greater than 50 A</p>
+        }
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Ampere Trip</label>
+        <p class="@(Circuit.AmpereTrip.HasError ? "item-error" : "")">@(Circuit.AmpereTrip)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Ampere Frame</label>
+        <p class="@(Circuit.AmpereFrame.HasError ? "item-error" : "")">@(Circuit.AmpereFrame)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>R</label>
+        <p class="@(Circuit.R.HasError ? "item-error" : "")">@(Circuit.R)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>X</label>
+        <p class="@(Circuit.X.HasError ? "item-error" : "")">@(Circuit.X)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Voltage Drop</label>
+        <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Math.Round(Circuit.VoltageDrop.Value, 4).ToPercentageString())</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Conductor Size</label>
+        <p class="@(Circuit.ConductorSize.HasError ? "item-error" : "")">@(Circuit.ConductorSize)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Ground Size</label>
+        <p class="@(Circuit.GroundingSize.HasError ? "item-error" : "")">@(Circuit.GroundingSize)</p>
+    </div>
+
+    <div class="circuit-preview-value">
+        <label>Raceway Size</label>
+        <p class="@(Circuit.RacewaySize.HasError ? "item-error" : "")">@(Circuit.RacewaySize)</p>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Circuit Circuit { get; set; } = default!;
+    
+    [Parameter, EditorRequired] public EventCallback OnCircuitChange { get; set; }
+    
+    private Task OnCircuitPropertyChange()
+    {
+        return OnCircuitChange.InvokeAsync();
+    }
+}

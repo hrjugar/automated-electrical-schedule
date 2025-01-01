@@ -1,0 +1,87 @@
+<div class="convenience-yokes">
+    <div class="convenience-yokes-inputs">
+        <p>Type</p>
+        <p>Quantity</p>
+        <p>VA/Yoke</p>
+
+        <p>GFCI Receptacle</p>
+        <InputNumber 
+            class="input-primary" 
+            @bind-Value="Circuit.GfciReceptacleQuantity" 
+            @bind-Value:after="OnCircuitPropertyChange" />
+        <InputNumber 
+            class="input-primary" 
+            @bind-Value="Circuit.GfciReceptacleYoke" 
+            @bind-Value:after="OnCircuitPropertyChange" 
+            disabled="@(Circuit.GfciReceptacleQuantity == 0)" />
+        
+        <p>1-Gang</p>
+        <InputNumber 
+            class="input-primary" 
+            @bind-Value="Circuit.OneGangQuantity" 
+            @bind-Value:after="OnCircuitPropertyChange" />
+        <InputNumber 
+            class="input-primary"
+            @bind-Value="Circuit.OneGangYoke"
+            @bind-Value:after="OnCircuitPropertyChange"
+            disabled="@(Circuit.OneGangQuantity == 0)" />
+        
+        <p>2-Gang</p>
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.TwoGangQuantity"
+            @bind-Value:after="OnCircuitPropertyChange"/>
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.TwoGangYoke"
+            @bind-Value:after="OnCircuitPropertyChange"
+            disabled="@(Circuit.TwoGangQuantity == 0)" />
+        
+        <p>3-Gang</p>
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.ThreeGangQuantity"
+            @bind-Value:after="OnCircuitPropertyChange" />
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.ThreeGangYoke"
+            @bind-Value:after="OnCircuitPropertyChange"
+            disabled="@(Circuit.ThreeGangQuantity == 0)" />
+        
+        <p>4-Gang</p>
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.FourGangQuantity"
+            @bind-Value:after="OnCircuitPropertyChange" />
+        <InputNumber
+            class="input-primary"
+            @bind-Value="Circuit.FourGangYoke"
+            @bind-Value:after="OnCircuitPropertyChange"
+            disabled="@(Circuit.FourGangQuantity == 0)" />
+    </div>
+    
+    <div class="convenience-yokes-validation">
+        <p>*As per PEC Part 1 2017 2.20.2.5 (I) p. 55, min. of 180 VA for GFCI Rec, and 1, 2, 3 -Gang while min. of 360 (90 x 4) VA for 4-Gang.</p>
+        <ValidationMessage For="@(() => Circuit.GfciReceptacleQuantity)"/>
+        <ValidationMessage For="@(() => Circuit.GfciReceptacleYoke)"/>
+        <ValidationMessage For="@(() => Circuit.OneGangQuantity)"/>
+        <ValidationMessage For="@(() => Circuit.OneGangYoke)"/>
+        <ValidationMessage For="@(() => Circuit.TwoGangQuantity)"/>
+        <ValidationMessage For="@(() => Circuit.TwoGangYoke)"/>
+        <ValidationMessage For="@(() => Circuit.ThreeGangQuantity)"/>
+        <ValidationMessage For="@(() => Circuit.ThreeGangYoke)"/>
+        <ValidationMessage For="@(() => Circuit.FourGangQuantity)"/>
+        <ValidationMessage For="@(() => Circuit.FourGangYoke)"/>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ConvenienceOutletCircuit Circuit { get; set; } = default!;
+    
+    [Parameter, EditorRequired] public EventCallback OnCircuitChange { get; set; }
+    
+    private Task OnCircuitPropertyChange()
+    {
+        return OnCircuitChange.InvokeAsync();
+    }
+}
