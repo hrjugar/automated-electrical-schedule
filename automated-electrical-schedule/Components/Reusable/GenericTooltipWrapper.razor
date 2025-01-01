@@ -1,0 +1,15 @@
+<TooltipWrapper Placement="Placement">
+    <ElementContent>@ChildContent</ElementContent>
+    
+    <TooltipContent>
+        <p class="tooltip-title">@Title</p>
+        <p class="tooltip-description">@Description</p>
+    </TooltipContent>
+</TooltipWrapper>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Description { get; set; } = string.Empty;
+    [Parameter] public TooltipPlacement Placement { get; set; } = TooltipPlacement.Right;
+}

@@ -1,0 +1,8 @@
+.tooltip-title {
+    font-weight: 600;
+    color: var(--clr-neutral-900);
+}
+
+.tooltip-description {
+    color: var(--clr-neutral-500);
+}

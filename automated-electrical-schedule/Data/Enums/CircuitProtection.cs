@@ -37,5 +37,7 @@ public enum CircuitProtection
     [Display(Name = "Inverse Time Breaker")]
     InverseTimeBreaker,
 
-    [Display(Name = "Cut-out Fuse")] CutOutFuse
+    [Display(Name = "Cut-out Fuse")] CutOutFuse,
+    
+    [Display(Name = "GFCI Circuit Breaker")] GfciCircuitBreaker,
 }

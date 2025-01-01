@@ -5,6 +5,18 @@ namespace automated_electrical_schedule.Data.Models;
 
 public partial class ConvenienceOutletCircuit
 {
+    public override List<CircuitProtection> AllowedCircuitProtections =>
+    [
+        CircuitProtection.MiniatureCircuitBreaker,
+        CircuitProtection.MoldedCaseCircuitBreaker,
+        CircuitProtection.GfciCircuitBreaker
+    ];
+
+    public bool HasExceedingAmpereTrip =>
+        CircuitProtection != CircuitProtection.GfciCircuitBreaker &&
+        GfciReceptacleQuantity > 0 &&
+        AmpereTrip.Value > 20;
+
     public override CalculationResult<double> VoltAmpere =>
         CalculationResult<double>.Success(
             GfciReceptacleQuantity * GfciReceptacleYoke +

@@ -13,15 +13,6 @@
         border: 1px solid var(--clr-neutral-500);
         background-color: white;
 
-        .tooltip-title {
-            font-weight: 600;
-            color: var(--clr-neutral-900);
-        }
-
-        .tooltip-description {
-            color: var(--clr-neutral-500);
-        }
-
         &.tooltip--top {
             top: -100%;
             bottom: 100%;

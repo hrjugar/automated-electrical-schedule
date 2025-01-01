@@ -49,10 +49,10 @@ else
                     </button>
                 }
 
-                <TooltipWrapper
+                <GenericTooltipWrapper
                     Title="Edit"
                     Description="Modify distribution board"
-                    Placement="TooltipWrapper.TooltipPlacement.BottomLeft">
+                    Placement="TooltipPlacement.BottomLeft">
                     <button class="btn-icon btn-secondary" @onclick="OpenEditBoardModal">
                         <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path
@@ -60,12 +60,12 @@ else
                                 d="M17.181 2.927a2.975 2.975 0 0 0-4.259-.054l-9.375 9.375a2.44 2.44 0 0 0-.656 1.194l-.877 3.95a.5.5 0 0 0 .596.597l3.927-.873a2.5 2.5 0 0 0 1.234-.678l9.358-9.358a2.975 2.975 0 0 0 .052-4.153m-3.552.653a1.975 1.975 0 1 1 2.793 2.793l-.671.671l-2.793-2.792zm-1.378 1.38l2.793 2.792l-7.98 7.98a1.5 1.5 0 0 1-.744.409l-3.16.702l.708-3.183c.059-.267.193-.511.386-.704z"/>
                         </svg>
                     </button>
-                </TooltipWrapper>
+                </GenericTooltipWrapper>
 
-                <TooltipWrapper
+                <GenericTooltipWrapper
                     Title="Delete"
                     Description="Remove distribution board"
-                    Placement="TooltipWrapper.TooltipPlacement.BottomLeft">
+                    Placement="TooltipPlacement.BottomLeft">
                     <button class="btn-icon btn-destructive" @onclick="OpenDeleteBoardModal">
                         <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path
@@ -73,7 +73,7 @@ else
                                 d="M8.5 4h3a1.5 1.5 0 0 0-3 0m-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.054l-1.194 10.344A3 3 0 0 1 12.272 18H7.728a3 3 0 0 1-2.98-2.656L3.554 5H2.5a.5.5 0 0 1 0-1zM5.741 15.23A2 2 0 0 0 7.728 17h4.544a2 2 0 0 0 1.987-1.77L15.439 5H4.561zM8.5 7.5A.5.5 0 0 1 9 8v6a.5.5 0 0 1-1 0V8a.5.5 0 0 1 .5-.5M12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
                         </svg>
                     </button>
-                </TooltipWrapper>
+                </GenericTooltipWrapper>
             </div>
         </header>
 

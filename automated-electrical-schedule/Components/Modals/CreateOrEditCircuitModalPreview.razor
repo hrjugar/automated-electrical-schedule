@@ -23,7 +23,30 @@
         }
         } else if (convenienceCircuit != null)
         {
-        // TODO: Add description for GFCI, 1-gang, 2-gang, 3-gang, 4-gang, if qty > 0
+            if (convenienceCircuit.GfciReceptacleQuantity > 0)
+            {
+                <p class="item-sub @(convenienceCircuit.HasExceedingAmpereTrip ? "item-error" : "")">GFCI Receptacle (@(convenienceCircuit.AmpereTrip) AT)</p>
+            }
+
+            if (convenienceCircuit.OneGangQuantity > 0)
+            {
+                <p class="item-sub">1-Gang</p>
+            }
+
+            if (convenienceCircuit.TwoGangQuantity > 0)
+            {
+                <p class="item-sub">2-Gang</p>
+            }
+
+            if (convenienceCircuit.ThreeGangQuantity > 0)
+            {
+                <p class="item-sub">3-Gang</p>
+            }
+
+            if (convenienceCircuit.FourGangQuantity > 0)
+            {
+                <p class="item-sub">4-Gang</p>
+            }
         }
     </div>
 
@@ -43,7 +66,36 @@
 
     <div class="circuit-preview-value">
         <label>Ampere Trip</label>
-        <p class="@(Circuit.AmpereTrip.HasError ? "item-error" : "")">@(Circuit.AmpereTrip)</p>
+        
+        @if (convenienceCircuit != null && convenienceCircuit.HasExceedingAmpereTrip)
+        {
+            <div class="circuit-preview-value-row item-error">
+                <p>@(Circuit.AmpereTrip)</p>
+                <InfoButton>
+                    <div class="info-tooltip-error-content">
+                        <div class="info-tooltip-error-content-group">
+                            <h6>Notice</h6>
+                            <p>GFCI Receptacle Ampere Trip is limited to 15 AT and 20 AT only.</p>
+                        </div>
+                        
+                        <div class="info-tooltip-error-content-group item-error">
+                            <h6>Suggestion:</h6>
+                            <p>Change the GFCI Receptacles to 2-Gang Outlets and change Circuit Protection Type to GFCI Circuit Breaker.</p>
+                        </div>
+                    </div>
+                </InfoButton>
+                <button
+                    type="button"
+                    class="btn-text btn-destructive"
+                    @onclick="ResolveExceedingAmpereTrip">
+                    Resolve
+                </button>
+            </div>
+        }
+        else
+        {
+            <p class="@(Circuit.AmpereTrip.HasError ? "item-error" : "")">@(Circuit.AmpereTrip)</p>
+        }
     </div>
 
     <div class="circuit-preview-value">
@@ -86,9 +138,14 @@
     [Parameter, EditorRequired] public Circuit Circuit { get; set; } = default!;
     
     [Parameter, EditorRequired] public EventCallback OnCircuitChange { get; set; }
-    
-    private Task OnCircuitPropertyChange()
+
+    private Task ResolveExceedingAmpereTrip()
     {
+        if (Circuit is ConvenienceOutletCircuit convenienceCircuit)
+        {
+            convenienceCircuit.CircuitProtection = CircuitProtection.GfciCircuitBreaker;
+        }
+        
         return OnCircuitChange.InvokeAsync();
     }
 }
