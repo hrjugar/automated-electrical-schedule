@@ -5,11 +5,6 @@
         <button type="button" class="btn-text btn-secondary" @onclick="@AddFixture">Add</button>
     </div>
     
-    @foreach (var fixture in Fixtures)
-    {
-        <p>Fixture @fixture.Id | Desc: @fixture.Description | Qty: @fixture.Quantity | W: @fixture.Wattage</p>
-    }
-    
     <div class="fixtures-itemized-list">
         @{
             var hasMoreThanOneFixture = Fixtures.Count > 1;

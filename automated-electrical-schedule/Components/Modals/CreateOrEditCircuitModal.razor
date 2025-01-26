@@ -97,11 +97,6 @@
                                 disabled="@(fixtureCircuit.Fixtures.Count > 1)"/>
                             <label>Itemized</label>
                         </div>
-
-                        foreach (var fixture in fixtureCircuit.Fixtures)
-                        {
-                            <p>Fixture @fixture.Id | Desc: @fixture.Description | Qty: @fixture.Quantity | W: @fixture.Wattage</p>
-                        }
                     }
 
                     <div class="create-or-edit-circuit-modal-field">
@@ -125,6 +120,17 @@
                                     }
                                 </InputSelect>
                                 <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
+                            </div>
+                            
+                            <div class="create-or-edit-circuit-modal-field">
+                                <label>Application <span class="red-asterisk">*</span></label>
+                                <InputSelect @bind-Value="motorOutletCircuit.MotorApplication">
+                                    @foreach (var motorApplication in motorOutletCircuit.AllowedMotorApplications)
+                                    {
+                                        <option value="@motorApplication">@motorApplication.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For=@(() => motorOutletCircuit.MotorApplication)/>
                             </div>
 
                             <div class="create-or-edit-circuit-modal-field">
@@ -336,6 +342,11 @@
                     DistributionBoard,
                     _newCircuit.LineToLineVoltage
                 )[0];
+                
+                var initialMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
+                    DistributionBoard,
+                    _newCircuit.LineToLineVoltage
+                )[0];
 
                 var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
                     initialMotorType,
@@ -343,6 +354,7 @@
                 )[0];
                 
                 motorOutletCircuit.MotorType = initialMotorType;
+                motorOutletCircuit.MotorApplication = initialMotorApplication;
                 motorOutletCircuit.Horsepower = initialHorsepower;
                 motorOutletCircuit.CircuitProtection = motorOutletCircuit.AllowedCircuitProtections[0];
             }
@@ -405,6 +417,11 @@
                     updatedNewLineToLineVoltage
                 )[0];
 
+                var initialMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
+                    _newCircuit!.ParentDistributionBoard,
+                    updatedNewLineToLineVoltage
+                )[0];
+
                 var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
                     initialMotorType,
                     updatedNewLineToLineVoltage
@@ -413,7 +430,8 @@
                 updatedNewCircuit = new MotorOutletCircuit
                 {
                     MotorType = initialMotorType,
-                    Horsepower = initialHorsepower
+                    Horsepower = initialHorsepower,
+                    MotorApplication = initialMotorApplication
                 };
                 
                 updatedNewCircuit.CircuitProtection = updatedNewCircuit.AllowedCircuitProtections[0];
@@ -466,6 +484,13 @@
             )[0];
             
             motorOutletCircuit.MotorType = newMotorType;
+            
+            var newMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
+                _newCircuit.ParentDistributionBoard,
+                lineToLineVoltage
+            )[0];
+            
+            motorOutletCircuit.MotorApplication = newMotorApplication;
             
             var allowedHorsepowerValues = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
                 newMotorType,
@@ -521,22 +546,7 @@
         
         StateHasChanged();
     }
-
-    // void UpdateLineToLineVoltage(LineToLineVoltage lineToLineVoltage)
-    // {
-    //     _newCircuit!.LineToLineVoltage = lineToLineVoltage;
-    //
-    //     if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
-    //     {
-    //         if (!motorOutletCircuit.AllowedMotorTypes.Contains(motorOutletCircuit.MotorType))
-    //         {
-    //             motorOutletCircuit.MotorType = motorOutletCircuit.AllowedMotorTypes[0];
-    //         }
-    //     }
-    //     
-    //     StateHasChanged();
-    // }
-
+    
     async Task HandleValidFormSubmit()
     {
         if (OldCircuit is null)

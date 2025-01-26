@@ -12,6 +12,11 @@ public partial class MotorOutletCircuit : Circuit
     public MotorType MotorType { get; set; } = MotorType.SinglePhaseMotor;
 
     [Required]
+    [Display(Name = "motor application")]
+    [Column("motor_application")]
+    public MotorApplication MotorApplication { get; set; } = MotorApplication.NormalMotor;
+    
+    [Required]
     [Display(Name = "horsepower")]
     [Column("horsepower")]
     [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
