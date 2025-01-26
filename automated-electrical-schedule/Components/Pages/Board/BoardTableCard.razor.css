@@ -24,7 +24,7 @@
     }
 
     .board-table {
-        --board-table-col-count: 26;
+        --board-table-col-count: 27;
 
         flex-grow: 1;
         flex-basis: 1px;
@@ -195,10 +195,10 @@
                 }
 
                 &.board-table-head-colgroup--conductor-size {
-                    grid-column: span 4;
+                    grid-column: span 5;
 
                     .board-table-head-colgroup-title, .board-table-head-colgroup-cols {
-                        grid-column: span 4;
+                        grid-column: span 5;
                     }
                 }
             }

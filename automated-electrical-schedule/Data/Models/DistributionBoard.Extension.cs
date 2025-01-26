@@ -108,6 +108,7 @@ public abstract partial class DistributionBoard
     {
         get
         {
+            // TODO: Edit volt ampere calculation
             return Circuits.Select(circuit => circuit.VoltAmpere).ToList().Sum() +
                    SubDistributionBoards.Sum(subBoard => subBoard.VoltAmpere);
         }
@@ -224,6 +225,8 @@ public abstract partial class DistributionBoard
     }
 
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
+    
+    public int WireCount => SetCount * (ConductorWireCount + GroundingWireCount);
 
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 

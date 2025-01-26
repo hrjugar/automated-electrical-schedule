@@ -141,6 +141,8 @@ public abstract partial class Circuit
     public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount);
     public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;
 
+    public int WireCount => SetCount * (ConductorWireCount + GroundingWireCount);
+    
     public ConductorType Grounding => ConductorType.FindById(GroundingId);
 
     // public CalculationResult<double> GroundingSize =>

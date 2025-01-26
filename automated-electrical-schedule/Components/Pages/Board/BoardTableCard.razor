@@ -84,6 +84,7 @@
             <p class="cell cell--text cell--head">@(DistributionBoard.ConductorHeaderDisplay)</p>
             <p class="cell cell--text cell--head">Ground</p>
             <p class="cell cell--text cell--head">Raceway</p>
+            <p class="cell cell--text cell--head">No. of Wires</p>
         </div>
     </div>
 
@@ -293,7 +294,7 @@
                     }
                     else
                     {
-                        <p>1-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
+                        <p>@(Circuit.GroundingWireCount)-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
                     }
                     <InfoButton 
                         OnClick="() => OpenInformationArea(Information.Grounding)"
@@ -313,6 +314,8 @@
                         OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(circuit.RacewayType))"
                         TooltipPlacement="TooltipPlacement.BottomLeft"/>
                 </div>
+                
+                <p class="cell cell--text">@circuit.WireCount</p>
 
                 <div class="cell cell--separator"></div>
 
@@ -398,7 +401,7 @@
                 </div>
                 <p class="cell cell--text">@subDistributionBoard.BoardName</p>
                 <div class="cell cell--empty"></div>
-
+                
                 @if (subDistributionBoard.VoltAmpere == 0)
                 {
                     <div class="cell cell--empty"></div>
@@ -432,8 +435,6 @@
                 {
                     <p class="cell cell--text">@((int) subDistributionBoard.Voltage)</p>
                 }
-                
-                <div class="cell cell--empty"></div>
 
                 @* @if (threePhaseBoard?.LineToLineVoltage == LineToLineVoltage.Abc) *@
                 @* { *@
@@ -607,7 +608,7 @@
                 }
                 else
                 {
-                    <p class="cell cell--text">1-@(subDistributionBoard.GroundingSize)mm² @(subDistributionBoard.Grounding.ToString())</p>
+                    <p class="cell cell--text">@(DistributionBoard.GroundingWireCount)-@(subDistributionBoard.GroundingSize)mm² @(subDistributionBoard.Grounding.ToString())</p>
                 }
 
                 @if (subDistributionBoard.RacewaySize.HasError)
@@ -618,6 +619,8 @@
                 {
                     <p class="cell cell--text">@(subDistributionBoard.RacewaySize)mm ø @subDistributionBoard.RacewayType.GetDisplayName()</p>
                 }
+                
+                <p class="cell cell--text">@subDistributionBoard.WireCount</p>
 
                 <div class="cell cell--separator"></div>
 
@@ -753,6 +756,7 @@ else
 
     <div class="cell cell--separator"></div>
 
+    <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
