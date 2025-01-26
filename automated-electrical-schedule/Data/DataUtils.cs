@@ -29,9 +29,9 @@ public static class DataUtils
             : CalculationResult<int>.Success(result.Value);
     }
 
-    public static CalculationResult<double> GetMotorOutlet230VoltAmpereLoad(double horsepower)
+    public static CalculationResult<double> GetMotorOutlet230VoltAmpereLoad(string horsepower)
     {
-        var index = DataConstants.SinglePhaseHorsepowerValues.FindIndex(hp => hp.IsRoughlyEqualTo(horsepower));
+        var index = DataConstants.SinglePhaseHorsepowerValues.FindIndex(hp => hp == horsepower);
         
         return index == -1
             ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingHorsepower)

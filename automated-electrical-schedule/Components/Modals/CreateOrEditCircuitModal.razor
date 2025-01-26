@@ -135,10 +135,10 @@
 
                             <div class="create-or-edit-circuit-modal-field">
                                 <label>Horsepower <span class="red-asterisk">*</span></label>
-                                <InputSelect @bind-Value="motorOutletCircuit.Horsepower">
+                                <InputSelect @bind-Value="motorOutletCircuit.Horsepower" @key="motorOutletCircuit.AllowedHorsepowerValues">
                                     @foreach (var horsepowerValue in motorOutletCircuit.AllowedHorsepowerValues)
                                     {
-                                        <option value="@horsepowerValue">@horsepowerValue.ToHorsepowerFractionalString()</option>
+                                        <option value="@horsepowerValue">@horsepowerValue</option>
                                     }
                                 </InputSelect>
                                 <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
@@ -497,7 +497,7 @@
                 lineToLineVoltage
             );
             
-            if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
+            if (!allowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
             {
                 motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
             }
@@ -519,7 +519,7 @@
 
         var allowedHorsepowerValues = motorOutletCircuit.AllowedHorsepowerValues;
 
-        if (!allowedHorsepowerValues.Any(hp => hp.IsRoughlyEqualTo(motorOutletCircuit.Horsepower)))
+        if (!allowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
         {
             motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
         }

@@ -19,6 +19,5 @@ public partial class MotorOutletCircuit : Circuit
     [Required]
     [Display(Name = "horsepower")]
     [Column("horsepower")]
-    [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
-    public double Horsepower { get; set; }
+    public string Horsepower { get; set; }
 }

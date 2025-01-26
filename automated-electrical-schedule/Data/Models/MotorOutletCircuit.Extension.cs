@@ -9,7 +9,7 @@ public partial class MotorOutletCircuit
 
     public List<MotorApplication> AllowedMotorApplications => GetAllowedMotorApplicationsStatic(ParentDistributionBoard, LineToLineVoltage);
     
-    public List<double> AllowedHorsepowerValues => GetAllowedHorsepowerValuesStatic(MotorType, LineToLineVoltage);
+    public List<string> AllowedHorsepowerValues => GetAllowedHorsepowerValuesStatic(MotorType, LineToLineVoltage);
 
     public override List<CircuitProtection> AllowedCircuitProtections =>
     [
@@ -228,7 +228,7 @@ public partial class MotorOutletCircuit
         return [MotorApplication.NormalMotor];
     }
     
-    public static List<double> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage lineToLineVoltage)
+    public static List<string> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage lineToLineVoltage)
     {
         if (lineToLineVoltage != LineToLineVoltage.Abc)
             return DataConstants.SinglePhaseHorsepowerValues;

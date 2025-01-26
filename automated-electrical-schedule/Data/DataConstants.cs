@@ -93,59 +93,59 @@ public static class DataConstants
         50
     ];
 
-    public static readonly List<double> SinglePhaseHorsepowerValues =
+    public static readonly List<string> SinglePhaseHorsepowerValues =
     [
-        1.0 / 6,
-        0.25,
-        1.0 / 3,
-        0.5,
-        0.75,
-        1.0,
-        1.5,
-        2.0,
-        3.0,
-        4.0,
-        7.5,
-        10
+        "1/6",
+        "1/4",
+        "1/3",
+        "1/2",
+        "3/4",
+        "1",
+        "1 1/2",
+        "2",
+        "3",
+        "4",
+        "7 1/2",
+        "10"
     ];
 
-    public static readonly List<double> GeneralThreePhaseHorsepowerValues =
+    public static readonly List<string> GeneralThreePhaseHorsepowerValues =
     [
-        0.5,
-        0.75,
-        1,
-        1.5,
-        2,
-        3,
-        5,
-        7.5,
-        10,
-        15,
-        20,
-        25,
-        30,
-        40,
-        50,
-        60,
-        75,
-        100,
-        125,
-        150,
-        200
+        "1/2",
+        "3/4",
+        "1",
+        "1 1/2",
+        "2",
+        "3",
+        "5",
+        "7 1/2",
+        "10",
+        "15",
+        "20",
+        "25",
+        "30",
+        "40",
+        "50",
+        "60",
+        "75",
+        "100",
+        "125",
+        "150",
+        "200"
     ];
 
-    public static readonly List<double> SynchronousThreePhaseHorsepowerValues =
+    public static readonly List<string> SynchronousThreePhaseHorsepowerValues =
     [
-        25,
-        30,
-        40,
-        50,
-        60,
-        75,
-        100,
-        125,
-        150,
-        200
+        "25",
+        "30",
+        "40",
+        "50",
+        "60",
+        "75",
+        "100",
+        "125",
+        "150",
+        "200",
     ];
 
     public static readonly List<double> ConductorSizes =

@@ -275,7 +275,7 @@ public static class ThreePhaseMotorLoadTable
 
 
     // Use if not fire pump
-    public static CalculationResult<double> GetMotorLoad(BoardVoltage voltage, MotorType motorType, double horsepower)
+    public static CalculationResult<double> GetMotorLoad(BoardVoltage voltage, MotorType motorType, string horsepower)
     {
         // return motorType switch
         // {
@@ -299,18 +299,15 @@ public static class ThreePhaseMotorLoadTable
             case MotorType.SquirrelCage:
             case MotorType.WoundRotor:
                 column = GroupOneLoadTable[voltage];
-                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp =>
-                    hp.IsRoughlyEqualTo(horsepower));
+                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp == horsepower);
                 break;
             case MotorType.Synchronous:
                 column = SynchronousLoadTable[voltage];
-                index = DataConstants.SynchronousThreePhaseHorsepowerValues.FindIndex(hp =>
-                    hp.IsRoughlyEqualTo(horsepower));
+                index = DataConstants.SynchronousThreePhaseHorsepowerValues.FindIndex(hp => hp == horsepower);
                 break;
             case MotorType.InductionMotorFirePump:
                 column = FirePumpLoadTable[voltage];
-                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp =>
-                    hp.IsRoughlyEqualTo(horsepower));
+                index = DataConstants.GeneralThreePhaseHorsepowerValues.FindIndex(hp => hp == horsepower);
                 break;
             case MotorType.SinglePhaseMotor:
             default:
