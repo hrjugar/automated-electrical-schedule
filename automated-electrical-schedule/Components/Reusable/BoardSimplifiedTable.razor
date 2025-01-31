@@ -1,0 +1,320 @@
+<div class="simplified-table-wrapper">
+    <table class="simplified-table">
+        <thead>
+            <tr>
+                <th rowspan="2">CKT No.</th>
+                <th rowspan="2">Load Description</th>
+                <th rowspan="2">QTY</th>
+                <th rowspan="2">VA</th>
+                <th rowspan="2">Voltage</th>
+                
+                @if (DistributionBoard is ThreePhaseDistributionBoard)
+                {
+                    <th colspan="4">Ampere Load</th>
+                }
+                else
+                {
+                    <th rowspan="2">Ampere Load</th>
+                }
+                @* <th rowspan="2">Ampere Load</th> *@
+                    
+                <th colspan="7">Circuit Protection</th>
+                <th colspan="4">Conductor Size</th>
+            </tr>
+            
+            <tr>
+                @if (DistributionBoard is ThreePhaseDistributionBoard)
+                {
+                    var config = (DistributionBoard as ThreePhaseDistributionBoard)!.ThreePhaseConfiguration;
+                    
+                    @if (config == ThreePhaseConfiguration.Delta)
+                    {
+                        <th>AB</th>
+                        <th>BC</th>
+                        <th>CA</th>
+                        <th>ABC</th>
+                    }
+                    else
+                    {
+                        <th>AN</th>
+                        <th>BN</th>
+                        <th>CN</th>
+                        <th>ABC</th>
+                    }
+                }
+                
+                <th>AT</th>
+                <th>AF</th>
+                <th>Phase</th>
+                <th>Pole</th>
+                <th>Length</th>
+                <th>VD</th>
+                <th>Type</th>
+                <th>Sets</th>
+                <th>Phase+Neutral</th>
+                <th>Ground</th>
+                <th>Raceway</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            @for (var i = 0; i < DistributionBoard.Circuits.Count; i++)
+            {
+                var circuit = DistributionBoard.Circuits[i];
+                var fixtureCircuit = circuit as FixtureCircuit;
+                    
+                <tr>
+                    <td>@((i+1).ToString())</td>
+                    <td>@circuit.Description</td>
+                    <td>
+                        @if (fixtureCircuit != null && !fixtureCircuit.IsItemized && fixtureCircuit.Fixtures.Count > 0)
+                        {
+                            @fixtureCircuit.Fixtures[0].Quantity
+                        }
+                    </td> 
+                    <td>@circuit.VoltAmpere</td>
+                    <td>@circuit.Voltage.ToString()</td>
+                    
+                    @if (DistributionBoard is ThreePhaseDistributionBoard)
+                    {
+                        <td>
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
+                            {
+                                @(Math.Round(circuit.AmpereLoad.Value, 4))
+                            }
+                        </td>
+                        
+                        <td>
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
+                            {
+                                @(Math.Round(circuit.AmpereLoad.Value, 4))
+                            }
+                        </td>
+                        
+                        <td>
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
+                            {
+                                @(Math.Round(circuit.AmpereLoad.Value, 4))
+                            }
+                        </td>
+                        <td>
+                            @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
+                            {
+                                @(Math.Round(circuit.AmpereLoad.Value, 4))
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@(Math.Round(circuit.AmpereLoad.Value, 4))</td>
+                    }
+                    
+                    <td>@circuit.AmpereTrip</td>
+                    <td>@circuit.AmpereFrame</td>
+                    <td>@circuit.Phase</td>
+                    <td>@circuit.Pole</td>
+                    <td>@circuit.WireLength</td>
+                    <td>@(Math.Round(circuit.VoltageDrop.Value, 4).ToPercentageString())</td>
+                    <td>@circuit.CircuitProtection.GetDisplayName()</td>
+                    <td>@circuit.SetCount</td>
+                    <td>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</td>
+                    <td>@(Circuit.GroundingWireCount)-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</td>
+                    <td>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</td>
+                </tr>
+                
+                @if (fixtureCircuit != null && fixtureCircuit.IsItemized)
+                {
+                    @foreach (var fixture in fixtureCircuit.Fixtures)
+                    {
+                        <tr>
+                            <td></td>
+                            <td>@fixture.Description</td>
+                            <td>@fixture.Quantity</td>
+                            <td></td>
+                            <td></td>
+                            
+                            @if (DistributionBoard is ThreePhaseDistributionBoard)
+                            {
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            
+                            @for (var k = 0; k < 11; k++)
+                            {
+                                <td></td>
+                            }
+                        </tr>
+                    }
+                }
+            }
+                
+            @for (var i = 0; i < DistributionBoard.SubDistributionBoards.Count; i++)
+            {
+                var subDistributionBoard = DistributionBoard.SubDistributionBoards[i];
+                    
+                <tr>
+                    <td>@((DistributionBoard.Circuits.Count + i + 1).ToString())</td>
+                    <td>@subDistributionBoard.BoardName</td>
+                    <td></td>
+                    <td>@subDistributionBoard.VoltAmpere</td>
+                    <td>@((int) subDistributionBoard.Voltage)</td>
+                    
+                    @if (DistributionBoard is ThreePhaseDistributionBoard)
+                    {
+                        if (subDistributionBoard is ThreePhaseDistributionBoard subThreePhaseBoard)
+                        {
+                            <td>
+                                @if (subThreePhaseBoard.AmpereLoadA != 0)
+                                {
+                                    @(Math.Round(subThreePhaseBoard.AmpereLoadA, 4))
+                                }
+                            </td>
+                            
+                            <td>
+                                @if (subThreePhaseBoard.AmpereLoadB != 0)
+                                {
+                                    @(Math.Round(subThreePhaseBoard.AmpereLoadB, 4))
+                                }
+                            </td>
+                            
+                            <td>
+                                @if (subThreePhaseBoard.AmpereLoadC != 0)
+                                {
+                                    @(Math.Round(subThreePhaseBoard.AmpereLoadC, 4))
+                                }
+                            </td>
+                            
+                            <td>
+                                @if (subThreePhaseBoard.AmpereLoadAbc != 0)
+                                {
+                                    @(Math.Round(subThreePhaseBoard.AmpereLoadAbc, 4))
+                                }
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A)
+                                {
+                                    @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                }
+                            </td>
+                            
+                            <td>
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B)
+                                {
+                                    @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                }
+                            </td>
+                            
+                            <td>
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C)
+                                {
+                                    @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                }
+                            </td>
+                            
+                            <td></td>
+                        }
+                    }
+                    else
+                    {
+                        <td>@(Math.Round(subDistributionBoard.AmpereLoad, 4))</td>
+                    }
+                    
+                    <td>
+                        @if (!subDistributionBoard.AmpereTrip.HasError)
+                        {
+                            @subDistributionBoard.AmpereTrip.Value
+                        }
+                    </td>
+                    
+                    <td>
+                        @if (!subDistributionBoard.AmpereFrame.HasError)
+                        {
+                            @subDistributionBoard.AmpereFrame.Value
+                        }
+                    </td>
+                    
+                    <td>@(subDistributionBoard.Phase == BoardPhase.SinglePhase ? 1 : 3)</td>
+                    <td>@subDistributionBoard.Pole</td>
+                    <td>@subDistributionBoard.WireLength</td>
+                    
+                    <td>
+                        @if (!subDistributionBoard.VoltageDrop.HasError)
+                        {
+                            @(Math.Round(subDistributionBoard.VoltageDrop.Value, 4).ToPercentageString())
+                        }
+                    </td>
+                    <td>@subDistributionBoard.CircuitProtection.GetDisplayName()</td>
+                    <td>@subDistributionBoard.SetCount</td>
+                    
+                    <td>
+                        @if (!subDistributionBoard.ConductorSize.HasError)
+                        {
+                            @($"{subDistributionBoard.ConductorWireCount}-{subDistributionBoard.ConductorSize}mm\u00b2 {subDistributionBoard.ConductorType}")
+                        }
+                    </td>
+                    
+                    <td>
+                        @if (!subDistributionBoard.GroundingSize.HasError)
+                        {
+                            @($"{Circuit.GroundingWireCount}-{subDistributionBoard.GroundingSize}mm\u00b2 {subDistributionBoard.Grounding}")
+                        }
+                    </td>
+                    
+                    <td>
+                        @if (!subDistributionBoard.RacewaySize.HasError)
+                        {
+                            @($"{subDistributionBoard.RacewaySize}mm ø {subDistributionBoard.RacewayType.GetDisplayName()}")
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        
+        <tfoot>
+            <tr>
+                <td></td>
+                <td>Total</td>
+                <td></td>
+                <td>@DistributionBoard.VoltAmpere</td>
+                <td></td>
+                
+                @if (DistributionBoard is ThreePhaseDistributionBoard threePhaseBoard)
+                {
+                    <td>@(Math.Round(threePhaseBoard.AmpereLoadA, 4))</td>
+                    <td>@(Math.Round(threePhaseBoard.AmpereLoadB, 4))</td>
+                    <td>@(Math.Round(threePhaseBoard.AmpereLoadC, 4))</td>
+                    <td>@(Math.Round(threePhaseBoard.AmpereLoadAbc, 4))</td>
+                }
+                else
+                {
+                    <td>@(Math.Round(DistributionBoard.AmpereLoad, 4))</td>
+                }
+                
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+@code {
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+}

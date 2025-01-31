@@ -1,0 +1,15 @@
+.simplified-table-wrapper {
+    min-width: 100%;
+    overflow: scroll;
+    
+    .simplified-table {
+        min-width: 100%;
+        border-collapse: collapse;
+        
+        th, td {
+            border: 1px solid black;
+            padding-inline: 0.5rem;
+            text-align: center;
+        }
+    }
+}

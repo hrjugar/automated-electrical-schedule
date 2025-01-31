@@ -1,0 +1,44 @@
+.summary-modal {
+    height: 100%;
+    
+    .modal-header {
+        .modal-header-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+    }
+    
+    .modal-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 2rem;
+        
+        .modal-content-description {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(auto, 1fr));
+            grid-template-rows: repeat(2, minmax(auto, 1fr));
+            column-gap: 4rem;
+            row-gap: 1rem;
+        }
+    }
+    
+    .modal-footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        
+        .modal-footer-nav {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+}

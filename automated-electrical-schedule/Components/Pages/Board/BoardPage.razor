@@ -20,6 +20,10 @@ else
             </div>
 
             <div class="header-controls">
+                <button class="btn-text btn-primary" @onclick="OpenSummaryModal">
+                    View Summary
+                </button>
+
                 <button class="btn-text btn-primary" @onclick="OpenCreateBoardModal">
                     Add Sub Distribution Board
                 </button>
@@ -27,7 +31,7 @@ else
                 <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
-                
+
                 @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {
                     var toBeBalancedCircuitsCount = _distributionBoard.Circuits
@@ -36,12 +40,12 @@ else
                              || circuit.LineToLineVoltage == LineToLineVoltage.B
                              || circuit.LineToLineVoltage == LineToLineVoltage.C) &&
                             circuit.Voltage == 230);
-                    
+
                     <button class="btn-text btn-primary" @onclick="BalanceLoads" disabled="@(toBeBalancedCircuitsCount < 2)">
                         Balance Loads
                     </button>
                 }
-                
+
                 @if (_distributionBoard.SetCount > 1)
                 {
                     <button class="btn-text btn-secondary" @onclick="ResetSetCount">
@@ -117,6 +121,11 @@ else
     <CreateOrEditBoardModal @bind-IsOpen="@_isCreateBoardModalOpen" DistributionBoard="@_distributionBoard" IsNew="true"/>
 }
 
+@if (_isSummaryModalOpen)
+{
+    <SummaryModal @bind-IsOpen="@_isSummaryModalOpen" DistributionBoard="@_distributionBoard"/>
+}
+
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
@@ -127,8 +136,8 @@ else
     private bool _isDeleteBoardModalOpen;
     private bool _isCreateCircuitModalOpen;
     private bool _isCreateBoardModalOpen;
+    private bool _isSummaryModalOpen;
     
-
     void OpenEditBoardModal()
     {
         _isEditBoardModalOpen = true;
@@ -147,6 +156,11 @@ else
     void OpenCreateBoardModal()
     {
         _isCreateBoardModalOpen = true;
+    }
+    
+    void OpenSummaryModal()
+    {
+        _isSummaryModalOpen = true;
     }
 
     async Task BalanceLoads()

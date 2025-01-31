@@ -42,7 +42,10 @@ public abstract partial class DistributionBoard
         {
             if (Phase == BoardPhase.SinglePhase)
             {
-                return [BuildingClassification.DwellingUnit];
+                return [
+                    BuildingClassification.DwellingUnit,
+                    BuildingClassification.Other
+                ];
             }
             
             return

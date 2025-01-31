@@ -1,0 +1,153 @@
+@inject NavigationManager Navigation
+@inject DatabaseContext DatabaseContext
+
+@if (IsOpen)
+{
+    var _currentBoard = _distributionBoards[_currentBoardIndex];
+    
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div 
+            class="modal modal-wide summary-modal"
+            @onclick:stopPropagation="true">
+            
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h5>Summary</h5>
+                    <p>
+                        @if (_currentBoardPage == SchedulePage)
+                        {
+                            @($"Schedule of Loads - {_currentBoard.BoardName}")
+                        }
+                        else
+                        {
+                            @($"Computations - {_currentBoard.BoardName}")
+                        }
+                    </p>
+                </div>
+            </div>
+            
+            <div class="modal-content">
+                <div class="modal-content-description">
+                    <p>PROJECT NAME: XXX</p>
+                    <p>SYSTEM: @(_currentBoard.Phase.GetDisplayName())</p>
+                    <p>DISTRIBUTION BOARD NAME: @(_currentBoard.BoardName)</p>
+                    <p>VOLTAGE: @((int) _currentBoard.Voltage)V</p>
+                </div>
+
+                <div class="modal-content-summary">
+                    @if (_currentBoardPage == SchedulePage)
+                    {
+                        <BoardSimplifiedTable DistributionBoard="@(_currentBoard)"/>
+                    }
+                    else
+                    {
+                        
+                    }
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="modal-footer-nav">
+                    <button
+                        class="btn-icon btn-secondary"
+                        type="button"
+                        @onclick="GoToPreviousPage"
+                        disabled="@(_currentBoardIndex == 0 && _currentBoardPage == SchedulePage)">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fill="currentColor" d="M12.353 15.854a.5.5 0 0 1-.707.001L6.162 10.39a.55.55 0 0 1 0-.78l5.484-5.464a.5.5 0 1 1 .706.708L7.188 10l5.164 5.147a.5.5 0 0 1 .001.707"/>
+                        </svg>
+                    </button>
+                    
+                    <p>@(_currentBoardIndex * 2 + 1 + _currentBoardPage)/@(_distributionBoards.Count * 2)</p>
+                    
+                    <button 
+                        class="btn-icon btn-secondary" 
+                        type="button"
+                        @onclick="GoToNextPage"
+                        disabled="@(_currentBoardIndex == _distributionBoards.Count - 1 && _currentBoardPage == ComputationsPage)">
+                        <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fill="currentColor" d="M7.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L12.812 10L7.647 4.854a.5.5 0 0 1-.001-.707"/>
+                        </svg>                        
+                    </button>
+                </div>
+                <div class="modal-footer-btns">
+                    <button
+                        class="btn-text btn-primary"
+                        type="button"
+                        @onclick="CloseModal">
+                        Exit
+                    </button>
+
+                    <button
+                        class="btn-text btn-primary"
+                        type="button"
+                        @onclick="@(() => { })">
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+
+    List<DistributionBoard> _distributionBoards = [];
+    int _currentBoardIndex = 0;
+
+    static readonly int SchedulePage = 0;
+    static readonly int ComputationsPage = 1;
+    
+    int _currentBoardPage = SchedulePage;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        GetAllDistributionBoards(DistributionBoard);
+    }
+
+    void GetAllDistributionBoards(DistributionBoard board)
+    {
+        _distributionBoards.Add(board);
+        foreach (var subBoard in board.SubDistributionBoards)
+        {
+            GetAllDistributionBoards(subBoard);
+        }
+    }
+
+    void GoToPreviousPage()
+    {
+        if (_currentBoardPage == SchedulePage)
+        {
+            _currentBoardPage = 1;
+            _currentBoardIndex -= 1;
+        }
+        else
+        {
+            _currentBoardPage = 0;
+        }
+    }
+
+    void GoToNextPage()
+    {
+        if (_currentBoardPage == SchedulePage)
+        {
+            _currentBoardPage = 1;
+        }
+        else
+        {
+            _currentBoardIndex += 1;
+            _currentBoardPage = 0;
+        }
+    }
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+}
