@@ -8,6 +8,5 @@ public enum BuildingClassification
     [Display(Name = "Hospital")] Hospital,
     [Display(Name = "Hotel/Motel/Apartment")] HotelMotelApartment,
     [Display(Name = "Warehouses (Storage)")] Warehouse,
-    [Display(Name = "Other")] Other,
-    [Display(Name = "None")] None
+    [Display(Name = "Other")] Other
 }

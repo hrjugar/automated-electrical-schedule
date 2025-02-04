@@ -23,20 +23,20 @@ public partial class SinglePhaseDistributionBoard
         }
     }
 
-    protected override CalculationResult<double> Current
-    {
-        get
-        {
-            double highestMotorLoad = 0;
-            if (Circuits.Count > 0)
-            {
-                highestMotorLoad =
-                    Circuits.OfType<MotorOutletCircuit>().Select(c => c.AmpereLoad).Max();
-            }
-
-            return CalculationResult<double>.Success(AmpereLoad + 0.25 * highestMotorLoad);
-        }
-    }
+    // protected override CalculationResult<double> Current
+    // {
+    //     get
+    //     {
+    //         double highestMotorLoad = 0;
+    //         if (Circuits.Count > 0)
+    //         {
+    //             highestMotorLoad =
+    //                 Circuits.OfType<MotorOutletCircuit>().Select(c => c.AmpereLoad).Max();
+    //         }
+    //
+    //         return CalculationResult<double>.Success(AmpereLoad + 0.25 * highestMotorLoad);
+    //     }
+    // }
 
     public override double AmpereLoad
     {

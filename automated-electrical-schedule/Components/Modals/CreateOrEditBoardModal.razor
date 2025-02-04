@@ -60,6 +60,17 @@
                             </div>
                         }
                     </div>
+                    
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Building Classification <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newDistributionBoard.BuildingClassification>
+                            @foreach (var buildingClassification in _newDistributionBoard.AllowedBuildingClassifications)
+                            {
+                                <option value="@buildingClassification">@buildingClassification.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.BuildingClassification)/>
+                    </div>
 
                     @if (parentThreePhaseBoard is not null)
                     {
@@ -282,6 +293,7 @@
             _newDistributionBoard.ParentDistributionBoardId = DistributionBoard.Id;
             _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
             _newDistributionBoard.Phase = DistributionBoard.Phase;
+            _newDistributionBoard.BuildingClassification = _newDistributionBoard.AllowedBuildingClassifications[0];
             _newDistributionBoard.WireLength = 1;
             _newDistributionBoard.Voltage = _newDistributionBoard.AllowedVoltages[0];
 

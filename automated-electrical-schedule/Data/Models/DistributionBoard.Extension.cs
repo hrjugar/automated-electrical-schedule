@@ -63,6 +63,21 @@ public abstract partial class DistributionBoard
 
     public abstract List<LineToLineVoltage> AllowedLineToLineVoltages { get; }
 
+    public List<TCircuit> FilterNestedCircuits<TCircuit>(Func<TCircuit, bool>? filterCallback = null) where TCircuit : Circuit
+    {
+        var notNullFilterCallback = filterCallback ?? (_ => true);
+        
+        List<TCircuit> nestedCircuits = [];
+        nestedCircuits.AddRange(Circuits.OfType<TCircuit>().Where(notNullFilterCallback));
+        
+        foreach (var subBoard in SubDistributionBoards)
+        {
+            nestedCircuits.AddRange(subBoard.FilterNestedCircuits(filterCallback));
+        }
+
+        return nestedCircuits;
+    }
+    
     public string LineToLineVoltageDisplay
     {
         get
@@ -107,14 +122,103 @@ public abstract partial class DistributionBoard
         }
     }
 
+    // public double VoltAmpere
+    // {
+    //     get
+    //     {
+    //         // TODO: Edit volt ampere calculation
+    //         return Circuits.Select(circuit => circuit.VoltAmpere).ToList().Sum() +
+    //                SubDistributionBoards.Sum(subBoard => subBoard.VoltAmpere);
+    //     }
+    // }
+
+    public double HighestMotorLoad => 
+        FilterNestedCircuits<MotorOutletCircuit>()
+                .Select(c => c.AmpereLoad)
+                .Max();
+    
     public double VoltAmpere
     {
         get
         {
-            // TODO: Edit volt ampere calculation
-            return Circuits.Select(circuit => circuit.VoltAmpere).ToList().Sum() +
-                   SubDistributionBoards.Sum(subBoard => subBoard.VoltAmpere);
+            double current = 0;
+
+            var lightingCircuitsVoltAmpere = FilterVoltAmpere<LightingOutletCircuit>();
+            var convenienceCircuitsVoltAmpere = FilterVoltAmpere<ConvenienceOutletCircuit>();
+
+            var dryers = FilterNestedCircuits<ApplianceEquipmentOutletCircuit>(
+                c => c.ApplianceType == ApplianceType.Dryer
+            );
+            var kitchenEquipments = FilterNestedCircuits<ApplianceEquipmentOutletCircuit>(
+                c => c.ApplianceType == ApplianceType.KitchenEquipment
+            );
+            var otherApplianceEquipments = FilterNestedCircuits<ApplianceEquipmentOutletCircuit>(
+                c => c.ApplianceType == ApplianceType.Other
+            );
+            
+            var elevatorFeeders = FilterNestedCircuits<MotorOutletCircuit>(
+                c => c.MotorApplication == MotorApplication.ElevatorFeeder
+            );
+
+            var cranesAndHoists = FilterNestedCircuits<MotorOutletCircuit>(
+                c => c.MotorApplication == MotorApplication.CranesAndHoist
+            );
+            
+            var normalMotors = FilterNestedCircuits<MotorOutletCircuit>(
+                c => c.MotorApplication == MotorApplication.NormalMotor
+            );
+
+            if (BuildingClassification == BuildingClassification.DwellingUnit)
+            {
+                current += DemandFactorFormulas.ApplyDemandFactorToDwellingUnitLightingAndConvenienceCircuits(
+                    lightingCircuitsVoltAmpere + convenienceCircuitsVoltAmpere
+                ).Sum();
+
+                current += DemandFactorFormulas.ApplyDemandFactorToDwellingUnitKitchenEquipment(kitchenEquipments).Sum();
+            }
+            else
+            {
+                var lightingCurrent = BuildingClassification switch
+                {
+                    BuildingClassification.Hospital => DemandFactorFormulas.ApplyDemandFactorToHospitalLightingCircuits(
+                        lightingCircuitsVoltAmpere
+                    ).Sum(),
+                    BuildingClassification.HotelMotelApartment => DemandFactorFormulas.ApplyDemandFactorToHotelMotelApartmentLightingCircuits(
+                        lightingCircuitsVoltAmpere
+                    ).Sum(),
+                    BuildingClassification.Warehouse => DemandFactorFormulas.ApplyDemandFactorToWarehouseLightingCircuits(
+                        lightingCircuitsVoltAmpere
+                    ).Sum(),
+                    BuildingClassification.Other => lightingCircuitsVoltAmpere,
+                    BuildingClassification.DwellingUnit or _ => throw new ArgumentOutOfRangeException(nameof(BuildingClassification))
+                };
+
+                current += lightingCurrent;
+                
+                current +=
+                    DemandFactorFormulas.ApplyDemandFactorToNonDwellingConvenienceCircuits(
+                        convenienceCircuitsVoltAmpere
+                    ).Sum();
+
+                current +=
+                    DemandFactorFormulas.ApplyDemandFactorToNonDwellingUnitKitchenEquipment(kitchenEquipments);
+            }
+
+            current += DemandFactorFormulas.ApplyDemandFactorToDryers(dryers);
+            current += otherApplianceEquipments.Sum(aec => aec.VoltAmpere.Value);
+            
+            current += DemandFactorFormulas.ApplyDemandFactorToElevatorFeeders(elevatorFeeders);
+            current += DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranesAndHoists);
+            current += normalMotors.Sum(mc => mc.VoltAmpere.Value);
+
+            return current;
         }
+    }
+
+    public double FilterVoltAmpere<TCircuit>(Func<TCircuit, bool>? filterCallback = null) where TCircuit : Circuit
+    {
+        var nestedCircuits = FilterNestedCircuits<TCircuit>(filterCallback);
+        return nestedCircuits.Select(circuit => circuit.VoltAmpere).Sum();
     }
 
     public List<CircuitProtection> AllowedTransformerPrimaryProtections
@@ -157,7 +261,9 @@ public abstract partial class DistributionBoard
         }
     }
 
-    protected abstract CalculationResult<double> Current { get; }
+    public CalculationResult<double> Current => CalculationResult<double>.Success(VoltAmpere / (int) Voltage);
+
+    public double Ampere => Current.Value + (HighestMotorLoad * 1.25);
 
     public CalculationResult<int> AmpereTrip
     {
@@ -167,7 +273,7 @@ public abstract partial class DistributionBoard
             
             return Current.HasError 
                 ? CalculationResult<int>.Failure(Current.ErrorType) 
-                : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Current.Value / 0.8), 20);
+                : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Ampere), 20);
         }
     }
 
@@ -348,7 +454,7 @@ public abstract partial class DistributionBoard
 
     public ConductorType? BreakerGrounding =>
         BreakerGroundingId is null ? null : ConductorType.FindById(BreakerGroundingId);
-
+    
     public string ConductorHeaderDisplay
     {
         get
@@ -362,6 +468,7 @@ public abstract partial class DistributionBoard
             return "Line+Neutral";
         }
     }
+    
     public abstract DistributionBoard Clone();
     
     private void AdjustSetCountForConductorSize()

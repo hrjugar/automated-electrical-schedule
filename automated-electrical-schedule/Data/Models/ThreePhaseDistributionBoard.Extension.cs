@@ -30,63 +30,63 @@ public partial class ThreePhaseDistributionBoard
 
     public override List<LineToLineVoltage> AllowedLineToLineVoltages => [Enums.LineToLineVoltage.Abc];
 
-    protected override CalculationResult<double> Current
-    {
-        get
-        {
-            var highestPhaseAmpereLoad = new[] { AmpereLoadA, AmpereLoadB, AmpereLoadC }.Max();
-
-            var totalAbcCircuitsAmpereLoad = Circuits
-                .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-                .Select(circuit => circuit.AmpereLoad)
-                .Sum();
-
-            var totalAbcSubBoardsAmpereLoad = SubDistributionBoards
-                .OfType<ThreePhaseDistributionBoard>()
-                .Select(board => board.AmpereLoadAbc)
-                .Sum();
-
-            var totalAbcAmpereLoad = totalAbcCircuitsAmpereLoad + totalAbcSubBoardsAmpereLoad;
-
-            var highestMotorLoadA = Circuits
-                .OfType<MotorOutletCircuit>()
-                .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.A)
-                .Select(circuit => circuit.AmpereLoad)
-                .Max();
-
-            var highestMotorLoadB = Circuits
-                .OfType<MotorOutletCircuit>()
-                .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.B)
-                .Select(circuit => circuit.AmpereLoad)
-                .Max();
-
-            var highestMotorLoadC = Circuits
-                .OfType<MotorOutletCircuit>()
-                .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.C)
-                .Select(circuit => circuit.AmpereLoad)
-                .Max();
-
-            var highestMotorLoadAbc = Circuits
-                .OfType<MotorOutletCircuit>()
-                .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
-                .Select(circuit => circuit.AmpereLoad)
-                .Max();
-
-            var highestMotorLoad = new[]
-            {
-                highestMotorLoadA,
-                highestMotorLoadB,
-                highestMotorLoadC,
-                highestMotorLoadAbc
-            }.Max();
-
-            var factor = ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? Math.Sqrt(3) : 1;
-            var value = highestPhaseAmpereLoad * factor + totalAbcAmpereLoad + 0.25 * highestMotorLoad;
-            return value == 0
-                ? CalculationResult<double>.Failure(CalculationErrorType.NoBoardCurrent)
-                : CalculationResult<double>.Success(value);
-        }
-    }
+    // protected override CalculationResult<double> Current
+    // {
+    //     get
+    //     {
+    //         var highestPhaseAmpereLoad = new[] { AmpereLoadA, AmpereLoadB, AmpereLoadC }.Max();
+    //
+    //         var totalAbcCircuitsAmpereLoad = Circuits
+    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
+    //             .Select(circuit => circuit.AmpereLoad)
+    //             .Sum();
+    //
+    //         var totalAbcSubBoardsAmpereLoad = SubDistributionBoards
+    //             .OfType<ThreePhaseDistributionBoard>()
+    //             .Select(board => board.AmpereLoadAbc)
+    //             .Sum();
+    //
+    //         var totalAbcAmpereLoad = totalAbcCircuitsAmpereLoad + totalAbcSubBoardsAmpereLoad;
+    //
+    //         var highestMotorLoadA = Circuits
+    //             .OfType<MotorOutletCircuit>()
+    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.A)
+    //             .Select(circuit => circuit.AmpereLoad)
+    //             .Max();
+    //
+    //         var highestMotorLoadB = Circuits
+    //             .OfType<MotorOutletCircuit>()
+    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.B)
+    //             .Select(circuit => circuit.AmpereLoad)
+    //             .Max();
+    //
+    //         var highestMotorLoadC = Circuits
+    //             .OfType<MotorOutletCircuit>()
+    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.C)
+    //             .Select(circuit => circuit.AmpereLoad)
+    //             .Max();
+    //
+    //         var highestMotorLoadAbc = Circuits
+    //             .OfType<MotorOutletCircuit>()
+    //             .Where(circuit => circuit.LineToLineVoltage == Enums.LineToLineVoltage.Abc)
+    //             .Select(circuit => circuit.AmpereLoad)
+    //             .Max();
+    //
+    //         var highestMotorLoad = new[]
+    //         {
+    //             highestMotorLoadA,
+    //             highestMotorLoadB,
+    //             highestMotorLoadC,
+    //             highestMotorLoadAbc
+    //         }.Max();
+    //
+    //         var factor = ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? Math.Sqrt(3) : 1;
+    //         var value = highestPhaseAmpereLoad * factor + totalAbcAmpereLoad + 0.25 * highestMotorLoad;
+    //         return value == 0
+    //             ? CalculationResult<double>.Failure(CalculationErrorType.NoBoardCurrent)
+    //             : CalculationResult<double>.Success(value);
+    //     }
+    // }
 
     public double AmpereLoadA => CalculateAmpereLoad(Enums.LineToLineVoltage.A);
     public double AmpereLoadB => CalculateAmpereLoad(Enums.LineToLineVoltage.B);

@@ -3,7 +3,7 @@
 
 @if (IsOpen)
 {
-    var _currentBoard = _distributionBoards[_currentBoardIndex];
+    var currentBoard = _distributionBoards[_currentBoardIndex];
     
     <div class="modal-wrapper" @onclick="CloseModal">
         <div 
@@ -14,14 +14,7 @@
                 <div class="modal-header-text">
                     <h5>Summary</h5>
                     <p>
-                        @if (_currentBoardPage == SchedulePage)
-                        {
-                            @($"Schedule of Loads - {_currentBoard.BoardName}")
-                        }
-                        else
-                        {
-                            @($"Computations - {_currentBoard.BoardName}")
-                        }
+                        @($"{(_currentBoardPage == SchedulePage ? "Schedule of Loads" : "Computations")} - {currentBoard.BoardName}")
                     </p>
                 </div>
             </div>
@@ -29,19 +22,19 @@
             <div class="modal-content">
                 <div class="modal-content-description">
                     <p>PROJECT NAME: XXX</p>
-                    <p>SYSTEM: @(_currentBoard.Phase.GetDisplayName())</p>
-                    <p>DISTRIBUTION BOARD NAME: @(_currentBoard.BoardName)</p>
-                    <p>VOLTAGE: @((int) _currentBoard.Voltage)V</p>
+                    <p>SYSTEM: @(currentBoard.Phase.GetDisplayName())</p>
+                    <p>DISTRIBUTION BOARD NAME: @(currentBoard.BoardName)</p>
+                    <p>VOLTAGE: @((int) currentBoard.Voltage)V</p>
                 </div>
 
                 <div class="modal-content-summary">
                     @if (_currentBoardPage == SchedulePage)
                     {
-                        <BoardSimplifiedTable DistributionBoard="@(_currentBoard)"/>
+                        <BoardSimplifiedTable DistributionBoard="@(currentBoard)"/>
                     }
                     else
                     {
-                        
+                        <BoardComputations DistributionBoard="@(currentBoard)" />
                     }
                 </div>
             </div>

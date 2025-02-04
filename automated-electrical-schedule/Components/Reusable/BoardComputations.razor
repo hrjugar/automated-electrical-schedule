@@ -1,0 +1,539 @@
+@using automated_electrical_schedule.Data.FormulaTables
+<div class="computations">
+    <div class="computation-group">
+        <h5>A.) Application of Demand Factors</h5>
+        
+        @if (DistributionBoard.BuildingClassification == BuildingClassification.DwellingUnit)
+        {
+            var lightingAndConvenienceCircuitsVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<LightingOutletCircuit>() +
+                DistributionBoard.FilterVoltAmpere<ConvenienceOutletCircuit>();
+            
+            var subBoardsWithLightingAndConvenienceCircuits =
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => 
+                        b.FilterVoltAmpere<LightingOutletCircuit>() > 0 || 
+                        b.FilterVoltAmpere<ConvenienceOutletCircuit>() > 0
+                );
+            
+            <div class="computation-subgroup">
+                <h4>Lighting and Convenience Outlets</h4>
+                
+                @if (lightingAndConvenienceCircuitsVoltAmpere > 0)
+                {
+                    @foreach (var lightingCircuit in _lightingCircuits)
+                    {
+                        <p>- @($"{lightingCircuit.Description} = {lightingCircuit.VoltAmpere}VA")</p>
+                    }
+                    
+                    @foreach (var convenienceCircuit in _convenienceCircuits)
+                    {
+                        <p>- @($"{convenienceCircuit.Description} = {convenienceCircuit.VoltAmpere}VA")</p>
+                    }
+                    
+                    @foreach (var subBoard in subBoardsWithLightingAndConvenienceCircuits)
+                    {
+                        var subBoardLightingCircuitsVoltAmpere = subBoard.FilterVoltAmpere<LightingOutletCircuit>();
+                        var subBoardConvenienceCircuitsVoltAmpere = subBoard.FilterVoltAmpere<ConvenienceOutletCircuit>();
+                        
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardLightingCircuitsVoltAmpere + subBoardConvenienceCircuitsVoltAmpere}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(lightingAndConvenienceCircuitsVoltAmpere)VA</p>
+
+                    var lightingAndConvenienceCircuitsVoltAmpereRanges = 
+                        DemandFactorFormulas.ApplyDemandFactorToDwellingUnitLightingAndConvenienceCircuits(
+                            lightingAndConvenienceCircuitsVoltAmpere
+                        );
+                    
+                    var firstRangeValue = lightingAndConvenienceCircuitsVoltAmpereRanges[0];
+                    var secondRangeValue = lightingAndConvenienceCircuitsVoltAmpereRanges[1];
+                    var thirdRangeValue = lightingAndConvenienceCircuitsVoltAmpereRanges[2];
+                    
+                    <p>First 3000 VA @("@") 100% = @(firstRangeValue)</p>
+                    
+                    @if (secondRangeValue > 0)
+                    {
+                        <p>From 3001 to 120000 VA @@ 35% = @(secondRangeValue)</p>
+                    }
+                    
+                    @if (thirdRangeValue > 0)
+                    {
+                        <p>Remainder over 120000 VA @@ 25% = @(thirdRangeValue)</p>
+                    }
+                    
+                    <h6>Final total = @(firstRangeValue + secondRangeValue + thirdRangeValue) VA</h6>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </div>
+        }
+        else
+        {
+            var lightingCircuitsVoltAmpere = DistributionBoard.FilterVoltAmpere<LightingOutletCircuit>();
+            
+            var subBoardsWithLightingCircuits = 
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<ConvenienceOutletCircuit>() > 0
+                );
+            
+            <div class="computation-subgroup">
+                <h4>Lighting Outlets</h4>
+                
+                @if (lightingCircuitsVoltAmpere > 0)
+                {
+                    @foreach (var lightingCircuit in _lightingCircuits)
+                    {
+                        <p>- @($"{lightingCircuit.Description} = {lightingCircuit.VoltAmpere}VA")</p>
+                    }
+                    
+                    @foreach (var subBoard in subBoardsWithLightingCircuits)
+                    {
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<LightingOutletCircuit>()}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(lightingCircuitsVoltAmpere)VA</p>
+                    
+                    double nonDwellingLightingCircuitsVoltAmpereWithDemandFactor;
+                    @if (DistributionBoard.BuildingClassification == BuildingClassification.Hospital)
+                    {
+                        var hospitalLightingCircuitsVoltAmpereRanges =
+                            DemandFactorFormulas.ApplyDemandFactorToHospitalLightingCircuits(
+                                lightingCircuitsVoltAmpere
+                            );
+                        var firstHospitalLightingRangeValue = hospitalLightingCircuitsVoltAmpereRanges[0];
+                        var secondHospitalLightingRangeValue = hospitalLightingCircuitsVoltAmpereRanges[1];
+                        
+                        <p>First 50000 @@ 40% = @firstHospitalLightingRangeValue VA</p>
+                        
+                        @if (secondHospitalLightingRangeValue > 0)
+                        {
+                            <p>Remainder over 50000 @@ 20% = @secondHospitalLightingRangeValue VA</p>
+                        }
+                        
+                        nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = 
+                            firstHospitalLightingRangeValue + secondHospitalLightingRangeValue;
+                    } 
+                    else if (DistributionBoard.BuildingClassification == BuildingClassification.HotelMotelApartment)
+                    {
+                        var hotelLightingCircuitsVoltAmpereRanges =
+                            DemandFactorFormulas.ApplyDemandFactorToHotelMotelApartmentLightingCircuits(
+                                lightingCircuitsVoltAmpere
+                            );
+                        var firstHotelLightingRangeValue = hotelLightingCircuitsVoltAmpereRanges[0];
+                        var secondHotelLightingRangeValue = hotelLightingCircuitsVoltAmpereRanges[1];
+                        var thirdHotelLightingRangeValue = hotelLightingCircuitsVoltAmpereRanges[2];
+                        
+                        <p>First 20000 @@ 50% = @firstHotelLightingRangeValue VA</p>
+                        
+                        @if (secondHotelLightingRangeValue > 0)
+                        {
+                            <p>From 20001 to 100000 @@ 40% = @secondHotelLightingRangeValue VA</p>
+                        }
+                        
+                        @if (thirdHotelLightingRangeValue > 0)
+                        {
+                            <p>Remainder over 100000 @@ 30% = @thirdHotelLightingRangeValue VA</p>
+                        }
+                        
+                        nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = 
+                            firstHotelLightingRangeValue + 
+                            secondHotelLightingRangeValue + 
+                            thirdHotelLightingRangeValue;
+                    }
+                    else if (DistributionBoard.BuildingClassification == BuildingClassification.Warehouse)
+                    {
+                        var warehouseCircuitsVoltAmpereRanges =
+                            DemandFactorFormulas.ApplyDemandFactorToWarehouseLightingCircuits(
+                                lightingCircuitsVoltAmpere
+                            );
+                        var firstWarehouseLightingRangeValue = warehouseCircuitsVoltAmpereRanges[0];
+                        var secondWarehouseLightingRangeValue = warehouseCircuitsVoltAmpereRanges[1];
+                        
+                        <p>First 12500 @@ 100% = @(firstWarehouseLightingRangeValue)</p>
+                        
+                        @if (secondWarehouseLightingRangeValue > 0)
+                        {
+                            <p>Remainder over 12500 @@ 50% = @(secondWarehouseLightingRangeValue)</p>
+                        }
+
+                        nonDwellingLightingCircuitsVoltAmpereWithDemandFactor =
+                            firstWarehouseLightingRangeValue +
+                            secondWarehouseLightingRangeValue;
+                    }
+                    else
+                    {
+                        nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = lightingCircuitsVoltAmpere;
+                    }
+                    
+                    <h6>Final total = @(nonDwellingLightingCircuitsVoltAmpereWithDemandFactor) VA</h6>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </div>
+
+            var convenienceCircuitsVoltAmpere = DistributionBoard.FilterVoltAmpere<ConvenienceOutletCircuit>();
+            
+            var subBoardsWithConvenienceCircuits = 
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<ConvenienceOutletCircuit>() > 0
+                );
+            
+            <div class="computation-subgroup">
+                <h4>Convenience Outlets</h4>
+                
+                @if (convenienceCircuitsVoltAmpere > 0)
+                {
+                    @foreach (var convenienceCircuit in _convenienceCircuits)
+                    {
+                        <p>- @($"{convenienceCircuit.Description} = {convenienceCircuit.VoltAmpere}VA")</p>
+                    }
+
+                    @foreach (var subBoard in subBoardsWithConvenienceCircuits)
+                    {
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<ConvenienceOutletCircuit>()}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(convenienceCircuitsVoltAmpere)VA</p>
+                    
+                    var nonDwellingConvenienceCircuitsVoltAmpereRanges =
+                        DemandFactorFormulas.ApplyDemandFactorToNonDwellingConvenienceCircuits(
+                            convenienceCircuitsVoltAmpere
+                        );
+                    var firstNonDwellingConvenienceRangeValue = nonDwellingConvenienceCircuitsVoltAmpereRanges[0];
+                    var secondNonDwellingConvenienceRangeValue = nonDwellingConvenienceCircuitsVoltAmpereRanges[1];
+                    
+                    <p>First 10000 @@ 100% = @(firstNonDwellingConvenienceRangeValue) VA</p>
+                    
+                    @if (secondNonDwellingConvenienceRangeValue > 0)
+                    {
+                        <p>Remainder over 10000 @@ 50% = @secondNonDwellingConvenienceRangeValue</p>
+                    }
+                    
+                    <h6>Final total = @(nonDwellingConvenienceCircuitsVoltAmpereRanges.Sum()) VA</h6>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </div>
+        }
+        
+        @{
+            var normalMotorsVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.NormalMotor
+                );
+            
+            var normalMotors =
+                _motorCircuits.Where(mc => mc.MotorApplication == MotorApplication.NormalMotor);
+            
+            var subBoardsWithNormalMotors = 
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<MotorOutletCircuit>(
+                        mc => mc.MotorApplication == MotorApplication.NormalMotor
+                    ) > 0
+                );
+            
+            var feedersVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.ElevatorFeeder
+                );
+            
+            var feeders =
+                DistributionBoard.FilterNestedCircuits<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.ElevatorFeeder
+                );
+
+            var feedersVoltAmpereWithDemandFactor =
+                DemandFactorFormulas.ApplyDemandFactorToElevatorFeeders(feeders);
+            
+            var cranesAndHoistVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.CranesAndHoist
+                );
+
+            var cranesAndHoists =
+                DistributionBoard.FilterNestedCircuits<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.CranesAndHoist
+                );
+            
+            var cranesAndHoistsVoltAmpereWithDemandFactor =
+                DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranesAndHoists);
+        }
+        
+        <div class="computation-subgroup">
+            <h4>Motor Outlets</h4>
+            
+            @if (normalMotorsVoltAmpere > 0 || feedersVoltAmpere > 0 || cranesAndHoistVoltAmpere > 0)
+            {
+                @if (normalMotorsVoltAmpere > 0)
+                {
+                    <p>For Normal Motors:</p>
+                    
+                    @foreach (var normalMotor in normalMotors)
+                    {
+                        <p>- @($"{normalMotor.Description} = {normalMotor.VoltAmpere}VA")</p>
+                    }
+                    
+                    @foreach (var subBoard in subBoardsWithNormalMotors)
+                    {
+                        var subBoardNormalMotorsVoltAmpere = subBoard.FilterVoltAmpere<MotorOutletCircuit>(mc => mc.MotorApplication == MotorApplication.NormalMotor);
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardNormalMotorsVoltAmpere}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(normalMotorsVoltAmpere)</p>
+                    <p>No Demand Factors</p>
+                }
+                
+                @if (feedersVoltAmpere > 0)
+                {
+                    <p></p>
+                    <p>For Elevator Feeders:</p>
+                    
+                    @foreach (var feeder in feeders)
+                    {
+                        <p>- @($"{feeder.Description} = {feeder.VoltAmpere}VA")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(feedersVoltAmpere)</p>
+                    <p>Sub Total with Demand Factor for Elevator Feeders = @(feedersVoltAmpereWithDemandFactor)</p>
+                }
+                
+                @if (cranesAndHoistVoltAmpere > 0)
+                {
+                    <p></p>
+                    <p>For Cranes and Hoists:</p>
+                    
+                    @foreach (var craneAndHoist in cranesAndHoists)
+                    {
+                        <p>- @($"{craneAndHoist.Description} = {craneAndHoist.VoltAmpere}VA")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(cranesAndHoistVoltAmpere)</p>
+                    <p>Sub Total with Demand Factor for Cranes and Hoists = @(cranesAndHoistsVoltAmpereWithDemandFactor)</p>
+                }
+                
+                <h6>Final total = @(normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor)</h6>
+            }
+            else
+            {
+                <p>None</p>
+            }
+        </div>
+        
+        @{
+            var applianceEquipmentVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>();
+            
+            var dryersVoltAmpere = 
+                DistributionBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
+                    aec => aec.ApplianceType == ApplianceType.Dryer
+                );
+
+            var dryers =
+                DistributionBoard.FilterNestedCircuits<ApplianceEquipmentOutletCircuit>(
+                    aec => aec.ApplianceType == ApplianceType.Dryer
+                );
+            
+            var dryersVoltAmpereWithDemandFactor = 
+                DemandFactorFormulas.ApplyDemandFactorToDryers(dryers);
+            
+            var kitchenEquipmentsVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
+                    aec => aec.ApplianceType == ApplianceType.KitchenEquipment
+                );
+
+            var kitchenEquipments =
+                DistributionBoard.FilterNestedCircuits<ApplianceEquipmentOutletCircuit>(
+                    aec => aec.ApplianceType == ApplianceType.KitchenEquipment
+                );
+            
+            var dwellingUnitKitchenEquipmentsVoltAmpereRange =
+                DemandFactorFormulas.ApplyDemandFactorToDwellingUnitKitchenEquipment(kitchenEquipments);
+            
+            var dwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor =
+                dwellingUnitKitchenEquipmentsVoltAmpereRange[0] + dwellingUnitKitchenEquipmentsVoltAmpereRange[1];
+            
+            var nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor =
+                DemandFactorFormulas.ApplyDemandFactorToNonDwellingUnitKitchenEquipment(kitchenEquipments);
+            
+            var otherApplianceEquipmentsVoltAmpere = 
+                DistributionBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
+                    aec => aec.ApplianceType == ApplianceType.Other
+                );
+            
+            var otherApplianceEquipments = 
+                _applianceEquipmentCircuits.Where(aec => aec.ApplianceType == ApplianceType.Other);
+            
+            var subBoardsWithOtherApplianceEquipments = 
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
+                        aec => aec.ApplianceType == ApplianceType.Other
+                    ) > 0
+                );
+
+            var applianceEquipmentVoltAmpereWithDemandFactor =
+                dryersVoltAmpereWithDemandFactor +
+                otherApplianceEquipmentsVoltAmpere;
+
+            if (DistributionBoard.BuildingClassification == BuildingClassification.DwellingUnit)
+            {
+                applianceEquipmentVoltAmpereWithDemandFactor += dwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor;
+            }
+            else
+            {
+                applianceEquipmentVoltAmpereWithDemandFactor += nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor;
+            }
+        }
+        
+        <div class="computation-subgroup">
+            <h4>Appliance/Equipment Outlets</h4>
+            
+            @if (applianceEquipmentVoltAmpere > 0)
+            {
+                @if (dryersVoltAmpere > 0)
+                {
+                    <p>For Dryers:</p>
+                    
+                    @foreach (var dryer in dryers)
+                    {
+                        <p>- @($"{dryer.Description} = {dryer.VoltAmpere}VA")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(dryersVoltAmpere)</p>
+                    <p>Sub Total with Demand Factor for Dryers = @(dryersVoltAmpereWithDemandFactor)</p>
+                }
+                
+                @if (kitchenEquipmentsVoltAmpere > 0)
+                {
+                    <p></p>
+                    <p>For Kitchen Equipment:</p>
+                    
+                    @if (DistributionBoard.BuildingClassification == BuildingClassification.DwellingUnit)
+                    {
+                        var kitchenEquipmentsLessThan3500VaTotalVoltAmpere = dwellingUnitKitchenEquipmentsVoltAmpereRange[0];
+                        var kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere = dwellingUnitKitchenEquipmentsVoltAmpereRange[1];
+                        
+                        var kitchenEquipmentsLessThan3500Va =
+                            kitchenEquipments.Where(ke => ke.VoltAmpere.Value < 3500).ToList();
+                        
+                        var kitchenEquipmentsGreaterThan3500Va =
+                            kitchenEquipments.Where(ke => ke.VoltAmpere.Value >= 3500).ToList();
+                        
+                        @if (kitchenEquipmentsLessThan3500VaTotalVoltAmpere > 0)
+                        {
+                            @foreach (var kitchenEquipment in kitchenEquipmentsLessThan3500Va)
+                            {
+                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                            }
+                            
+                            <p>Sub Total = @(kitchenEquipmentsLessThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum())</p>
+                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Less than 3500 VA = @(kitchenEquipmentsLessThan3500VaTotalVoltAmpere)</p>
+                        }
+                        
+                        @if (kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere > 0)
+                        {
+                            @foreach (var kitchenEquipment in kitchenEquipmentsGreaterThan3500Va)
+                            {
+                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                            }
+                            
+                            <p>Sub Total = @(kitchenEquipmentsGreaterThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum())</p>
+                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Greater than 3500 VA = @(kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere)</p>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var kitchenEquipment in kitchenEquipments)
+                        {
+                            <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                        }
+                        
+                        <p>Sub Total = @(kitchenEquipmentsVoltAmpere)</p>
+                        <p>Sub Total with Demand Factor for Non-Dwelling Unit Kitchen Equipment = @(nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor)</p>
+                    }
+                }
+                
+                @if (otherApplianceEquipmentsVoltAmpere > 0)
+                {
+                    <p></p>
+                    <p> For Other Equipment:</p>
+                    @foreach (var otherApplianceEquipment in otherApplianceEquipments)
+                    {
+                        <p>- @($"{otherApplianceEquipment.Description} = {otherApplianceEquipment.VoltAmpere}VA")</p>
+                    }
+                    
+                    @foreach (var subBoard in subBoardsWithOtherApplianceEquipments)
+                    {
+                        var subBoardOtherApplianceEquipmentsVoltAmpere = subBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
+                            aec => aec.ApplianceType == ApplianceType.Other
+                        );
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardOtherApplianceEquipmentsVoltAmpere}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(otherApplianceEquipmentsVoltAmpere)</p>
+                    <p>No Demand Factors</p>
+                }
+                
+                <h6>Final Total = @(applianceEquipmentVoltAmpereWithDemandFactor) VA</h6>
+            }
+            else
+            {
+                <p>None</p>
+            }
+        </div>
+        
+        <div class="computation-subgroup">
+            <h4>Overall Total</h4>
+            <p>Total VA (S) = @(DistributionBoard.VoltAmpere) VA</p>
+            <p>@(DistributionBoard.VoltAmpere) VA / @((int) DistributionBoard.Voltage)V = @(DistributionBoard.Current.Value)A</p>
+        </div>
+    </div>
+    
+    <div class="computation-group">
+        <h5>B.) Sizing of Circuit Protection</h5>
+        
+        <div class="computation-subgroup">
+            <h4>For Circuit Protection</h4>
+            
+            <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A x 1.25) = @(DistributionBoard.Ampere)</p>
+            <h6>Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</h6>
+        </div>
+    </div>
+    
+    <div class="computation-group">
+        <h5>C.) Sizing of Conductors and Raceway</h5>
+        
+        <div class="computation-subgroup">
+            <h4>For Conductors</h4>
+        </div>
+        
+        <div class="computation-subgroup">
+            <h4>For Raceway</h4>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+    
+    List<LightingOutletCircuit> _lightingCircuits;
+    List<ConvenienceOutletCircuit> _convenienceCircuits;
+    List<MotorOutletCircuit> _motorCircuits;
+    List<ApplianceEquipmentOutletCircuit> _applianceEquipmentCircuits;
+    
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _lightingCircuits = DistributionBoard.Circuits.OfType<LightingOutletCircuit>().ToList();
+        _convenienceCircuits = DistributionBoard.Circuits.OfType<ConvenienceOutletCircuit>().ToList();
+        _motorCircuits = DistributionBoard.Circuits.OfType<MotorOutletCircuit>().ToList();
+        _applianceEquipmentCircuits = DistributionBoard.Circuits.OfType<ApplianceEquipmentOutletCircuit>().ToList();
+    }
+}

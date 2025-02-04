@@ -1,0 +1,28 @@
+.computations {
+    overflow: scroll;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 5rem;
+    
+    .computation-group {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 2rem;
+        
+        .computation-subgroup {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 1rem;
+            
+            h4, .underline {
+                text-decoration: underline;
+            }
+        }
+    }
+}
