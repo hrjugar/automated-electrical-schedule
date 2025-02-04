@@ -261,7 +261,15 @@ public abstract partial class DistributionBoard
         }
     }
 
-    public CalculationResult<double> Current => CalculationResult<double>.Success(VoltAmpere / (int) Voltage);
+    // public CalculationResult<double> Current => CalculationResult<double>.Success(VoltAmpere / (int) Voltage);
+    public CalculationResult<double> Current
+    {
+        get
+        {
+            var denominator = Phase == BoardPhase.ThreePhase ? (int) Voltage * Math.Sqrt(3) : (int) Voltage;
+            return CalculationResult<double>.Success(VoltAmpere / denominator);
+        }
+    }
 
     public double Ampere => Current.Value + (HighestMotorLoad * 1.25);
 

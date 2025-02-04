@@ -491,7 +491,15 @@
         <div class="computation-subgroup">
             <h4>Overall Total</h4>
             <p>Total VA (S) = @(DistributionBoard.VoltAmpere) VA</p>
-            <p>@(DistributionBoard.VoltAmpere) VA / @((int) DistributionBoard.Voltage)V = @(DistributionBoard.Current.Value)A</p>
+            
+            @if (DistributionBoard.Phase == BoardPhase.ThreePhase)
+            {
+                <p>@(DistributionBoard.VoltAmpere) VA / (√3 x @((int) DistributionBoard.Voltage)V) = @(DistributionBoard.Current.Value)A</p>
+            }
+            else
+            {
+                <p>@(DistributionBoard.VoltAmpere) VA / @((int) DistributionBoard.Voltage)V = @(DistributionBoard.Current.Value)A</p>
+            }
         </div>
     </div>
     
