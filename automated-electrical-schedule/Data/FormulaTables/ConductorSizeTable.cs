@@ -250,4 +250,35 @@ public static class ConductorSizeTable
 
         return CalculationResult<double>.Failure(CalculationErrorType.NoFittingConductorSize);
     }
+
+    public static CalculationResult<int> GetAmpacity(
+        CalculationResult<double> conductorSize,
+        ConductorType conductorType
+    )
+    {
+        if (conductorSize.HasError) return CalculationResult<int>.Failure(conductorSize.ErrorType);
+        
+        var conductorSizeIndex =
+            DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize.Value));
+        
+        if (conductorSizeIndex == -1) return CalculationResult<int>.Failure(CalculationErrorType.InvalidConductorSize);
+
+        var column = conductorType.Material switch
+        {
+            ConductorMaterial.Copper => conductorType.TemperatureRating switch
+            {
+                ConductorTemperatureRating.C60 => Cu60Column,
+                ConductorTemperatureRating.C75 => Cu75Column,
+                ConductorTemperatureRating.C90 => Cu90Column
+            },
+            ConductorMaterial.Aluminum => conductorType.TemperatureRating switch
+            {
+                ConductorTemperatureRating.C60 => Al60Column,
+                ConductorTemperatureRating.C75 => Al75Column,
+                ConductorTemperatureRating.C90 => Al90Column
+            },
+        };
+
+        return CalculationResult<int>.Success(column[conductorSizeIndex]);
+    }
 }

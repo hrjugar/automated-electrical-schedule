@@ -276,26 +276,12 @@
                 <p class="cell cell--text">@circuit.SetCount</p>
                 
                 <div class="@("cell cell--group cell--info " + (circuit.ConductorSize.HasError ? "cell--error" : ""))">
-                    @if (circuit.ConductorSize.HasError)
-                    {
-                        <p>@(circuit.ConductorSize.ErrorMessage)</p>
-                    }
-                    else
-                    {
-                        <p>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</p>
-                    }
+                    <p>@circuit.ConductorTextDisplay</p>
                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateConductorInfo(circuit.ConductorType.WireType))"/>
                 </div>
                 
                 <div class="@("cell cell--group cell--info " + (circuit.GroundingSize.HasError ? "cell--error" : ""))">
-                    @if (circuit.GroundingSize.HasError)
-                    {
-                        <p>@(circuit.GroundingSize.ErrorMessage)</p>
-                    }
-                    else
-                    {
-                        <p>@(Circuit.GroundingWireCount)-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</p>
-                    }
+                    <p>@circuit.GroundingTextDisplay</p>
                     <InfoButton 
                         OnClick="() => OpenInformationArea(Information.Grounding)"
                         TooltipPlacement="TooltipPlacement.BottomLeft"/>
@@ -308,7 +294,7 @@
                     }
                     else
                     {
-                        <p>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</p>
+                        <p>@(circuit.RacewayTextDisplay)</p>
                     }
                     <InfoButton 
                         OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(circuit.RacewayType))"
@@ -599,7 +585,7 @@
                 }
                 else
                 {
-                    <p class="cell cell--text">@(subDistributionBoard.ConductorWireCount)-@(subDistributionBoard.ConductorSize)mm² @(subDistributionBoard.ConductorType.ToString())</p>
+                    <p class="cell cell--text">@(subDistributionBoard.ConductorTextDisplay)</p>
                 }
 
                 @if (subDistributionBoard.GroundingSize.HasError)
@@ -608,7 +594,7 @@
                 }
                 else
                 {
-                    <p class="cell cell--text">@(DistributionBoard.GroundingWireCount)-@(subDistributionBoard.GroundingSize)mm² @(subDistributionBoard.Grounding.ToString())</p>
+                    <p class="cell cell--text">@(subDistributionBoard.GroundingTextDisplay)</p>
                 }
 
                 @if (subDistributionBoard.RacewaySize.HasError)
@@ -617,7 +603,7 @@
                 }
                 else
                 {
-                    <p class="cell cell--text">@(subDistributionBoard.RacewaySize)mm ø @subDistributionBoard.RacewayType.GetDisplayName()</p>
+                    <p class="cell cell--text">@(subDistributionBoard.RacewayTextDisplay)</p>
                 }
                 
                 <p class="cell cell--text">@subDistributionBoard.WireCount</p>

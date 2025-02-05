@@ -62,7 +62,9 @@
                         <p>Remainder over 120000 VA @@ 25% = @(thirdRangeValue)</p>
                     }
                     
+                    <p></p>
                     <h6>Final total = @(firstRangeValue + secondRangeValue + thirdRangeValue) VA</h6>
+                    <p>Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.</p>
                 }
                 else
                 {
@@ -169,6 +171,7 @@
                     }
                     
                     <h6>Final total = @(nonDwellingLightingCircuitsVoltAmpereWithDemandFactor) VA</h6>
+                    <p>Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.</p>
                 }
                 else
                 {
@@ -215,6 +218,7 @@
                     }
                     
                     <h6>Final total = @(nonDwellingConvenienceCircuitsVoltAmpereRanges.Sum()) VA</h6>
+                    <p>Reference: Demand Factors for Non-Dwelling Receptacle Loads, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.5, pp. 56, 2017.</p>
                 }
                 else
                 {
@@ -273,7 +277,7 @@
             {
                 @if (normalMotorsVoltAmpere > 0)
                 {
-                    <p>For Normal Motors:</p>
+                    <h6>For Normal Motors:</h6>
                     
                     @foreach (var normalMotor in normalMotors)
                     {
@@ -292,8 +296,7 @@
                 
                 @if (feedersVoltAmpere > 0)
                 {
-                    <p></p>
-                    <p>For Elevator Feeders:</p>
+                    <h6>For Elevator Feeders:</h6>
                     
                     @foreach (var feeder in feeders)
                     {
@@ -306,8 +309,7 @@
                 
                 @if (cranesAndHoistVoltAmpere > 0)
                 {
-                    <p></p>
-                    <p>For Cranes and Hoists:</p>
+                    <h6>For Cranes and Hoists:</h6>
                     
                     @foreach (var craneAndHoist in cranesAndHoists)
                     {
@@ -398,7 +400,7 @@
             {
                 @if (dryersVoltAmpere > 0)
                 {
-                    <p>For Dryers:</p>
+                    <h6>For Dryers:</h6>
                     
                     @foreach (var dryer in dryers)
                     {
@@ -407,12 +409,12 @@
                     
                     <p class="underline">Sub Total = @(dryersVoltAmpere)</p>
                     <p>Sub Total with Demand Factor for Dryers = @(dryersVoltAmpereWithDemandFactor)</p>
+                    <p>Reference: “Demand Factors for Household Electric Clothes Dryers”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.15, pp. 57, 2017</p>
                 }
                 
                 @if (kitchenEquipmentsVoltAmpere > 0)
                 {
-                    <p></p>
-                    <p>For Kitchen Equipment:</p>
+                    <h6>For Kitchen Equipment:</h6>
                     
                     @if (DistributionBoard.BuildingClassification == BuildingClassification.DwellingUnit)
                     {
@@ -445,6 +447,7 @@
                             
                             <p>Sub Total = @(kitchenEquipmentsGreaterThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum())</p>
                             <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Greater than 3500 VA = @(kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere)</p>
+                            <p>Reference: “Demand Factors and Loads for Household Electric Ranges, Wall Mounted Ovens, Counter-Mounted Cooking Units, and Other Household Cooking Appliances over 1 ¾ kW”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.</p>
                         }
                     }
                     else
@@ -456,13 +459,13 @@
                         
                         <p>Sub Total = @(kitchenEquipmentsVoltAmpere)</p>
                         <p>Sub Total with Demand Factor for Non-Dwelling Unit Kitchen Equipment = @(nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor)</p>
+                        <p>Reference: “Demand Factors for Kitchen Equipment – other than Dwelling Units”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.</p>
                     }
                 }
                 
                 @if (otherApplianceEquipmentsVoltAmpere > 0)
                 {
-                    <p></p>
-                    <p> For Other Equipment:</p>
+                    <h6> For Other Equipment:</h6>
                     @foreach (var otherApplianceEquipment in otherApplianceEquipments)
                     {
                         <p>- @($"{otherApplianceEquipment.Description} = {otherApplianceEquipment.VoltAmpere}VA")</p>
@@ -480,7 +483,7 @@
                     <p>No Demand Factors</p>
                 }
                 
-                <h6>Final Total = @(applianceEquipmentVoltAmpereWithDemandFactor) VA</h6>
+                <h6>Final total = @(applianceEquipmentVoltAmpereWithDemandFactor) VA</h6>
             }
             else
             {
@@ -509,8 +512,15 @@
         <div class="computation-subgroup">
             <h4>For Circuit Protection</h4>
             
-            <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A x 1.25) = @(DistributionBoard.Ampere)</p>
-            <h6>Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</h6>
+            @if (DistributionBoard.FilterNestedCircuits<Circuit>().Count > 0)
+            {
+                <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 1.25) = @(DistributionBoard.CircuitProtectionAmpere)</p>
+                <strong>• Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</strong>
+            }
+            else
+            {
+                <p>No Circuits</p>
+            }
         </div>
     </div>
     
@@ -519,12 +529,46 @@
         
         <div class="computation-subgroup">
             <h4>For Conductors</h4>
+            
+            <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 0.25) = @(DistributionBoard.ConductorAmpere)</p>
+            <p>• Conductor = @(DistributionBoard.InitialConductorTextDisplay)</p>
+            
+            @if (DistributionBoard.InitialConductorSize.HasError)
+            {
+                <p>@(DistributionBoard.InitialConductorSize.ErrorMessage)</p>
+            }
+            else
+            {
+                <h6>For Ambient Temperature Conductors Correction Factor under 90 degrees</h6>
+                <p>Chosen Temperature: @(DistributionBoard.AmbientTemperature.GetDisplayName()) degrees</p>
+                <p>• Ampacity of @(DistributionBoard.InitialConductorSize) mm² = @(DistributionBoard.InitialConductorSizeAmpacity) × @(DistributionBoard.AmbientTemperatureMultiplier) = @(DistributionBoard.InitialConductorSizeAmpacity.Value * DistributionBoard.AmbientTemperatureMultiplier)</p>
+                <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
+            }
+            <strong>Ground = Use @(DistributionBoard.GroundingTextDisplay)</strong>
         </div>
         
         <div class="computation-subgroup">
             <h4>For Raceway</h4>
+            <strong>Raceway = Use @(DistributionBoard.RacewayTextDisplay)</strong>
         </div>
     </div>
+    
+    @if (
+        DistributionBoard.HasTransformer && 
+        DistributionBoard.TransformerPrimaryProtection != null &&
+        DistributionBoard.TransformerSecondaryProtection != null &&
+        !DistributionBoard.TransformerRating.HasError && 
+        !DistributionBoard.TransformerPrimaryProtectionAmpereTrip.HasError &&
+        !DistributionBoard.TransformerSecondaryProtectionAmpereTrip.HasError
+    )
+    {
+        <div class="computation-group">
+            <h5>D.) Transformer</h5>
+            <strong>TX = @(DistributionBoard.TransformerRating.Value / 1000)kVA</strong>
+            <p>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereWithoutMultiplier) A × @(DistributionBoard.TransformerPrimaryProtectionMultiplier) = @(DistributionBoard.TransformerPrimaryProtectionAmpere) A = <strong>Use @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection.GetDisplayName())</strong></p>
+            <p>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereWithoutMultiplier) A × @(DistributionBoard.TransformerSecondaryProtectionMultiplier) = @(DistributionBoard.TransformerSecondaryProtectionAmpere) A = <strong>Use @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection.GetDisplayName())</strong></p>
+        </div>
+    }
 </div>
 
 @code {

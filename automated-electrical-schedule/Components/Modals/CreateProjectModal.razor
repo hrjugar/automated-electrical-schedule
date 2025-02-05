@@ -133,6 +133,17 @@
                     <ValidationMessage For=@(() => _newProject.MainDistributionBoard.RacewayType)/>
                 </div>
 
+                <div class="create-project-modal-field">
+                    <label>Ambient Temperature (°C) <span class="red-asterisk">*</span></label>
+                    <InputSelect @bind-Value=_newProject.MainDistributionBoard.AmbientTemperature>
+                        @foreach (AmbientTemperature ambientTemperature in Enum.GetValues(typeof(AmbientTemperature)))
+                        {
+                            <option value="@ambientTemperature">@ambientTemperature.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.AmbientTemperature)/>
+                </div>
+                
                 @if (threePhaseBoard is not null)
                 {
                     <div class="create-project-modal-field">

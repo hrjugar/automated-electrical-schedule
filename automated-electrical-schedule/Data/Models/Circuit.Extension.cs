@@ -1,6 +1,7 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.FormulaTables;
 using automated_electrical_schedule.Data.Validators;
+using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
@@ -140,6 +141,10 @@ public abstract partial class Circuit
 
     public virtual CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount);
     public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;
+    
+    public string ConductorTextDisplay => ConductorSize.HasError ? 
+        ConductorSize.ErrorMessage :
+        $"{ConductorWireCount}-{ConductorSize} mm\u00b2 {ConductorType}";
 
     public int WireCount => SetCount * (ConductorWireCount + GroundingWireCount);
     
@@ -165,6 +170,10 @@ public abstract partial class Circuit
                 );
         }
     }
+    
+    public string GroundingTextDisplay => GroundingSize.HasError ? 
+        GroundingSize.ErrorMessage :
+        $"{GroundingWireCount}-{GroundingSize} mm\u00b2 {Grounding}";
 
     public CalculationResult<int> RacewaySize
     {
@@ -189,6 +198,8 @@ public abstract partial class Circuit
             );
         }
     }
+    
+    public string RacewayTextDisplay => $"{RacewaySize} mm ø {RacewayType.GetDisplayName()}";
 
     public abstract Circuit Clone();
 

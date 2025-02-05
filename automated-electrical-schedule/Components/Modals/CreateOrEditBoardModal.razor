@@ -159,6 +159,17 @@
                         </InputSelect>
                         <ValidationMessage For=@(() => _newDistributionBoard.RacewayType)/>
                     </div>
+                    
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Ambient Temperature (°C) <span class="red-asterisk">*</span></label>
+                        <InputSelect @bind-Value=_newDistributionBoard.AmbientTemperature>
+                            @foreach (AmbientTemperature ambientTemperature in Enum.GetValues(typeof(AmbientTemperature)))
+                            {
+                                <option value="@ambientTemperature">@ambientTemperature.GetDisplayName()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For=@(() => _newDistributionBoard.AmbientTemperature)/>
+                    </div>
 
                     @if (_newDistributionBoard.HasTransformer)
                     {
@@ -360,6 +371,8 @@
         updatedNewDistributionBoard.ConductorTypeId = _newDistributionBoard.ConductorTypeId;
         updatedNewDistributionBoard.GroundingId = _newDistributionBoard.GroundingId;
         updatedNewDistributionBoard.RacewayType = _newDistributionBoard.RacewayType;
+        updatedNewDistributionBoard.BuildingClassification = _newDistributionBoard.BuildingClassification;
+        updatedNewDistributionBoard.AmbientTemperature = _newDistributionBoard.AmbientTemperature;
 
         if (updatedNewDistributionBoard.HasTransformer)
         {

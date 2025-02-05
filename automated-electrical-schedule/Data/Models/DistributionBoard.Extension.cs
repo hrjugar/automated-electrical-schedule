@@ -132,10 +132,13 @@ public abstract partial class DistributionBoard
     //     }
     // }
 
-    public double HighestMotorLoad => 
-        FilterNestedCircuits<MotorOutletCircuit>()
-                .Select(c => c.AmpereLoad)
-                .Max();
+    public double HighestMotorLoad =>
+        Circuits
+            .OfType<MotorOutletCircuit>()
+            .Select(mc => mc.AmpereLoad.Value)
+            .DefaultIfEmpty(0)
+            .Max();
+        
     
     public double VoltAmpere
     {
@@ -271,7 +274,9 @@ public abstract partial class DistributionBoard
         }
     }
 
-    public double Ampere => Current.Value + (HighestMotorLoad * 1.25);
+    public double CircuitProtectionAmpere => Current.Value + (HighestMotorLoad * 1.25);
+
+    public double ConductorAmpere => Current.Value + (HighestMotorLoad * 0.25);
 
     public CalculationResult<int> AmpereTrip
     {
@@ -281,7 +286,7 @@ public abstract partial class DistributionBoard
             
             return Current.HasError 
                 ? CalculationResult<int>.Failure(Current.ErrorType) 
-                : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(Ampere), 20);
+                : DataUtils.GetAmpereTrip(CalculationResult<double>.Success(CircuitProtectionAmpere), 20);
         }
     }
 
@@ -327,21 +332,52 @@ public abstract partial class DistributionBoard
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
+    private double MinimumConductorSize =>
+        ParentDistributionBoard is null ? 
+            ConductorType.Material == ConductorMaterial.Copper ? 
+                8.0 : 
+                14.0 : 
+            3.5;
+    
+    public CalculationResult<double> InitialConductorSize => 
+        ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, MinimumConductorSize);
+
+    public CalculationResult<int> InitialConductorSizeAmpacity =>
+        ConductorSizeTable.GetAmpacity(
+            InitialConductorSize,
+            ConductorType
+        );
+    
+    public double AmbientTemperatureMultiplier =>
+        AmbientTemperatureTable.GetAmbientTemperatureMultiplier(
+            AmbientTemperature,
+            ConductorType.TemperatureRating
+        );
+    
     public CalculationResult<double> ConductorSize
     {
         get
         {
-            double minConductorSize;
-            if (ParentDistributionBoard is null)
-                minConductorSize = ConductorType.Material == ConductorMaterial.Copper ? 8.0 : 14.0;
-            else
-                minConductorSize = 3.5;
+            if (InitialConductorSizeAmpacity.HasError) return CalculationResult<double>.Failure(InitialConductorSizeAmpacity.ErrorType);
 
-            return ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, minConductorSize);
+            var ampacityWithMultiplier = InitialConductorSizeAmpacity.Value * AmbientTemperatureMultiplier;
+
+            var ampacityWithMultiplierAmpereTrip =
+                DataUtils.GetAmpereTrip(CalculationResult<double>.Success(ampacityWithMultiplier), 20);
+
+            return ConductorSizeTable.GetConductorSize(ConductorType, ampacityWithMultiplierAmpereTrip, SetCount, MinimumConductorSize);
         }
     }
 
     public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
+    
+    public string InitialConductorTextDisplay => InitialConductorSize.HasError ? 
+        ConductorSize.ErrorMessage :
+        $"{ConductorWireCount}-{InitialConductorSize} mm\u00b2 {ConductorType}";
+    
+    public string ConductorTextDisplay => ConductorSize.HasError ? 
+        ConductorSize.ErrorMessage :
+        $"{ConductorWireCount}-{ConductorSize} mm\u00b2 {ConductorType}";
     
     public int WireCount => SetCount * (ConductorWireCount + GroundingWireCount);
 
@@ -373,6 +409,10 @@ public abstract partial class DistributionBoard
                 );
         }
     }
+    
+    public string GroundingTextDisplay => GroundingSize.HasError ? 
+        GroundingSize.ErrorMessage :
+        $"{GroundingWireCount}-{GroundingSize} mm\u00b2 {Grounding}";
 
     public CalculationResult<int> RacewaySize
     {
@@ -398,6 +438,8 @@ public abstract partial class DistributionBoard
         }
     }
 
+    public string RacewayTextDisplay => $"{RacewaySize} mm ø {RacewayType.GetDisplayName()}";
+
     // private CalculationResult<double> TransformerCurrent => HasTransformer
     //             ? CalculationResult<double>.Success(Math.Sqrt(3) * (int)Voltage * Current)
     //             : CalculationResult<double>.Failure(CalculationErrorType.NoTransformer);
@@ -417,45 +459,54 @@ public abstract partial class DistributionBoard
         TransformerCurrent.HasError
             ? CalculationResult<int>.Failure(TransformerCurrent.ErrorType)
             : TransformerTable.GetTransformerRating(TransformerCurrent);
+
+    public double TransformerPrimaryProtectionAmpereWithoutMultiplier
+    {
+        get
+        {
+            var voltage = ParentDistributionBoard is null ? 13800 : (int)ParentDistributionBoard.Voltage;
+            var denominatorMultiplier = Phase == BoardPhase.ThreePhase ? Math.Sqrt(3) : 1;
+
+            return VoltAmpere / (denominatorMultiplier * voltage);
+        }
+    }
+    public double TransformerPrimaryProtectionMultiplier =>
+        ParentDistributionBoard is null
+            ? TransformerTable.MainBoardTransformerPrimaryProtectionFactor
+            : TransformerTable.SubBoardTransformerPrimaryProtectionFactor;
+
+    public double TransformerPrimaryProtectionAmpere =>
+        TransformerPrimaryProtectionAmpereWithoutMultiplier * TransformerPrimaryProtectionMultiplier;
+
+    public CalculationResult<int> TransformerPrimaryProtectionAmpereTrip => 
+        DataUtils.GetAmpereTrip(
+            CalculationResult<double>.Success(TransformerPrimaryProtectionAmpere)
+        );
     
-    public CalculationResult<int> TransformerPrimaryProtectionAmpereTrip
+    public double TransformerSecondaryProtectionAmpereWithoutMultiplier
     {
         get
         {
-            if (TransformerCurrent.HasError) return CalculationResult<int>.Failure(TransformerCurrent.ErrorType);
+            var denominatorMultiplier = Phase == BoardPhase.ThreePhase ? Math.Sqrt(3) : 1;
 
-            var primaryProtectionFactor = ParentDistributionBoard is null
-                ? TransformerTable.MainBoardTransformerPrimaryProtectionFactor
-                : TransformerTable.SubBoardTransformerPrimaryProtectionFactor;
-
-            var primaryProtectionVoltage = ParentDistributionBoard is null
-                ? 13800
-                : (int) ParentDistributionBoard.Voltage;
-
-            var value = CalculationResult<double>.Success(
-                TransformerCurrent.Value / (Math.Sqrt(3) * primaryProtectionVoltage) * primaryProtectionFactor);
-            
-            return DataUtils.GetAmpereTrip(value);
+            return VoltAmpere / (denominatorMultiplier * (int)Voltage);
         }
     }
+    
+    public double TransformerSecondaryProtectionMultiplier =>
+        ParentDistributionBoard is null
+            ? TransformerTable.MainBoardTransformerSecondaryProtectionFactor
+            : Current.Value >= 9
+                ? TransformerTable.SubBoardTransformerSecondaryProtectionGreaterEqual9
+                : TransformerTable.SubBoardTransformerSecondaryProtectionLessThan9;
 
-    public CalculationResult<int> TransformerSecondaryProtectionAmpereTrip
-    {
-        get
-        {
-            if (TransformerCurrent.HasError) return CalculationResult<int>.Failure(TransformerCurrent.ErrorType);
-            if (Current.HasError) return CalculationResult<int>.Failure(Current.ErrorType);
-            
-            var secondaryProtectionFactor = ParentDistributionBoard is null
-                ? TransformerTable.MainBoardTransformerSecondaryProtectionFactor
-                : Current.Value >= 9
-                    ? TransformerTable.SubBoardTransformerSecondaryProtectionGreaterEqual9
-                    : TransformerTable.SubBoardTransformerSecondaryProtectionLessThan9;
-            
-            var value = CalculationResult<double>.Success(Current.Value * secondaryProtectionFactor);
-            return DataUtils.GetAmpereTrip(value);
-        }
-    }
+    public double TransformerSecondaryProtectionAmpere => 
+        TransformerSecondaryProtectionAmpereWithoutMultiplier * TransformerSecondaryProtectionMultiplier;
+    
+    public CalculationResult<int> TransformerSecondaryProtectionAmpereTrip => 
+        DataUtils.GetAmpereTrip(
+            CalculationResult<double>.Success(TransformerSecondaryProtectionAmpere)
+        );
 
     public ConductorType? BreakerConductorType =>
         BreakerConductorTypeId is null ? null : ConductorType.FindById(BreakerConductorTypeId);

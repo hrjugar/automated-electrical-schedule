@@ -68,6 +68,8 @@ public partial class SinglePhaseDistributionBoard
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            BuildingClassification = BuildingClassification,
+            AmbientTemperature = AmbientTemperature,
             TransformerPrimaryProtection = TransformerPrimaryProtection,
             TransformerSecondaryProtection = TransformerSecondaryProtection,
             BreakerCircuitProtection = BreakerCircuitProtection,

@@ -125,6 +125,11 @@
         <label>@(DistributionBoard?.BreakerRacewayType != null ? $"{(int)DistributionBoard.Voltage}V" : "") Raceway Type</label>
         <h5>@DistributionBoard.RacewayType.GetDisplayName()</h5>
     </div>
+
+    <div class="board-spec">
+        <label>Ambient Temperature (°C)</label>
+        <h5>@DistributionBoard.AmbientTemperature.GetDisplayName()</h5>
+    </div>
 </div>
 
 @code {

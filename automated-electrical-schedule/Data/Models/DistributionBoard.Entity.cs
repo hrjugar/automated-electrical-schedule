@@ -79,6 +79,11 @@ public abstract partial class DistributionBoard
     [Column("building_classification")]
     public BuildingClassification BuildingClassification { get; set; } = BuildingClassification.Other;
 
+    [Required]
+    [Display(Name = "ambient temperature")]
+    [Column("ambient_temperature")]
+    public AmbientTemperature AmbientTemperature { get; set; }
+    
     /* USE WHEN THIS OR PARENT BOARD IS THREE PHASE */
 
     [Display(Name = "transformer primary protection")]

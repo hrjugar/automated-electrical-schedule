@@ -125,6 +125,8 @@ public partial class ThreePhaseDistributionBoard
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            BuildingClassification = BuildingClassification,
+            AmbientTemperature = AmbientTemperature,
             TransformerPrimaryProtection = TransformerPrimaryProtection,
             TransformerSecondaryProtection = TransformerSecondaryProtection,
             BreakerCircuitProtection = BreakerCircuitProtection,
