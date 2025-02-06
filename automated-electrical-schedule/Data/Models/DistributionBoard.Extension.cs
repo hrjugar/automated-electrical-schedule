@@ -297,8 +297,8 @@ public abstract partial class DistributionBoard
         }
     }
     
-    public bool HasCircuitsRecursive =>
-        Circuits.Count > 0 || SubDistributionBoards.Any(subBoard => subBoard.HasCircuitsRecursive);
+    public bool HasNestedCircuits =>
+        Circuits.Count > 0 || SubDistributionBoards.Any(subBoard => subBoard.HasNestedCircuits);
 
     public bool HasBreaker =>
         ParentDistributionBoard is not null &&
@@ -344,7 +344,7 @@ public abstract partial class DistributionBoard
     {
         get
         {
-            if (!HasCircuitsRecursive) return CalculationResult<int>.Failure(CalculationErrorType.NoCircuits);
+            if (!HasNestedCircuits) return CalculationResult<int>.Failure(CalculationErrorType.NoCircuits);
             
             return Current.HasError 
                 ? CalculationResult<int>.Failure(Current.ErrorType) 
@@ -511,7 +511,7 @@ public abstract partial class DistributionBoard
         get
         {
             if (!HasTransformer) return CalculationResult<double>.Failure(CalculationErrorType.NoTransformer);
-            if (!HasCircuitsRecursive) return CalculationResult<double>.Failure(CalculationErrorType.NoCircuits);
+            if (!HasNestedCircuits) return CalculationResult<double>.Failure(CalculationErrorType.NoCircuits);
             if (Current.HasError) return CalculationResult<double>.Failure(Current.ErrorType);
             return CalculationResult<double>.Success(Math.Sqrt(3) * (int)Voltage * Current.Value);
         }

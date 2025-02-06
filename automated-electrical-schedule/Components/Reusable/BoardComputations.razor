@@ -512,7 +512,7 @@
         <div class="computation-subgroup">
             <h4>For Circuit Protection</h4>
             
-            @if (DistributionBoard.FilterNestedCircuits<Circuit>().Count > 0)
+            @if (DistributionBoard.HasNestedCircuits)
             {
                 <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 1.25) = @(DistributionBoard.CircuitProtectionAmpere)</p>
                 <strong>• Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</strong>
@@ -530,26 +530,41 @@
         <div class="computation-subgroup">
             <h4>For Conductors</h4>
             
-            <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 0.25) = @(DistributionBoard.ConductorAmpere)</p>
-            <p>• Conductor = @(DistributionBoard.InitialConductorTextDisplay)</p>
-            
-            @if (DistributionBoard.InitialConductorSize.HasError)
+            @if (DistributionBoard.HasNestedCircuits)
             {
-                <p>@(DistributionBoard.InitialConductorSize.ErrorMessage)</p>
+                <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 0.25) = @(DistributionBoard.ConductorAmpere)</p>
+                <p>• Conductor = @(DistributionBoard.InitialConductorTextDisplay)</p>
+                
+                @if (DistributionBoard.InitialConductorSize.HasError)
+                {
+                    <p>@(DistributionBoard.InitialConductorSize.ErrorMessage)</p>
+                }
+                else
+                {
+                    <h6>For Ambient Temperature Conductors Correction Factor under 90 degrees</h6>
+                    <p>Chosen Temperature: @(DistributionBoard.AmbientTemperature.GetDisplayName()) degrees</p>
+                    <p>• Ampacity of @(DistributionBoard.InitialConductorSize) mm² = @(DistributionBoard.InitialConductorSizeAmpacity) × @(DistributionBoard.AmbientTemperatureMultiplier) = @(DistributionBoard.InitialConductorSizeAmpacity.Value * DistributionBoard.AmbientTemperatureMultiplier)</p>
+                    <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
+                }
+                <strong>Ground = Use @(DistributionBoard.GroundingTextDisplay)</strong>
             }
             else
             {
-                <h6>For Ambient Temperature Conductors Correction Factor under 90 degrees</h6>
-                <p>Chosen Temperature: @(DistributionBoard.AmbientTemperature.GetDisplayName()) degrees</p>
-                <p>• Ampacity of @(DistributionBoard.InitialConductorSize) mm² = @(DistributionBoard.InitialConductorSizeAmpacity) × @(DistributionBoard.AmbientTemperatureMultiplier) = @(DistributionBoard.InitialConductorSizeAmpacity.Value * DistributionBoard.AmbientTemperatureMultiplier)</p>
-                <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
+                <p>No Circuits</p>
             }
-            <strong>Ground = Use @(DistributionBoard.GroundingTextDisplay)</strong>
+            
         </div>
         
         <div class="computation-subgroup">
             <h4>For Raceway</h4>
-            <strong>Raceway = Use @(DistributionBoard.RacewayTextDisplay)</strong>
+            @if (DistributionBoard.HasNestedCircuits)
+            {
+                <strong>Raceway = Use @(DistributionBoard.RacewayTextDisplay)</strong>
+            }
+            else
+            {
+                <p>No Circuits</p>
+            }
         </div>
     </div>
     
