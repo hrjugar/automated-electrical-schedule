@@ -11,5 +11,24 @@
             padding-inline: 0.5rem;
             text-align: center;
         }
+        
+        tbody {
+            tr {
+                td {
+                    border-bottom: none;
+                }
+            }
+        }
+        
+        td {
+            &.subitem-desc {
+                text-align: right;
+                font-style: italic;
+                
+                &:not(:last-child) {
+                    border-block: none;
+                }
+            }
+        }
     }
 }
