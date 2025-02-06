@@ -59,7 +59,7 @@ public abstract partial class Circuit
 
     public List<LineToLineVoltage> AllowedLineToLineVoltages =>
         GetAllowedLineToLineVoltagesStatic(ParentDistributionBoard, CircuitType);
-
+    
     public int Voltage
     {
         get

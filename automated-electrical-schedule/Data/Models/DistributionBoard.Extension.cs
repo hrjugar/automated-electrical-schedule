@@ -78,6 +78,68 @@ public abstract partial class DistributionBoard
         return nestedCircuits;
     }
     
+    public int LastOrder
+    {
+        get
+        {
+            var circuitsLastOrder = Circuits.Select(c => c.Order).DefaultIfEmpty(0).Max();
+            var subBoardsLastOrder = SubDistributionBoards.Select(b => b.Order).DefaultIfEmpty(0).Max();
+            return Math.Max(circuitsLastOrder, subBoardsLastOrder);
+        }
+    }
+
+    public void DecreaseOrderOfSucceedingChildren(int order)
+    {
+        var circuitsToDecreaseOrder = Circuits.Where(circuit => circuit.Order > order).ToList();
+        var subBoardsToDecreaseOrder = SubDistributionBoards.Where(subBoard => subBoard.Order > order).ToList();
+
+        foreach (var circuit in circuitsToDecreaseOrder)
+        {
+            circuit.Order -= 1;
+        }
+
+        foreach (var circuit in subBoardsToDecreaseOrder)
+        {
+            circuit.Order -= 1;
+        }
+    }
+
+    public IElectricalComponent FindChildByOrder(int order)
+    {
+        var circuit = Circuits.FirstOrDefault(c => c.Order == order);
+        if (circuit is not null) return circuit;
+
+        var subBoard = SubDistributionBoards.FirstOrDefault(b => b.Order == order);
+        if (subBoard is null) throw new ArgumentOutOfRangeException(nameof(order));
+        return subBoard;
+    }
+
+    public (IElectricalComponent, IElectricalComponent)? DecreaseChildOrder(int order)
+    {
+        if (order == 1) return null;
+        
+        var currentChild = FindChildByOrder(order);
+        var previousChild = FindChildByOrder(order - 1);
+
+        currentChild.Order -= 1;
+        previousChild.Order += 1;
+
+        return (previousChild, currentChild);
+    }
+
+    public (IElectricalComponent, IElectricalComponent)? IncreaseChildOrder(int order)
+    {
+        if (order == LastOrder) return null;
+
+        var currentChild = FindChildByOrder(order);
+        var nextChild = FindChildByOrder(order + 1);
+
+        currentChild.Order += 1;
+        nextChild.Order -= 1;
+
+        return (currentChild, nextChild);
+    }
+    
     public string LineToLineVoltageDisplay
     {
         get

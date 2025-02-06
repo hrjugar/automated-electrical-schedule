@@ -455,6 +455,7 @@
     {
         if (IsNew)
         {
+            _newDistributionBoard!.Order = DistributionBoard.LastOrder + 1;
             await DatabaseContext.DistributionBoards.AddAsync(_newDistributionBoard!);
         }
         else

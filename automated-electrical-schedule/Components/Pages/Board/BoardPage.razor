@@ -85,7 +85,7 @@ else
             <BoardSpecs DistributionBoard="_distributionBoard"/>
 
             <div class="board-content-main">
-                <BoardTableCard DistributionBoard="_distributionBoard" OnCircuitChange="RefreshCircuitList"/>
+                <BoardTableCard DistributionBoard="_distributionBoard" OnBoardChange="RefreshBoard"/>
                 <BoardSizeCards DistributionBoard="_distributionBoard" OnBoardUpdate="RefreshBoard"/>
             </div>
             @* <div class="board-content-main"> *@
@@ -113,7 +113,7 @@ else
     <CreateOrEditCircuitModal
         @bind-IsOpen="@_isCreateCircuitModalOpen"
         DistributionBoard="@_distributionBoard"
-        OnCircuitCreateOrEdit="RefreshCircuitList"/>
+        OnCircuitCreateOrEdit="RefreshBoard"/>
 }
 
 @if (_isCreateBoardModalOpen)
@@ -129,8 +129,6 @@ else
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
-
-    List<Circuit> _circuits = [];
     
     private bool _isEditBoardModalOpen;
     private bool _isDeleteBoardModalOpen;
@@ -177,13 +175,6 @@ else
         _distributionBoard!.SetCount = 1;
         StateHasChanged();
         await DatabaseContext.SaveChangesAsync();
-    }
-
-    async Task RefreshCircuitList()
-    {
-        _circuits = await DatabaseContext.Circuits.Where(c => c.ParentDistributionBoardId == BoardId).ToListAsync();
-
-        StateHasChanged();
     }
 
     async Task RefreshBoard()

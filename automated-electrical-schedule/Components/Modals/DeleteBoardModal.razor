@@ -66,6 +66,8 @@
 
     async Task DeleteBoard()
     {
+        DistributionBoard.ParentDistributionBoard?.DecreaseOrderOfSucceedingChildren(DistributionBoard.Order);
+        
         DatabaseContext.Circuits.RemoveRange(DistributionBoard.Circuits);
         DatabaseContext.DistributionBoards.Remove(DistributionBoard);
 

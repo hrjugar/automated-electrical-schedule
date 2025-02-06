@@ -226,6 +226,18 @@
 
                     &.cell--sticky {
                         height: 100%;
+                        
+                        &.cell--sticky--left {
+                            .order-buttons {
+                                visibility: hidden;
+                            }
+                            
+                            &:hover {
+                                .order-buttons {
+                                    visibility: visible;
+                                }
+                            }
+                        }
                     }
 
                     &.cell--text {

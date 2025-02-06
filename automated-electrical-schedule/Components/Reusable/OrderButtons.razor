@@ -1,0 +1,59 @@
+@inject DatabaseContext DatabaseContext;
+
+<div class="order-buttons">
+    <button
+        type="button"
+        class="order-btn"
+        @onclick="DecreaseChildOrder"
+        disabled="@(Order == 1)">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            class="icon-md">
+            <path fill="currentColor" d="M4.207 12.267a.75.75 0 0 1 .026-1.06l5.25-5.002a.75.75 0 0 1 1.035 0l5.25 5.001a.75.75 0 0 1-1.034 1.086L10 7.784l-4.734 4.508a.75.75 0 0 1-1.06-.025"/>
+        </svg>
+    </button>
+
+    <button
+        type="button"
+        class="order-btn"
+        @onclick="IncreaseChildOrder"
+        disabled="@(Order == ParentBoard.LastOrder)">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            class="icon-md">
+            <path fill="currentColor" d="M15.794 7.733a.75.75 0 0 1-.026 1.06l-5.25 5.001a.75.75 0 0 1-1.035 0l-5.25-5a.75.75 0 0 1 1.034-1.087l4.734 4.509l4.733-4.51a.75.75 0 0 1 1.06.027"/>
+        </svg>
+    </button>
+</div>
+
+@code {
+    [Parameter] public DistributionBoard ParentBoard { get; set; } = default!;
+    [Parameter] public int Order { get; set; }
+    [Parameter] public EventCallback OnBoardChange { get; set; }
+
+    async Task DecreaseChildOrder()
+    {
+        var affectedChildren = ParentBoard.DecreaseChildOrder(Order);
+        if (affectedChildren is not null)
+        {
+            DatabaseContext.Update(affectedChildren.Value.Item1);
+            DatabaseContext.Update(affectedChildren.Value.Item2);
+        }
+        await DatabaseContext.SaveChangesAsync();
+        await OnBoardChange.InvokeAsync();
+    }
+
+    async Task IncreaseChildOrder()
+    {
+        var affectedChildren = ParentBoard.IncreaseChildOrder(Order);
+        if (affectedChildren is not null)
+        {
+            DatabaseContext.Update(affectedChildren.Value.Item1);
+            DatabaseContext.Update(affectedChildren.Value.Item2);
+        }
+        await DatabaseContext.SaveChangesAsync();
+        await OnBoardChange.InvokeAsync();
+    }
+}

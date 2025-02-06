@@ -1,0 +1,14 @@
+.order-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    
+    .order-btn {
+        &:disabled {
+            cursor: auto;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    }
+}

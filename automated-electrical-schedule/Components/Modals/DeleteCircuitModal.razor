@@ -47,6 +47,7 @@
 
     async Task DeleteCircuit()
     {
+        Circuit.ParentDistributionBoard.DecreaseOrderOfSucceedingChildren(Circuit.Order);
         DatabaseContext.Circuits.Remove(Circuit);
         await DatabaseContext.SaveChangesAsync();
         await CloseModal();

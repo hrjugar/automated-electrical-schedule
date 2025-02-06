@@ -59,6 +59,7 @@ public partial class SinglePhaseDistributionBoard
             BoardName = BoardName,
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
+            Order = Order,
             Phase = Phase,
             Voltage = Voltage,
             WireLength = WireLength,

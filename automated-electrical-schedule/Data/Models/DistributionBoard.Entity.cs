@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public abstract partial class DistributionBoard
+public abstract partial class DistributionBoard : IElectricalComponent
 {
     private const string TableName = "distribution_boards";
 
@@ -29,6 +29,10 @@ public abstract partial class DistributionBoard
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public DistributionBoard? ParentDistributionBoard { get; set; }
 
+    [Required]
+    [Column("order")]
+    public int Order { get; set; }
+    
     [Required]
     [Display(Name = "phase")]
     [Column("phase")]

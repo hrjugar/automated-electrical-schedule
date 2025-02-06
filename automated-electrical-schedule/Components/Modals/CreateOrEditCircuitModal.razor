@@ -551,6 +551,7 @@
     {
         if (OldCircuit is null)
         {
+            _newCircuit!.Order = DistributionBoard.LastOrder + 1;
             DatabaseContext.Circuits.Add(_newCircuit!);
             await DatabaseContext.SaveChangesAsync();
         }

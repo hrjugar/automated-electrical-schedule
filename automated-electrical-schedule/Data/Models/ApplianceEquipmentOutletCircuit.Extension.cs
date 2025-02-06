@@ -34,6 +34,7 @@ public partial class ApplianceEquipmentOutletCircuit
             Id = Id,
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
+            Order = Order,
             CircuitType = CircuitType,
             LineToLineVoltage = LineToLineVoltage,
             Description = Description,

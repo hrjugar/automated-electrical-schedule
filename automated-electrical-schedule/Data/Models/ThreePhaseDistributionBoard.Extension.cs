@@ -116,6 +116,7 @@ public partial class ThreePhaseDistributionBoard
             BoardName = BoardName,
             ParentDistributionBoardId = ParentDistributionBoardId,
             ParentDistributionBoard = ParentDistributionBoard,
+            Order = Order,
             Phase = Phase,
             Voltage = Voltage,
             WireLength = WireLength,

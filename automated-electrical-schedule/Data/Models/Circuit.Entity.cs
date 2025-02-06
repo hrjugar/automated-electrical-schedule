@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public abstract partial class Circuit
+public abstract partial class Circuit : IElectricalComponent
 {
     private const string TableName = "circuits";
 
@@ -22,7 +22,11 @@ public abstract partial class Circuit
     [ForeignKey(nameof(ParentDistributionBoardId))]
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public DistributionBoard ParentDistributionBoard { get; set; } = default!;
-
+    
+    [Required]
+    [Column("order")]
+    public int Order { get; set; }
+    
     [Required]
     [Display(Name = "circuit type")]
     [Column("circuit_type")]
