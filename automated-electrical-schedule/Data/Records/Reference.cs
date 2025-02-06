@@ -1,6 +1,6 @@
 namespace automated_electrical_schedule.Data.Models;
 
-public class Reference
+public record Reference
 {
     public string? Name { get; set; }
 

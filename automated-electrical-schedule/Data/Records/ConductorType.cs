@@ -1,9 +1,9 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Extensions;
 
-namespace automated_electrical_schedule.Data.Models;
+namespace automated_electrical_schedule.Data.Records;
 
-public partial class ConductorType
+public partial record ConductorType
 {
     public ConductorType()
     {

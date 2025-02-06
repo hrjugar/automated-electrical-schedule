@@ -1,7 +1,7 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Extensions;
 
-namespace automated_electrical_schedule.Data.Models;
+namespace automated_electrical_schedule.Data.Wrappers;
 
 public struct CalculationResult<T>
 {

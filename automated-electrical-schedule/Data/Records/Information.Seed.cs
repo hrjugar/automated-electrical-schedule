@@ -3,7 +3,7 @@ using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public partial class Information
+public partial record Information
 {
     private const string CircuitTypeTitle = "Circuit Type";
     private const string QuantityTitle = "Quantity";

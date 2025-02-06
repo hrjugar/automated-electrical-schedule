@@ -1,8 +1,8 @@
 using automated_electrical_schedule.Data.Enums;
 
-namespace automated_electrical_schedule.Data.Models;
+namespace automated_electrical_schedule.Data.Records;
 
-public partial class ConductorType
+public partial record ConductorType
 {
     public static readonly ConductorType TwCu60 = new(
         ConductorMaterial.Copper,

@@ -91,7 +91,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Seeds\" />
+      <Folder Include="Data\Interfaces\" />
     </ItemGroup>
 
 </Project>

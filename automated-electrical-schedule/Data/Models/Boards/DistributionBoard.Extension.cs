@@ -1,5 +1,7 @@
 using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.FormulaTables;
+using automated_electrical_schedule.Data.Records;
+using automated_electrical_schedule.Data.Wrappers;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
@@ -283,7 +285,9 @@ public abstract partial class DistributionBoard
     public double FilterVoltAmpere<TCircuit>(Func<TCircuit, bool>? filterCallback = null) where TCircuit : Circuit
     {
         var nestedCircuits = FilterNestedCircuits<TCircuit>(filterCallback);
-        return nestedCircuits.Select(circuit => circuit.VoltAmpere).Sum();
+        return nestedCircuits
+            .Select(circuit => circuit.VoltAmpere)
+            .Sum();
     }
 
     public List<CircuitProtection> AllowedTransformerPrimaryProtections

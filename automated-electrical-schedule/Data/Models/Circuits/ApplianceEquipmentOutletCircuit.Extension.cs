@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Wrappers;
 
 namespace automated_electrical_schedule.Data.Models;
 
