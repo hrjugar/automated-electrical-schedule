@@ -14,14 +14,14 @@
                 <div class="modal-header-text">
                     <h5>Summary</h5>
                     <p>
-                        @($"{(_currentBoardPage == SchedulePage ? "Schedule of Loads" : "Computations")} - {currentBoard.BoardName}")
+                        @($"{(_currentBoardPage == SchedulePage ? "SCHEDULE OF LOADS" : "COMPUTATIONS")}")
                     </p>
                 </div>
             </div>
             
             <div class="modal-content">
                 <div class="modal-content-description">
-                    <p>PROJECT NAME: XXX</p>
+                    <p>PROJECT NAME: @(_projectName)</p>
                     <p>SYSTEM: @(currentBoard.Phase.GetDisplayName())</p>
                     <p>DISTRIBUTION BOARD NAME: @(currentBoard.BoardName)</p>
                     <p>VOLTAGE: @((int) currentBoard.Voltage)V</p>
@@ -89,6 +89,7 @@
 
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
+    string _projectName = "";
     List<DistributionBoard> _distributionBoards = [];
     int _currentBoardIndex = 0;
 
@@ -100,7 +101,28 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        GetProjectName();
         GetAllDistributionBoards(DistributionBoard);
+    }
+
+    void GetProjectName()
+    {
+        var mainDistributionBoard = GetMainDistributionBoard(DistributionBoard);
+        _projectName = 
+            DatabaseContext
+                .Projects
+                .First(p => p.MainDistributionBoardId == mainDistributionBoard.Id)
+                .ProjectName;
+    }
+
+    DistributionBoard GetMainDistributionBoard(DistributionBoard distributionBoard)
+    {
+        while (distributionBoard.ParentDistributionBoard is not null)
+        {
+            distributionBoard = distributionBoard.ParentDistributionBoard;
+        }
+
+        return distributionBoard;
     }
 
     void GetAllDistributionBoards(DistributionBoard board)
