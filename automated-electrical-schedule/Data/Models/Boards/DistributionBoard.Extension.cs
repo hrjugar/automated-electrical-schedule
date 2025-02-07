@@ -351,6 +351,12 @@ public abstract partial class DistributionBoard
         }
     }
 
+    public int TotalChildPoles =>
+        Circuits.OfType<NonSpaceCircuit>().Select(c => c.Pole).Sum() +
+        SubDistributionBoards.Select(b => b.Pole).Sum();
+    
+    public const int RecommendedTotalChildPoles = 48;
+
     // public CalculationResult<double> Current => CalculationResult<double>.Success(VoltAmpere / (int) Voltage);
     public CalculationResult<double> Current
     {

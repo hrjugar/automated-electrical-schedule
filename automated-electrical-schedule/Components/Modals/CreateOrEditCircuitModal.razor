@@ -300,6 +300,11 @@
     </div>
 }
 
+@if (_isPoleWarningModalOpen && _poleWarningCallback is not null)
+{
+    <PoleWarningModal @bind-IsOpen="_isPoleWarningModalOpen" OnConfirm="_poleWarningCallback"/>
+}
+
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
@@ -313,6 +318,9 @@
     EditContext? _editContext;
 
     Circuit? _newCircuit;
+
+    private bool _isPoleWarningModalOpen;
+    private Func<Task>? _poleWarningCallback;
 
     protected override void OnInitialized()
     {
@@ -375,6 +383,11 @@
 
         _editContext = new EditContext(_newCircuit);
         StateHasChanged();
+    }
+    
+    void OpenPoleWarningModal()
+    {
+        _isPoleWarningModalOpen = true;
     }
 
     async Task CloseModal()
@@ -528,9 +541,26 @@
     {
         if (OldCircuit is null)
         {
-            _newCircuit!.Order = DistributionBoard.LastOrder + 1;
-            DatabaseContext.Circuits.Add(_newCircuit!);
-            await DatabaseContext.SaveChangesAsync();
+            var createCircuitCallback = async () =>
+            {
+                _newCircuit!.Order = DistributionBoard.LastOrder + 1;
+                DatabaseContext.Circuits.Add(_newCircuit!);
+                await DatabaseContext.SaveChangesAsync();
+                await CloseModal();
+                await OnCircuitCreateOrEdit.InvokeAsync();
+            };
+
+            if (
+                _newCircuit is NonSpaceCircuit nonSpaceCircuit && 
+                DistributionBoard.TotalChildPoles + nonSpaceCircuit.Pole > DistributionBoard.RecommendedTotalChildPoles)
+            {
+                _poleWarningCallback = createCircuitCallback;
+                OpenPoleWarningModal();
+            }
+            else
+            {
+                await createCircuitCallback();
+            }
         }
         else
         {
@@ -565,10 +595,11 @@
             
             DatabaseContext.Update(OldCircuit);
             await DatabaseContext.SaveChangesAsync();
+            
+            await CloseModal();
+            await OnCircuitCreateOrEdit.InvokeAsync();
         }
         
-        await CloseModal();
-        await OnCircuitCreateOrEdit.InvokeAsync();
     }
 
 }

@@ -1,0 +1,45 @@
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-content">
+                <p> As per <em>PEC Part 1 2017 4.8.3.7 p.302</em>, the total number of overcurrent devices or poles shall not exceed 48. Continue adding circuit?</p>
+            </div>
+            
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    type="button"
+                    class="btn-text btn-secondary"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+                
+                <button
+                    type="button"
+                    class="btn-text btn-primary"
+                    @onclick="Confirm">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task Confirm()
+    {
+        await OnConfirm.InvokeAsync();
+        await CloseModal();
+    }
+}

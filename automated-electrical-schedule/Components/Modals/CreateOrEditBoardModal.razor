@@ -271,6 +271,11 @@
     </div>
 }
 
+@if (_isPoleWarningModalOpen && _poleWarningCallback is not null)
+{
+    <PoleWarningModal @bind-IsOpen="_isPoleWarningModalOpen" OnConfirm="_poleWarningCallback"/>
+}
+
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
@@ -282,6 +287,9 @@
     EditContext? _editContext;
 
     DistributionBoard? _newDistributionBoard;
+
+    private bool _isPoleWarningModalOpen;
+    private Func<Task>? _poleWarningCallback;
 
     protected override void OnParametersSet()
     {
@@ -329,6 +337,11 @@
         }
 
         _editContext = new EditContext(_newDistributionBoard);
+    }
+
+    void OpenPoleWarningModal()
+    {
+        _isPoleWarningModalOpen = true;
     }
 
     async Task CloseModal()
@@ -455,21 +468,34 @@
     {
         if (IsNew)
         {
-            _newDistributionBoard!.Order = DistributionBoard.LastOrder + 1;
-            await DatabaseContext.DistributionBoards.AddAsync(_newDistributionBoard!);
+            var createBoardCallback = async () =>
+            {
+                _newDistributionBoard!.Order = DistributionBoard.LastOrder + 1;
+                await DatabaseContext.DistributionBoards.AddAsync(_newDistributionBoard!);
+                
+                await DatabaseContext.SaveChangesAsync();
+                await CloseModal();
+                
+                Navigation.NavigateTo($"/board/{_newDistributionBoard!.Id}");
+            };
+
+            if (DistributionBoard.TotalChildPoles + _newDistributionBoard!.Pole > DistributionBoard.RecommendedTotalChildPoles)
+            {
+                _poleWarningCallback = createBoardCallback;
+                OpenPoleWarningModal();
+            }
+            else
+            {
+                await createBoardCallback();
+            }
         }
         else
         {
             DatabaseContext.Entry(DistributionBoard).CurrentValues.SetValues(_newDistributionBoard!);
             DatabaseContext.Update(DistributionBoard);
-        }
-
-        await DatabaseContext.SaveChangesAsync();
-        await CloseModal();
-
-        if (IsNew)
-        {
-            Navigation.NavigateTo($"/board/{_newDistributionBoard!.Id}");
+            
+            await DatabaseContext.SaveChangesAsync();
+            await CloseModal();
         }
     }
 
