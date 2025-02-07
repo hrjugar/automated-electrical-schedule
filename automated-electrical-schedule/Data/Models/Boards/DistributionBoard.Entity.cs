@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public abstract partial class DistributionBoard : IElectricalComponent
+public abstract partial class DistributionBoard : IOrdered
 {
     private const string TableName = "distribution_boards";
 
@@ -77,7 +77,7 @@ public abstract partial class DistributionBoard : IElectricalComponent
     [Required]
     [Display(Name = "raceway type")]
     [Column("raceway_type")]
-    public RacewayType RacewayType { get; set; }
+    public RacewayType RacewayType { get; set; } = RacewayType.Pvc;
     
     [Required]
     [Display(Name = "building classification")]

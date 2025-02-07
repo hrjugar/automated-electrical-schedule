@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using automated_electrical_schedule.Data.Enums;
 using automated_electrical_schedule.Data.Models;
 
 namespace automated_electrical_schedule.Data.Validators;
@@ -8,57 +9,60 @@ public sealed class CircuitValidator : ValidationAttribute
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         if (value is not Circuit circuit) return ValidationResult.Success;
-        
-        if (circuit.VoltAmpere.HasError)
+
+        if (circuit is NonSpaceCircuit nonSpaceCircuit)
         {
-            return new ValidationResult(circuit.VoltAmpere.ErrorMessage);
+            if (nonSpaceCircuit.AmpereLoad.HasError)
+            {
+                return new ValidationResult(nonSpaceCircuit.AmpereLoad.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.AmpereTrip.HasError)
+            {
+                return new ValidationResult(nonSpaceCircuit.AmpereTrip.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.AmpereFrame.HasError)
+            {
+                return new ValidationResult(nonSpaceCircuit.AmpereFrame.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.R.HasError && nonSpaceCircuit.R.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.R.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.X.HasError && nonSpaceCircuit.X.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.X.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.VoltageDrop.HasError && nonSpaceCircuit.VoltageDrop.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.VoltageDrop.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.ConductorSize.HasError && nonSpaceCircuit.ConductorSize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.ConductorSize.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.GroundingSize.HasError && nonSpaceCircuit.GroundingSize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.GroundingSize.ErrorMessage);
+            }
+            
+            if (nonSpaceCircuit.RacewaySize.HasError && nonSpaceCircuit.RacewaySize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            {
+                return new ValidationResult(nonSpaceCircuit.RacewaySize.ErrorMessage);
+            }
         }
 
-        if (circuit.AmpereLoad.HasError)
+        if (circuit is NonSpareCircuit nonSpareCircuit && nonSpareCircuit.VoltAmpere.HasError)
         {
-            return new ValidationResult(circuit.AmpereLoad.ErrorMessage);
+            return new ValidationResult(nonSpareCircuit.VoltAmpere.ErrorMessage);
         }
         
-        if (circuit.AmpereTrip.HasError)
-        {
-            return new ValidationResult(circuit.AmpereTrip.ErrorMessage);
-        }
-        
-        if (circuit.AmpereFrame.HasError)
-        {
-            return new ValidationResult(circuit.AmpereFrame.ErrorMessage);
-        }
-
-        if (circuit.R.HasError)
-        {
-            return new ValidationResult(circuit.R.ErrorMessage);
-        }
-        
-        if (circuit.X.HasError)
-        {
-            return new ValidationResult(circuit.X.ErrorMessage);
-        }
-
-        if (circuit.VoltageDrop.HasError)
-        {
-            return new ValidationResult(circuit.VoltageDrop.ErrorMessage);
-        }
-
-        if (circuit.ConductorSize.HasError)
-        {
-            return new ValidationResult(circuit.ConductorSize.ErrorMessage);
-        }
-        
-        if (circuit.GroundingSize.HasError)
-        {
-            return new ValidationResult(circuit.GroundingSize.ErrorMessage);
-        }
-        
-        if (circuit.RacewaySize.HasError)
-        {
-            return new ValidationResult(circuit.RacewaySize.ErrorMessage);
-        }
-
         if (circuit is LightingOutletCircuit { AmpereLoad.Value: > 50 })
         {
             return new ValidationResult("Ampere load cannot exceed 50 for lighting outlet circuits.");

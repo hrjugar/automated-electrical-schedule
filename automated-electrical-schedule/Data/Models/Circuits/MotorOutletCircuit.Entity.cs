@@ -4,7 +4,7 @@ using automated_electrical_schedule.Data.Enums;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public partial class MotorOutletCircuit : Circuit
+public partial class MotorOutletCircuit : NonSpareCircuit
 {
     [Required]
     [Display(Name = "motor type")]

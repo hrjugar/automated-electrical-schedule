@@ -7,7 +7,7 @@ public enum CircuitType
     [Display(Name = "Lighting Outlet")] LightingOutlet,
     [Display(Name = "Motor Outlet")] MotorOutlet,
     [Display(Name = "Convenience Outlet")] ConvenienceOutlet,
-
-    [Display(Name = "Appliance/Equipment Outlet")]
-    ApplianceEquipmentOutlet
+    [Display(Name = "Appliance/Equipment Outlet")] ApplianceEquipmentOutlet,
+    [Display(Name = "Space")] SpaceOutlet,
+    [Display(Name = "Spare")] SpareOutlet,
 }

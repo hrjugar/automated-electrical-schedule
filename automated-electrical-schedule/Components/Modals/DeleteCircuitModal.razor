@@ -10,7 +10,7 @@
             </div>
 
             <div class="modal-content delete-circuit-modal-content">
-                <p class="delete-confirmation">Are you sure you want to delete <em>@(Circuit.Description)</em>? This action cannot be undone.</p>
+                <p class="delete-confirmation">Are you sure you want to delete <em>@(_description)</em>? This action cannot be undone.</p>
             </div>
 
             <div class="modal-footer modal-footer-btns">
@@ -38,6 +38,19 @@
     [Parameter] public Circuit Circuit { get; set; } = default!;
 
     [Parameter] public EventCallback OnCircuitDelete { get; set; }
+
+    string _description = string.Empty;
+    
+    protected override void OnParametersSet()
+    {
+        _description = Circuit switch
+        {
+            IDescribed describedCircuit => describedCircuit.Description,
+            SpaceCircuit spaceCircuit => "this space",
+            SpareCircuit spareCircuit => "this spare",
+            _ => "this circuit"
+        };
+    }
 
     async Task CloseModal()
     {

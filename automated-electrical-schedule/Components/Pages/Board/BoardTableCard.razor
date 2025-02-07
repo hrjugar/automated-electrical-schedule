@@ -106,34 +106,18 @@
                     var motorCircuit = circuit as MotorOutletCircuit;
                     var applianceCircuit = circuit as ApplianceEquipmentOutletCircuit;
                     var convenienceCircuit = circuit as ConvenienceOutletCircuit;
+                    var spaceCircuit = circuit as SpaceCircuit;
+                    var nonSpaceCircuit = circuit as NonSpaceCircuit;
+                    var spareCircuit = circuit as SpareCircuit;
+                    var nonSpareCircuit = circuit as NonSpareCircuit;
 
-                    var circuitTypeLabel = "Sub";
-                    var circuitTypeLabelClass = "circuit-type-label--sub";
-                    var voltageDrop = circuit.VoltageDrop;
-                    var hasHighVoltageDrop = !voltageDrop.HasError && voltageDrop.Value * 100 >= 3;
-                    var ampereLoadDisplay = circuit.AmpereLoad.HasError
-                        ? circuit.AmpereLoad.ErrorMessage
-                        : Math.Round(circuit.AmpereLoad.Value, 4).ToString(CultureInfo.InvariantCulture);
-
-                    switch (circuit)
+                    var description = circuit switch
                     {
-                        case LightingOutletCircuit lightingOutletCircuit:
-                            circuitTypeLabel = "L";
-                            circuitTypeLabelClass = "circuit-type-label--lighting";
-                            break;
-                        case MotorOutletCircuit motorOutletCircuit:
-                            circuitTypeLabel = "M";
-                            circuitTypeLabelClass = "circuit-type-label--motor";
-                            break;
-                        case ConvenienceOutletCircuit convenienceOutletCircuit:
-                            circuitTypeLabel = "C";
-                            circuitTypeLabelClass = "circuit-type-label--convenience";
-                            break;
-                        case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
-                            circuitTypeLabel = "A/E";
-                            circuitTypeLabelClass = "circuit-type-label--appliance";
-                            break;
-                    }
+                        IDescribed describedCircuit => describedCircuit.Description,
+                        SpaceCircuit => "Space",
+                        SpareCircuit => "Spare",
+                        _ => ""
+                    };
 
                     <div class="board-table-row">
                         <div class="cell cell--group cell--sticky cell--sticky--left">
@@ -143,13 +127,44 @@
                                 Order="circuit.Order"
                                 OnBoardChange="OnBoardChange" />
                         </div>
-                        @* <p class="cell cell--group cell--sticky cell--sticky--left">@(circuit.Order)</p> *@
-                        <div
-                            class="cell cell--group cell--info">
-                            <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
-                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateCircuitTypeInfo(circuit.CircuitType))"/>
-                        </div>
-                        <p class="cell cell--text">@circuit.Description</p>
+                        
+                        @if (nonSpareCircuit is not null)
+                        {
+                            var circuitTypeLabel = "Sub";
+                            var circuitTypeLabelClass = "circuit-type-label--sub";
+
+                            switch (circuit)
+                            {
+                                case LightingOutletCircuit:
+                                    circuitTypeLabel = "L";
+                                    circuitTypeLabelClass = "circuit-type-label--lighting";
+                                    break;
+                                case MotorOutletCircuit:
+                                    circuitTypeLabel = "M";
+                                    circuitTypeLabelClass = "circuit-type-label--motor";
+                                    break;
+                                case ConvenienceOutletCircuit:
+                                    circuitTypeLabel = "C";
+                                    circuitTypeLabelClass = "circuit-type-label--convenience";
+                                    break;
+                                case ApplianceEquipmentOutletCircuit:
+                                    circuitTypeLabel = "A/E";
+                                    circuitTypeLabelClass = "circuit-type-label--appliance";
+                                    break;
+                            }
+                            
+                            <div
+                                class="cell cell--group cell--info">
+                                <span class="@("circuit-type-label " + circuitTypeLabelClass)">@circuitTypeLabel</span>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateCircuitTypeInfo(circuit.CircuitType))"/>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                        
+                        <p class="cell cell--text">@description</p>
 
                         @if ((fixtureCircuit?.IsItemized ?? false) || convenienceCircuit != null)
                         {
@@ -162,7 +177,7 @@
                                 {
                                     <p>@(fixtureCircuit.Fixtures[0].Quantity)</p>
                                 }
-                                else
+                                else if (nonSpaceCircuit is not null)
                                 {
                                     <p>1</p>
                                 }
@@ -170,92 +185,151 @@
                                 <InfoButton OnClick="() => OpenInformationArea(Information.Quantity)"/>
                             </div>
                         }
-                        <div class="@("cell cell--group cell--info " + (circuit.VoltAmpere.HasError ? "cell--error" : ""))">
-                            <p>@(circuit.VoltAmpere.HasError ? circuit.VoltAmpere.ErrorMessage : Math.Round(circuit.VoltAmpere.Value, 4))</p>
-                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
-                        </div>
+                        
+                        @if (nonSpaceCircuit is not null)
+                        {
+                            @if (spareCircuit is not null)
+                            {
+                                <div class="cell cell--group cell--info">
+                                    <p>@(Math.Round(spareCircuit.VoltAmpere, 4))</p>
+                                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
+                                </div>
+                            }
+                            else if (nonSpareCircuit is not null)
+                            {
+                                <div class="@("cell cell--group cell--info " + (nonSpareCircuit.VoltAmpere.HasError ? "cell--error" : ""))">
+                                    <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : Math.Round(nonSpareCircuit.VoltAmpere.Value, 4))</p>
+                                    <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                        }
+                        
                         <div class="cell cell--group cell--info">
                             <p>@circuit.Voltage</p>
                             <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltageInfo(circuit.Phase))"/>
                         </div>
-
-                        @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
+                        
+                        @if (nonSpaceCircuit is null)
                         {
-                            <div class="@("cell cell--group cell--info cell--load cell--load--no-line " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
-                                <p>@ampereLoadDisplay</p>
-                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="cell cell--separator"></div>
-
-                            if (DistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
+                            @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
                             {
-                                @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
-                                {
-                                    <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
-                                        <p>@ampereLoadDisplay</p>
-                                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.A))"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="cell cell--empty"></div>
-                                }
-
-                                @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
-                                {
-                                    <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
-                                        <p>@ampereLoadDisplay</p>
-                                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.B))"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="cell cell--empty"></div>
-                                }
-
-                                @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
-                                {
-                                    <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
-                                        <p>@ampereLoadDisplay</p>
-                                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.C))"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="cell cell--empty"></div>
-                                }
-
-                                @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
-                                {
-                                    <div class="@("cell cell--group cell--info cell--load " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
-                                        <p>@ampereLoadDisplay</p>
-                                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, LineToLineVoltage.Abc))"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="cell cell--empty"></div>
-                                }
+                                <div class="cell cell--load cell--load--no-line"></div>
                             }
                             else
                             {
-                                <div class="@("cell cell--group cell--info cell--load cell--load--line " + (circuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                <div class="cell cell--separator"></div>
+                                
+                                @if (DistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
+                                {
+                                    <div class="cell cell--empty"></div>
+                                    <div class="cell cell--empty"></div>
+                                    <div class="cell cell--empty"></div>
+                                    <div class="cell cell--empty"></div>
+                                }
+                                else
+                                {
+                                    <div class="cell cell--empty cell--load cell--load--line"></div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var ampereLoadDisplay = nonSpaceCircuit.AmpereLoad.HasError
+                                ? nonSpaceCircuit.AmpereLoad.ErrorMessage
+                                : Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4).ToString(CultureInfo.InvariantCulture);
+                            
+                            if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
+                            {
+                                <div class="@("cell cell--group cell--info cell--load cell--load--no-line " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
                                     <p>@ampereLoadDisplay</p>
                                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(circuit.CircuitType, circuit.LineToLineVoltage))"/>
                                 </div>
                             }
+                            else
+                            {
+                                <div class="cell cell--separator"></div>
+
+                                if (DistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
+                                {
+                                    if (circuit.LineToLineVoltage == LineToLineVoltage.A)
+                                    {
+                                        <div class="@("cell cell--group cell--info cell--load " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                            <p>@ampereLoadDisplay</p>
+                                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(nonSpaceCircuit.CircuitType, LineToLineVoltage.A))"/>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="cell cell--empty"></div>
+                                    }
+
+                                    if (nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.B)
+                                    {
+                                        <div class="@("cell cell--group cell--info cell--load " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                            <p>@ampereLoadDisplay</p>
+                                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(nonSpaceCircuit.CircuitType, LineToLineVoltage.B))"/>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="cell cell--empty"></div>
+                                    }
+
+                                    if (nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.C)
+                                    {
+                                        <div class="@("cell cell--group cell--info cell--load " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                            <p>@ampereLoadDisplay</p>
+                                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(nonSpaceCircuit.CircuitType, LineToLineVoltage.C))"/>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="cell cell--empty"></div>
+                                    }
+
+                                    if (nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.Abc)
+                                    {
+                                        <div class="@("cell cell--group cell--info cell--load " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                            <p>@ampereLoadDisplay</p>
+                                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(nonSpaceCircuit.CircuitType, LineToLineVoltage.Abc))"/>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="cell cell--empty"></div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="@("cell cell--group cell--info cell--load cell--load--line " + (nonSpaceCircuit.AmpereLoad.HasError ? "cell--error" : ""))">
+                                        <p>@ampereLoadDisplay</p>
+                                        <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereLoadInfo(nonSpaceCircuit.CircuitType, nonSpaceCircuit.LineToLineVoltage))"/>
+                                    </div>
+                                }
+                            }
                         }
 
-                        <div class="cell cell--separator"></div>
 
-                        <div class="@("cell cell--group cell--info " + (circuit.AmpereTrip.HasError ? "cell--error" : ""))">
-                            <p>@circuit.AmpereTrip</p>
-                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereTripInfo(circuit.CircuitType))"/>
-                        </div>
-                        <p class="@("cell cell--text " + (circuit.AmpereFrame.HasError ? "cell--error" : ""))">@(circuit.AmpereFrame)</p>
+                        <div class="cell cell--separator"></div>
+                        
+                        @if (nonSpaceCircuit is not null)
+                        {
+                            <div class="@("cell cell--group cell--info " + (nonSpaceCircuit.AmpereTrip.HasError ? "cell--error" : ""))">
+                                <p>@nonSpaceCircuit.AmpereTrip</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateAmpereTripInfo(nonSpaceCircuit.CircuitType))"/>
+                            </div>
+                            <p class="@("cell cell--text " + (nonSpaceCircuit.AmpereFrame.HasError ? "cell--error" : ""))">@(nonSpaceCircuit.AmpereFrame)</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                        }
+
                         <div class="cell cell--group cell--info">
                             <p>@circuit.Phase</p>
                             <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePhaseInfo(circuit.Phase))"/>
@@ -264,52 +338,74 @@
                             <p>@circuit.Pole</p>
                             <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePoleInfo(circuit.Pole))"/>
                         </div>
-                        <p class="cell cell--text">@circuit.WireLength</p>
-                        <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop || voltageDrop.HasError ? "cell--error" : ""))">
-                            <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : Math.Round(voltageDrop.Value, 4).ToPercentageString())</p>
+                        
+                        @if (nonSpaceCircuit is not null)
+                        {
+                            var voltageDrop = nonSpaceCircuit.VoltageDrop;
+                            var hasHighVoltageDrop = !voltageDrop.HasError && voltageDrop.Value * 100 >= 3;
 
-                            @if (hasHighVoltageDrop)
+                            if (nonSpaceCircuit.WireLength == 0)
                             {
-                                <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(circuit))">
-                                    Correct
-                                </button>
-                            }
-
-                            <InfoButton OnClick="() => OpenInformationArea(Information.VoltageDrop)"/>
-                        </div>
-                        <p class="cell cell--text">@circuit.CircuitProtection.GetDisplayName()</p>
-
-                        <div class="cell cell--separator"></div>
-
-                        <p class="cell cell--text">@circuit.SetCount</p>
-
-                        <div class="@("cell cell--group cell--info " + (circuit.ConductorSize.HasError ? "cell--error" : ""))">
-                            <p>@circuit.ConductorTextDisplay</p>
-                            <InfoButton OnClick="() => OpenInformationArea(Information.GenerateConductorInfo(circuit.ConductorType.WireType))"/>
-                        </div>
-
-                        <div class="@("cell cell--group cell--info " + (circuit.GroundingSize.HasError ? "cell--error" : ""))">
-                            <p>@circuit.GroundingTextDisplay</p>
-                            <InfoButton
-                                OnClick="() => OpenInformationArea(Information.Grounding)"
-                                TooltipPlacement="TooltipPlacement.BottomLeft"/>
-                        </div>
-
-                        <div class="@("cell cell--group cell--info " + (circuit.RacewaySize.HasError ? "cell--error" : ""))">
-                            @if (circuit.RacewaySize.HasError)
-                            {
-                                <p>@(circuit.RacewaySize.ErrorMessage)</p>
+                                <div class="cell cell--empty"></div>
                             }
                             else
                             {
-                                <p>@(circuit.RacewayTextDisplay)</p>
+                                <p class="cell cell--text">@nonSpaceCircuit.WireLength</p>
                             }
-                            <InfoButton
-                                OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(circuit.RacewayType))"
-                                TooltipPlacement="TooltipPlacement.BottomLeft"/>
-                        </div>
+                            
+                            <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop || voltageDrop.HasError ? "cell--error" : ""))">
+                                <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : Math.Round(voltageDrop.Value, 4).ToPercentageString())</p>
 
-                        <p class="cell cell--text">@circuit.WireCount</p>
+                                @if (hasHighVoltageDrop)
+                                {
+                                    <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(nonSpaceCircuit))">
+                                        Correct
+                                    </button>
+                                }
+
+                                <InfoButton OnClick="() => OpenInformationArea(Information.VoltageDrop)"/>
+                            </div>
+                            <p class="cell cell--text">@nonSpaceCircuit.CircuitProtection.GetDisplayName()</p>
+
+                            <div class="cell cell--separator"></div>
+
+                            <p class="cell cell--text">@nonSpaceCircuit.SetCount</p>
+
+                            <div class="@("cell cell--group cell--info " + (nonSpaceCircuit.ConductorSize.HasError ? "cell--error" : ""))">
+                                <p>@nonSpaceCircuit.ConductorTextDisplay</p>
+                                <InfoButton OnClick="() => OpenInformationArea(Information.GenerateConductorInfo(nonSpaceCircuit.ConductorType.WireType))"/>
+                            </div>
+
+                            <div class="@("cell cell--group cell--info " + (nonSpaceCircuit.GroundingSize.HasError ? "cell--error" : ""))">
+                                <p>@nonSpaceCircuit.GroundingTextDisplay</p>
+                                <InfoButton
+                                    OnClick="() => OpenInformationArea(Information.Grounding)"
+                                    TooltipPlacement="TooltipPlacement.BottomLeft"/>
+                            </div>
+
+                            <div class="@("cell cell--group cell--info " + (nonSpaceCircuit.RacewaySize.HasError ? "cell--error" : ""))">
+                                <p>@(nonSpaceCircuit.RacewayTextDisplay)</p>
+                                <InfoButton
+                                    OnClick="() => OpenInformationArea(Information.GenerateRacewayInfo(nonSpaceCircuit.RacewayType))"
+                                    TooltipPlacement="TooltipPlacement.BottomLeft"/>
+                            </div>
+
+                            <p class="cell cell--text">@nonSpaceCircuit.WireCount</p>
+                        }
+                        else
+                        {
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                            
+                            <div class="cell cell--separator"></div>
+                            
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                            <div class="cell cell--empty"></div>
+                        }
 
                         <div class="cell cell--separator"></div>
 
@@ -1310,7 +1406,7 @@ else
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
     // private List<Circuit> _circuits = [];
-    private List<IElectricalComponent> _circuitsAndSubBoards = [];
+    private List<IOrdered> _circuitsAndSubBoards = [];
 
     [Parameter] public EventCallback OnBoardChange { get; set; }
 
@@ -1331,7 +1427,7 @@ else
     protected override void OnParametersSet()
     {
         _circuitsAndSubBoards =
-            DistributionBoard.Circuits.Cast<IElectricalComponent>()
+            DistributionBoard.Circuits.Cast<IOrdered>()
                 .Concat(DistributionBoard.SubDistributionBoards)
                 .OrderBy(e => e.Order)
                 .ToList();
@@ -1355,7 +1451,7 @@ else
         _isInformationAreaOpen = true;
     }
 
-    async Task CorrectVoltageDrop(Circuit circuit)
+    async Task CorrectVoltageDrop(NonSpaceCircuit circuit)
     {
         circuit.CorrectVoltageDrop();
         DatabaseContext.Update(circuit);

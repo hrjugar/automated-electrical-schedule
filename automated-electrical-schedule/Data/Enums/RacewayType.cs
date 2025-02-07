@@ -4,6 +4,8 @@ namespace automated_electrical_schedule.Data.Enums;
 
 public enum RacewayType
 {
+    [Display(Name = "-")] None,
+    
     [Display(Name = "PVC")] Pvc,
 
     [Display(Name = "EMT")] Emt,

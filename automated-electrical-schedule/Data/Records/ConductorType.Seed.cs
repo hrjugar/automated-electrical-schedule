@@ -364,10 +364,25 @@ public partial record ConductorType
         Xhhw2Al90
         // Zw2Al90
     ];
+
+    public static List<ConductorType?> AllWithNull
+    {
+        get
+        {
+            List<ConductorType?> allWithNull = [null];
+            allWithNull.AddRange(All);
+            return allWithNull;
+        }
+    }
     
     public static ConductorType FindById(string id)
     {
         var foundConductorType = All.Find(conductorType => conductorType.Id == id);
         return foundConductorType ?? throw new ArgumentException($"Conductor type with id {id} not found.");
+    }
+    
+    public static ConductorType? FindByIdOrNull(string id)
+    {
+        return id == string.Empty ? null : FindById(id);
     }
 }

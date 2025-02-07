@@ -152,7 +152,7 @@
                     <div class="create-or-edit-board-modal-field">
                         <label>Raceway Type <span class="red-asterisk">*</span></label>
                         <InputSelect @bind-Value=_newDistributionBoard.RacewayType>
-                            @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                            @foreach (RacewayType racewayType in DistributionBoard.AllowedRacewayTypes)
                             {
                                 <option value="@racewayType">@racewayType.GetDisplayName()</option>
                             }

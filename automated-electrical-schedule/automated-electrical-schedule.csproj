@@ -90,8 +90,4 @@
         <AdditionalFiles Include="Components\Reusable\GenericTooltipWrapper.razor" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Interfaces\" />
-    </ItemGroup>
-
 </Project>

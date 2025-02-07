@@ -37,6 +37,8 @@ public class DatabaseContext : DbContext
             .HasValue<LightingOutletCircuit>(CircuitType.LightingOutlet)
             .HasValue<MotorOutletCircuit>(CircuitType.MotorOutlet)
             .HasValue<ConvenienceOutletCircuit>(CircuitType.ConvenienceOutlet)
-            .HasValue<ApplianceEquipmentOutletCircuit>(CircuitType.ApplianceEquipmentOutlet);
+            .HasValue<ApplianceEquipmentOutletCircuit>(CircuitType.ApplianceEquipmentOutlet)
+            .HasValue<SpaceCircuit>(CircuitType.SpaceOutlet)
+            .HasValue<SpareCircuit>(CircuitType.SpareOutlet);
     }
 }

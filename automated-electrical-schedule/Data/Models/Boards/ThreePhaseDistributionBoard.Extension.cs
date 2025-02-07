@@ -145,6 +145,7 @@ public partial class ThreePhaseDistributionBoard
         double totalAmpereLoad = 0;
 
         var childCircuitsAmpereLoad = Circuits
+            .OfType<NonSpaceCircuit>()
             .Where(circuit => circuit.LineToLineVoltage == lineToLineVoltage)
             .Select(circuit => circuit.AmpereLoad)
             .Sum();
@@ -228,6 +229,7 @@ public partial class ThreePhaseDistributionBoard
 
             var totalA = 
                 cloneCircuits
+                    .OfType<NonSpaceCircuit>()
                     .Where(c => c.LineToLineVoltage == LineToLineVoltage.A)
                     .Select(c => c.AmpereLoad)
                     .Sum() + 
@@ -235,6 +237,7 @@ public partial class ThreePhaseDistributionBoard
             
             var totalB =
                 cloneCircuits
+                    .OfType<NonSpaceCircuit>()
                     .Where(c => c.LineToLineVoltage == LineToLineVoltage.B)
                     .Select(c => c.AmpereLoad)
                     .Sum() + 
@@ -242,6 +245,7 @@ public partial class ThreePhaseDistributionBoard
             
             var totalC =
                 cloneCircuits
+                    .OfType<NonSpaceCircuit>()
                     .Where(c => c.LineToLineVoltage == LineToLineVoltage.C)
                     .Select(c => c.AmpereLoad)
                     .Sum() + 

@@ -125,7 +125,7 @@
                 <div class="create-project-modal-field">
                     <label>Raceway Type <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newProject.MainDistributionBoard.RacewayType>
-                        @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                        @foreach (RacewayType racewayType in DistributionBoard.AllowedRacewayTypes)
                         {
                             <option value="@racewayType">@racewayType.GetDisplayName()</option>
                         }

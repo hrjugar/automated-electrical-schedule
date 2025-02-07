@@ -42,7 +42,10 @@ public partial class SinglePhaseDistributionBoard
     {
         get
         {
-            var childCircuitsAmpereLoad = Circuits.Select(circuit => circuit.AmpereLoad).Sum();
+            var childCircuitsAmpereLoad = Circuits
+                .OfType<NonSpaceCircuit>()
+                .Select(circuit => circuit.AmpereLoad)
+                .Sum();
             var subBoardsAmpereLoad = SubDistributionBoards
                 .OfType<SinglePhaseDistributionBoard>()
                 .Sum(subBoard => subBoard.AmpereLoad);

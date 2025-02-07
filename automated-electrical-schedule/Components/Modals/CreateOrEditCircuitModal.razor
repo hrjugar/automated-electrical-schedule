@@ -1,5 +1,3 @@
-@using System.Text.Json.Serialization
-@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject DatabaseContext DatabaseContext
 @inject IJSRuntime JsRuntime
@@ -24,6 +22,9 @@
                 var fixtureCircuit = _newCircuit as FixtureCircuit;
                 var applianceCircuit = _newCircuit as ApplianceEquipmentOutletCircuit;
                 var convenienceCircuit = _newCircuit as ConvenienceOutletCircuit;
+                var nonSpaceCircuit = _newCircuit as NonSpaceCircuit;
+                var spareCircuit = _newCircuit as SpareCircuit;
+                var nonSpareCircuit = _newCircuit as NonSpareCircuit;
             }
 
             
@@ -42,7 +43,7 @@
                         }
                     </InputSelect>
 
-                    @if (threePhaseBoard != null)
+                    @if (threePhaseBoard != null && _newCircuit.AllowedLineToLineVoltages.Count > 0)
                     {
                         <InputSelect
                             class="select-line-to-line"
@@ -58,7 +59,7 @@
                 </div>
 
                 <div class="create-or-edit-circuit-modal-content-buttons">
-                    @if (_newCircuit.SetCount > 1)
+                    @if (nonSpaceCircuit?.SetCount > 1)
                     {
                         <button
                             type="button"
@@ -70,16 +71,18 @@
                 </div>
             </div>
 
-            @if (_newCircuit.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize ||
-                 _newCircuit.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize)
+            @if (
+                nonSpaceCircuit?.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize ||
+                nonSpaceCircuit?.GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize
+            )
             {
                 <FormWarning
                     WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this."
-                    WarningAction="@(() => _newCircuit.AdjustSetCountForSizes())"
+                    WarningAction="@(() => nonSpaceCircuit.AdjustSetCountForSizes())"
                     WarningActionText="Adjust Number of Sets"/>
             }
 
-            @if (_newCircuit.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
+            @if (nonSpaceCircuit?.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
             {
                 <FormWarning
                     WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
@@ -87,172 +90,197 @@
                     WarningActionText="Convert to Cable Tray"/>
             }
 
-            <div class="create-or-edit-circuit-modal-content-main">
-                <div class="create-or-edit-circuit-modal-content-fields">
-                    @if (fixtureCircuit is not null && !(applianceCircuit is not null && applianceCircuit.ApplianceType == ApplianceType.Dryer))
-                    {
-                        <div class="create-or-edit-circuit-modal-checkbox">
-                            <InputCheckbox
-                                @bind-Value="@fixtureCircuit.IsItemized"
-                                disabled="@(fixtureCircuit.Fixtures.Count > 1)"/>
-                            <label>Itemized</label>
-                        </div>
-                    }
-
-                    <div class="create-or-edit-circuit-modal-field">
-                        <label>Description <span class="red-asterisk">*</span></label>
-                        <InputText class="input-primary" @bind-Value="_newCircuit.Description" placeholder="Description"/>
-                        <ValidationMessage For=@(() => _newCircuit.Description)/>
-                    </div>
-
-                    @switch (_newCircuit)
-                    {
-                        case MotorOutletCircuit motorOutletCircuit:
+            @if (nonSpaceCircuit is not null)
+            {
+                <div class="create-or-edit-circuit-modal-content-main">
+                    <div class="create-or-edit-circuit-modal-content-fields">
+                        @if (fixtureCircuit is not null && !(applianceCircuit is not null && applianceCircuit.ApplianceType == ApplianceType.Dryer))
+                        {
+                            <div class="create-or-edit-circuit-modal-checkbox">
+                                <InputCheckbox
+                                    @bind-Value="@fixtureCircuit.IsItemized"
+                                    disabled="@(fixtureCircuit.Fixtures.Count > 1)"/>
+                                <label>Itemized</label>
+                            </div>
+                        }
+                        
+                        @if (_newCircuit is IDescribed describedCircuit)
+                        {
                             <div class="create-or-edit-circuit-modal-field">
-                                <label>Motor Type <span class="red-asterisk">*</span></label>
-                                <InputSelect
-                                    Value="motorOutletCircuit.MotorType"
-                                    ValueChanged="@((MotorType motorType) => UpdateMotorType(motorType))"
-                                    ValueExpression="@(() => motorOutletCircuit.MotorType)">
-                                    @foreach (var motorType in motorOutletCircuit.AllowedMotorTypes)
-                                    {
-                                        <option value="@motorType">@motorType.GetDisplayName()</option>
-                                    }
-                                </InputSelect>
-                                <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
+                                <label class="required">Description</label>
+                                <InputText class="input-primary" @bind-Value="describedCircuit.Description" placeholder="Description"/>
+                                <ValidationMessage For=@(() => describedCircuit.Description)/>
+                            </div>
+                        }
+
+
+                        @switch (_newCircuit)
+                        {
+                            case MotorOutletCircuit motorOutletCircuit:
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Motor Type</label>
+                                    <InputSelect
+                                        Value="motorOutletCircuit.MotorType"
+                                        ValueChanged="@((MotorType motorType) => UpdateMotorType(motorType))"
+                                        ValueExpression="@(() => motorOutletCircuit.MotorType)">
+                                        @foreach (var motorType in motorOutletCircuit.AllowedMotorTypes)
+                                        {
+                                            <option value="@motorType">@motorType.GetDisplayName()</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
+                                </div>
+                                
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Application</label>
+                                    <InputSelect @bind-Value="motorOutletCircuit.MotorApplication">
+                                        @foreach (var motorApplication in motorOutletCircuit.AllowedMotorApplications)
+                                        {
+                                            <option value="@motorApplication">@motorApplication.GetDisplayName()</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => motorOutletCircuit.MotorApplication)/>
+                                </div>
+
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Horsepower</label>
+                                    <InputSelect @bind-Value="motorOutletCircuit.Horsepower" @key="motorOutletCircuit.AllowedHorsepowerValues">
+                                        @foreach (var horsepowerValue in motorOutletCircuit.AllowedHorsepowerValues)
+                                        {
+                                            <option value="@horsepowerValue">@horsepowerValue</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
+                                </div>
+
+                                break;
+                            case ConvenienceOutletCircuit convenienceOutletCircuit:
+                                <CreateOrEditCircuitModalConvenienceYokes
+                                    Circuit="convenienceOutletCircuit"
+                                    OnCircuitChange="StateHasChanged"/>
+
+                                break;
+                            case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Appliance Type</label>
+                                    <InputSelect @bind-Value="applianceEquipmentOutletCircuit.ApplianceType">
+                                        @foreach (ApplianceType applianceType in applianceEquipmentOutletCircuit.AllowedApplianceTypes)
+                                        {
+                                            <option value="@applianceType">@applianceType.GetDisplayName()</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.ApplianceType)/>
+                                </div>
+
+                                break;
+                            case SpareCircuit:
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Volt Ampere</label>
+                                    <InputNumber class="input-primary" @bind-Value="@spareCircuit!.VoltAmpere"/>
+                                    <ValidationMessage For="@(() => spareCircuit.VoltAmpere)"/>
+                                </div>
+                                break;
+                        }
+
+                        @if (fixtureCircuit is not null)
+                        {
+                            @if (fixtureCircuit.IsItemized)
+                            {
+                                <CreateOrEditCircuitModalItemizedFixtures
+                                    Fixtures="@fixtureCircuit.Fixtures"
+                                    AddFixture="AddFixture"
+                                    RemoveFixture="RemoveFixture"
+                                    OnFixtureChange="StateHasChanged"/>
+                            }
+                            else
+                            {
+                                var nonItemizedFixture = fixtureCircuit.Fixtures[0];
+
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Wattage</label>
+                                    <InputNumber class="input-primary" @bind-Value="@nonItemizedFixture.Wattage"/>
+                                    <ValidationMessage For="@(() => nonItemizedFixture.Wattage)"/>
+                                </div>
+
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="required">Quantity</label>
+                                    <InputNumber class="input-primary" @bind-Value="@nonItemizedFixture.Quantity"/>
+                                    <ValidationMessage For="@(() => nonItemizedFixture.Quantity)"/>
+                                </div>
+                            }
+                        }
+                        
+                        @if (nonSpaceCircuit is not null)
+                        {
+                            <div class="create-or-edit-circuit-modal-field">
+                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Wire Length (m)</label>
+                                <InputNumber class="input-primary" @bind-Value="nonSpaceCircuit.WireLength"/>
+                                <ValidationMessage For=@(() => nonSpaceCircuit.WireLength)/>
                             </div>
                             
                             <div class="create-or-edit-circuit-modal-field">
-                                <label>Application <span class="red-asterisk">*</span></label>
-                                <InputSelect @bind-Value="motorOutletCircuit.MotorApplication">
-                                    @foreach (var motorApplication in motorOutletCircuit.AllowedMotorApplications)
+                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Circuit Protection</label>
+                                <InputSelect @bind-Value=nonSpaceCircuit.CircuitProtection>
+                                    @foreach (var circuitProtection in nonSpaceCircuit.AllowedCircuitProtections)
                                     {
-                                        <option value="@motorApplication">@motorApplication.GetDisplayName()</option>
+                                        <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => motorOutletCircuit.MotorApplication)/>
+                                <ValidationMessage For=@(() => nonSpaceCircuit.CircuitProtection)/>
+                            </div>
+                            
+                            <div class="create-or-edit-circuit-modal-field-row">
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="@(nonSpareCircuit is not null ? "required" : "")">Conductor Type</label>
+
+                                    <InputSelect @bind-Value="nonSpaceCircuit.ConductorTypeId">
+                                        @if (spareCircuit is not null)
+                                        {
+                                            <option value="">-</option>
+                                        }
+                                        
+                                        @foreach (var conductorType in ConductorType.All)
+                                        {
+                                            <option value="@conductorType.Id">@conductorType.ToString()</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => nonSpaceCircuit.ConductorTypeId)/>
+                                </div>
+
+                                <div class="create-or-edit-circuit-modal-field">
+                                    <label class="@(nonSpareCircuit is not null ? "required" : "")">Grounding</label>
+
+                                    <InputSelect
+                                        @bind-Value="@nonSpaceCircuit.GroundingId">
+                                        @if (spareCircuit is not null)
+                                        {
+                                            <option value="">-</option>
+                                        }
+                                        @foreach (var grounding in ConductorType.All)
+                                        {
+                                            <option value="@grounding.Id">@grounding.ToString()</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For=@(() => nonSpaceCircuit.GroundingId)/>
+                                </div>
                             </div>
 
                             <div class="create-or-edit-circuit-modal-field">
-                                <label>Horsepower <span class="red-asterisk">*</span></label>
-                                <InputSelect @bind-Value="motorOutletCircuit.Horsepower" @key="motorOutletCircuit.AllowedHorsepowerValues">
-                                    @foreach (var horsepowerValue in motorOutletCircuit.AllowedHorsepowerValues)
+                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Raceway Type</label>
+                                <InputSelect @bind-Value=nonSpaceCircuit.RacewayType>
+                                    @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
                                     {
-                                        <option value="@horsepowerValue">@horsepowerValue</option>
+                                        <option value="@racewayType">@racewayType.GetDisplayName()</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => motorOutletCircuit.Horsepower)/>
-                            </div>
-
-                            break;
-                        case ConvenienceOutletCircuit convenienceOutletCircuit:
-                            // TODO: Add fields for convenience outlet circuit
-                            <CreateOrEditCircuitModalConvenienceYokes
-                                Circuit="convenienceOutletCircuit"
-                                OnCircuitChange="StateHasChanged"/>
-
-                            break;
-                        case ApplianceEquipmentOutletCircuit applianceEquipmentOutletCircuit:
-                            <div class="create-or-edit-circuit-modal-field">
-                                <label>Appliance Type <span class="red-asterisk">*</span></label>
-                                <InputSelect @bind-Value="applianceEquipmentOutletCircuit.ApplianceType">
-                                    @foreach (ApplianceType applianceType in applianceEquipmentOutletCircuit.AllowedApplianceTypes)
-                                    {
-                                        <option value="@applianceType">@applianceType.GetDisplayName()</option>
-                                    }
-                                </InputSelect>
-                                <ValidationMessage For=@(() => applianceEquipmentOutletCircuit.ApplianceType)/>
-                            </div>
-
-                            break;
-                    }
-
-                    @if (fixtureCircuit is not null)
-                    {
-                        @if (fixtureCircuit.IsItemized)
-                        {
-                            <CreateOrEditCircuitModalItemizedFixtures
-                                Fixtures="@fixtureCircuit.Fixtures"
-                                AddFixture="AddFixture"
-                                RemoveFixture="RemoveFixture"
-                                OnFixtureChange="StateHasChanged"/>
-                        }
-                        else
-                        {
-                            var nonItemizedFixture = fixtureCircuit.Fixtures[0];
-
-                            <div class="create-or-edit-circuit-modal-field">
-                                <label>Wattage <span class="red-asterisk">*</span></label>
-                                <InputNumber class="input-primary" @bind-Value="@nonItemizedFixture.Wattage"/>
-                                <ValidationMessage For="@(() => nonItemizedFixture.Wattage)"/>
-                            </div>
-
-                            <div class="create-or-edit-circuit-modal-field">
-                                <label>Quantity <span class="red-asterisk">*</span></label>
-                                <InputNumber class="input-primary" @bind-Value="@nonItemizedFixture.Quantity"/>
-                                <ValidationMessage For="@(() => nonItemizedFixture.Quantity)"/>
+                                <ValidationMessage For=@(() => nonSpaceCircuit.RacewayType)/>
                             </div>
                         }
-                    }
-
-                    <div class="create-or-edit-circuit-modal-field">
-                        <label>Wire Length (m) <span class="red-asterisk">*</span></label>
-                        <InputNumber class="input-primary" @bind-Value="_newCircuit.WireLength"/>
-                        <ValidationMessage For=@(() => _newCircuit.WireLength)/>
+                        
                     </div>
-
-                    <div class="create-or-edit-circuit-modal-field">
-                        <label>Circuit Protection <span class="red-asterisk">*</span></label>
-                        <InputSelect @bind-Value=_newCircuit.CircuitProtection>
-                            @foreach (var circuitProtection in _newCircuit.AllowedCircuitProtections)
-                            {
-                                <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => _newCircuit.CircuitProtection)/>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-field-row">
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Conductor Type <span class="red-asterisk">*</span></label>
-
-                            <InputSelect @bind-Value="_newCircuit.ConductorTypeId">
-                                @foreach (var conductorType in ConductorType.All)
-                                {
-                                    <option value="@conductorType.Id">@conductorType.ToString()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For=@(() => _newCircuit.ConductorTypeId)/>
-                        </div>
-
-                        <div class="create-or-edit-circuit-modal-field">
-                            <label>Grounding <span class="red-asterisk">*</span></label>
-
-                            <InputSelect
-                                @bind-Value="@_newCircuit.GroundingId">
-                                @foreach (var grounding in ConductorType.All)
-                                {
-                                    <option value="@grounding.Id">@grounding.ToString()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For=@(() => _newCircuit.GroundingId)/>
-                        </div>
-                    </div>
-
-                    <div class="create-or-edit-circuit-modal-field">
-                        <label>Raceway Type <span class="red-asterisk">*</span></label>
-                        <InputSelect @bind-Value=_newCircuit.RacewayType>
-                            @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
-                            {
-                                <option value="@racewayType">@racewayType.GetDisplayName()</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For=@(() => _newCircuit.RacewayType)/>
-                    </div>
+                    <CreateOrEditCircuitModalPreview Circuit="nonSpaceCircuit" OnCircuitChange="StateHasChanged" />
                 </div>
-
-                <CreateOrEditCircuitModalPreview Circuit="_newCircuit" OnCircuitChange="StateHasChanged" />
-            </div>
+            }
         </div>
 
         <div class="modal-footer modal-footer-btns">
@@ -266,7 +294,7 @@
             <button
                 class="btn-text create-or-edit-circuit-modal-create-btn btn-primary"
                 type="submit"
-                disabled="@(!_editContext.Validate() || (OldCircuit is null && !_editContext.IsModified()))">
+                disabled="@(!_editContext.Validate() || (OldCircuit is null && nonSpaceCircuit is not null && !_editContext.IsModified()))">
                 @(OldCircuit == null ? "Create" : "Edit")
             </button>
         </div>
@@ -325,8 +353,6 @@
             }
 
             _newCircuit.ParentDistributionBoard = DistributionBoard;
-            _newCircuit.ConductorTypeId = ConductorType.All[0].Id;
-            _newCircuit.GroundingId = ConductorType.All[0].Id;
 
             if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
             {
@@ -334,6 +360,22 @@
                     _newCircuit.ParentDistributionBoard, 
                     _newCircuit.CircuitType
                 )[0];
+            }
+
+            if (_newCircuit is NonSpaceCircuit nonSpaceCircuit)
+            {
+                if (nonSpaceCircuit is SpareCircuit spareCircuit)
+                {
+                    spareCircuit.ConductorTypeId = string.Empty;
+                    spareCircuit.GroundingId = string.Empty;
+                    spareCircuit.RacewayType = RacewayType.None;
+                }
+                else
+                {
+                    nonSpaceCircuit.ConductorTypeId = ConductorType.All[0].Id;
+                    nonSpaceCircuit.GroundingId = ConductorType.All[0].Id;
+                    nonSpaceCircuit.RacewayType = RacewayType.Pvc;
+                }
             }
 
             if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
@@ -376,7 +418,9 @@
 
     void ResetSetCount()
     {
-        _newCircuit!.SetCount = 1;
+        if (_newCircuit is not NonSpaceCircuit nonSpaceCircuit) return;
+        
+        nonSpaceCircuit.SetCount = 1;
         StateHasChanged();
     }
 
@@ -433,8 +477,6 @@
                     Horsepower = initialHorsepower,
                     MotorApplication = initialMotorApplication
                 };
-                
-                updatedNewCircuit.CircuitProtection = updatedNewCircuit.AllowedCircuitProtections[0];
                 break;
             case CircuitType.ConvenienceOutlet:
                 updatedNewCircuit = new ConvenienceOutletCircuit();
@@ -442,24 +484,58 @@
             case CircuitType.ApplianceEquipmentOutlet:
                 updatedNewCircuit = new ApplianceEquipmentOutletCircuit();
                 break;
+            case CircuitType.SpaceOutlet:
+                updatedNewCircuit = new SpaceCircuit();
+                break;
+            case CircuitType.SpareOutlet:
+                updatedNewCircuit = new SpareCircuit();
+                break;
         }
 
         updatedNewCircuit.Id = _newCircuit!.Id;
         updatedNewCircuit.CircuitType = circuitType;
         updatedNewCircuit.ParentDistributionBoardId = _newCircuit!.ParentDistributionBoardId;
         updatedNewCircuit.ParentDistributionBoard = _newCircuit!.ParentDistributionBoard;
-        updatedNewCircuit.Description = _newCircuit!.Description;
-        updatedNewCircuit.WireLength = _newCircuit.WireLength;
-
         updatedNewCircuit.LineToLineVoltage = updatedNewLineToLineVoltage;
+        
+        
+        @if (_newCircuit is IDescribed newDescribedCircuit && updatedNewCircuit is IDescribed updatedNewDescribedCircuit)
+        {
+            updatedNewDescribedCircuit.Description = newDescribedCircuit.Description;
+        }
+        
+        @if (_newCircuit is NonSpaceCircuit newNonSpaceCircuit && updatedNewCircuit is NonSpaceCircuit updatedNewNonSpaceCircuit)
+        {
+            updatedNewNonSpaceCircuit.CircuitProtection =
+                updatedNewNonSpaceCircuit.AllowedCircuitProtections.Contains(newNonSpaceCircuit.CircuitProtection) ? 
+                    newNonSpaceCircuit.CircuitProtection : 
+                    updatedNewCircuit.AllowedCircuitProtections[0];
+            
+            updatedNewNonSpaceCircuit.WireLength = 
+                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.WireLength == 0 
+                    ? 1 
+                    : newNonSpaceCircuit.WireLength;
 
-        updatedNewCircuit.CircuitProtection =
-            updatedNewCircuit.AllowedCircuitProtections.Contains(_newCircuit.CircuitProtection) ? _newCircuit.CircuitProtection : updatedNewCircuit.AllowedCircuitProtections[0];
+            updatedNewNonSpaceCircuit.SetCount =
+                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.SetCount == 0
+                    ? 1
+                    : newNonSpaceCircuit.SetCount;
 
-        updatedNewCircuit.SetCount = _newCircuit.SetCount;
-        updatedNewCircuit.ConductorTypeId = _newCircuit.ConductorTypeId;
-        updatedNewCircuit.GroundingId = _newCircuit.GroundingId;
-        updatedNewCircuit.RacewayType = _newCircuit.RacewayType;
+            updatedNewNonSpaceCircuit.ConductorTypeId =
+                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.ConductorTypeId == string.Empty
+                    ? string.Empty
+                    : newNonSpaceCircuit.ConductorTypeId;
+            
+            updatedNewNonSpaceCircuit.GroundingId = 
+                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.GroundingId == string.Empty
+                    ? string.Empty
+                    : newNonSpaceCircuit.GroundingId;
+            
+            updatedNewNonSpaceCircuit.RacewayType = 
+                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.RacewayType == RacewayType.None
+                    ? RacewayType.Pvc
+                    : newNonSpaceCircuit.RacewayType;
+        }
 
         if (updatedNewCircuit is FixtureCircuit updatedNewFixtureCircuit)
         {
@@ -508,7 +584,9 @@
 
     void ConvertToCableTray()
     {
-        _newCircuit!.RacewayType = RacewayType.CableTray;
+        if (_newCircuit is not NonSpaceCircuit nonSpaceCircuit) return;
+        
+        nonSpaceCircuit.RacewayType = RacewayType.CableTray;
         StateHasChanged();
     }
     

@@ -12,48 +12,55 @@
         <p>@(Circuit.SetCount)</p>
     </div>
 
-    <div class="circuit-preview-value">
-        <label>Load Description</label>
-        <p>@(Circuit.Description)</p>
-        @if (fixtureCircuit?.IsItemized ?? false)
-        {
-        foreach (var fixture in fixtureCircuit.Fixtures)
-        {
-        <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
-        }
-        } else if (convenienceCircuit != null)
-        {
-            if (convenienceCircuit.GfciReceptacleQuantity > 0)
+    @if (Circuit is IDescribed describedCircuit)
+    {
+        <div class="circuit-preview-value">
+            <label>Load Description</label>
+            <p>@(describedCircuit.Description)</p>
+            @if (fixtureCircuit?.IsItemized ?? false)
             {
-                <p class="item-sub @(convenienceCircuit.HasExceedingAmpereTrip ? "item-error" : "")">GFCI Receptacle (@(convenienceCircuit.AmpereTrip) AT)</p>
+                foreach (var fixture in fixtureCircuit.Fixtures)
+                {
+                    <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
+                }
             }
-
-            if (convenienceCircuit.OneGangQuantity > 0)
+            else if (convenienceCircuit != null)
             {
-                <p class="item-sub">1-Gang</p>
-            }
+                if (convenienceCircuit.GfciReceptacleQuantity > 0)
+                {
+                    <p class="item-sub @(convenienceCircuit.HasExceedingAmpereTrip ? "item-error" : "")">GFCI Receptacle (@(convenienceCircuit.AmpereTrip) AT)</p>
+                }
 
-            if (convenienceCircuit.TwoGangQuantity > 0)
-            {
-                <p class="item-sub">2-Gang</p>
-            }
+                if (convenienceCircuit.OneGangQuantity > 0)
+                {
+                    <p class="item-sub">1-Gang</p>
+                }
 
-            if (convenienceCircuit.ThreeGangQuantity > 0)
-            {
-                <p class="item-sub">3-Gang</p>
-            }
+                if (convenienceCircuit.TwoGangQuantity > 0)
+                {
+                    <p class="item-sub">2-Gang</p>
+                }
 
-            if (convenienceCircuit.FourGangQuantity > 0)
-            {
-                <p class="item-sub">4-Gang</p>
-            }
-        }
-    </div>
+                if (convenienceCircuit.ThreeGangQuantity > 0)
+                {
+                    <p class="item-sub">3-Gang</p>
+                }
 
-    <div class="circuit-preview-value">
-        <label>Volt Amps</label>
-        <p>@(Circuit.VoltAmpere.HasError ? Circuit.VoltAmpere.ErrorMessage : Math.Round(Circuit.VoltAmpere.Value, 4))</p>
-    </div>
+                if (convenienceCircuit.FourGangQuantity > 0)
+                {
+                    <p class="item-sub">4-Gang</p>
+                }
+            }
+        </div>
+    }
+
+    @if (Circuit is NonSpareCircuit nonSpareCircuit)
+    {
+        <div class="circuit-preview-value">
+            <label>Volt Amps</label>
+            <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : Math.Round(nonSpareCircuit.VoltAmpere.Value, 4))</p>
+        </div>
+    }
 
     <div class="circuit-preview-value">
         <label>Ampere Load</label>
@@ -135,7 +142,7 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] public Circuit Circuit { get; set; } = default!;
+    [Parameter, EditorRequired] public NonSpaceCircuit Circuit { get; set; } = default!;
     
     [Parameter, EditorRequired] public EventCallback OnCircuitChange { get; set; }
 

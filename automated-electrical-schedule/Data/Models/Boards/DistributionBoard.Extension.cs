@@ -61,6 +61,15 @@ public abstract partial class DistributionBoard
         }
     }
 
+    public static RacewayType[] AllowedRacewayTypes
+    {
+        get
+        {
+            var racewayTypes = Enum.GetValues<RacewayType>().ToList();
+            return racewayTypes.Where(r => r != RacewayType.None).ToArray();
+        }
+    }
+
     public abstract List<BoardVoltage> AllowedVoltages { get; }
 
     public abstract List<LineToLineVoltage> AllowedLineToLineVoltages { get; }
@@ -106,7 +115,7 @@ public abstract partial class DistributionBoard
         }
     }
 
-    public IElectricalComponent FindChildByOrder(int order)
+    public IOrdered FindChildByOrder(int order)
     {
         var circuit = Circuits.FirstOrDefault(c => c.Order == order);
         if (circuit is not null) return circuit;
@@ -116,7 +125,7 @@ public abstract partial class DistributionBoard
         return subBoard;
     }
 
-    public (IElectricalComponent, IElectricalComponent)? DecreaseChildOrder(int order)
+    public (IOrdered, IOrdered)? DecreaseChildOrder(int order)
     {
         if (order == 1) return null;
         
@@ -129,7 +138,7 @@ public abstract partial class DistributionBoard
         return (previousChild, currentChild);
     }
 
-    public (IElectricalComponent, IElectricalComponent)? IncreaseChildOrder(int order)
+    public (IOrdered, IOrdered)? IncreaseChildOrder(int order)
     {
         if (order == LastOrder) return null;
 
@@ -278,16 +287,28 @@ public abstract partial class DistributionBoard
             current += DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranesAndHoists);
             current += normalMotors.Sum(mc => mc.VoltAmpere.Value);
 
+            current += FilterVoltAmpere<SpareCircuit>();
+
             return current;
         }
     }
 
-    public double FilterVoltAmpere<TCircuit>(Func<TCircuit, bool>? filterCallback = null) where TCircuit : Circuit
+    public double FilterVoltAmpere<TCircuit>(Func<TCircuit, bool>? filterCallback = null) where TCircuit : NonSpaceCircuit
     {
         var nestedCircuits = FilterNestedCircuits<TCircuit>(filterCallback);
-        return nestedCircuits
-            .Select(circuit => circuit.VoltAmpere)
-            .Sum();
+        
+        if (typeof(TCircuit).IsSubclassOf(typeof(NonSpareCircuit)))
+        {
+            return nestedCircuits
+                .OfType<NonSpareCircuit>()
+                .Select(circuit => circuit.VoltAmpere)
+                .Sum();
+        }
+        return
+            nestedCircuits
+                .OfType<SpareCircuit>()
+                .Select(circuit => circuit.VoltAmpere)
+                .Sum();
     }
 
     public List<CircuitProtection> AllowedTransformerPrimaryProtections

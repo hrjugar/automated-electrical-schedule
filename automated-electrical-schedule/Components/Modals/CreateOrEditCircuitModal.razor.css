@@ -77,6 +77,13 @@
 
                 label {
                     color: var(--clr-neutral-500);
+                    
+                    &.required {
+                        &::after {
+                            content: '*';
+                            color: red;
+                        }
+                    }
                 }
             }
         }

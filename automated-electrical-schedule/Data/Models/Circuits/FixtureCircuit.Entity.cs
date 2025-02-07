@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public abstract partial class FixtureCircuit : Circuit
+public abstract partial class FixtureCircuit : NonSpareCircuit
 {
     [Required]
     [Display(Name = "itemized")]

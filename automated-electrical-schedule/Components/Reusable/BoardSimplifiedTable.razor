@@ -65,7 +65,20 @@
                     case Circuit circuit:
                         var fixtureCircuit = circuit as FixtureCircuit;
                         var convenienceCircuit = circuit as ConvenienceOutletCircuit;
+                        var nonSpaceCircuit = circuit as NonSpaceCircuit;
+                        var spareCircuit = circuit as SpareCircuit;
+                        var nonSpareCircuit = circuit as NonSpareCircuit;
+                        
+                        var loadDescription = circuit switch
+                        {
+                            IDescribed describedCircuit => describedCircuit.Description,
+                            SpaceCircuit => "Space",
+                            SpareCircuit => "Spare",
+                            _ => ""
+                        };
+                        
                         int rowSpan = 1;
+                        
                         if (fixtureCircuit is not null && fixtureCircuit.IsItemized)
                         {
                             rowSpan = fixtureCircuit.Fixtures.Count + 1;
@@ -81,7 +94,7 @@
                         
                         <tr>
                             <td rowspan="@rowSpan">@(circuit.Order)</td>
-                            <td>@circuit.Description</td>
+                            <td>@loadDescription</td>
                             <td>
                                 @if (fixtureCircuit != null && !fixtureCircuit.IsItemized && fixtureCircuit.Fixtures.Count > 0)
                                 {
@@ -92,55 +105,94 @@
                                     @("1")
                                 }
                             </td>
-                            <td>@circuit.VoltAmpere</td>
+                            
+                            @if (nonSpaceCircuit is null)
+                            {
+                                <td></td>
+                            }
+                            else
+                            {
+                                if (spareCircuit is not null)
+                                {
+                                    <td>@spareCircuit.VoltAmpere</td>
+                                } else if (nonSpareCircuit is not null)
+                                {
+                                    <td>@nonSpareCircuit.VoltAmpere.Value</td>
+                                }
+                            }
+                            
                             <td>@circuit.Voltage.ToString()</td>
                             
                             @if (DistributionBoard is ThreePhaseDistributionBoard)
                             {
                                 <td>
-                                    @if (circuit.LineToLineVoltage == LineToLineVoltage.A)
+                                    @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.A)
                                     {
-                                        @(Math.Round(circuit.AmpereLoad.Value, 4))
+                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
                                     }
                                 </td>
                                 
                                 <td>
-                                    @if (circuit.LineToLineVoltage == LineToLineVoltage.B)
+                                    @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.B)
                                     {
-                                        @(Math.Round(circuit.AmpereLoad.Value, 4))
+                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
                                     }
                                 </td>
                 
                                 <td>
-                                    @if (circuit.LineToLineVoltage == LineToLineVoltage.C)
+                                    @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.C)
                                     {
-                                        @(Math.Round(circuit.AmpereLoad.Value, 4))
+                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
                                     }
                                 </td>
                                 
                                 <td>
-                                    @if (circuit.LineToLineVoltage == LineToLineVoltage.Abc)
+                                    @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.Abc)
                                     {
-                                        @(Math.Round(circuit.AmpereLoad.Value, 4))
+                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
                                     }
                                 </td>
                             }
                             else
                             {
-                                <td>@(Math.Round(circuit.AmpereLoad.Value, 4))</td>
+                                if (nonSpaceCircuit is null)
+                                {
+                                    <td></td>
+                                }
+                                else
+                                {
+                                    <td>@(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))</td>
+                                }
                             }
             
-                            <td>@circuit.AmpereTrip</td>
-                            <td>@circuit.AmpereFrame</td>
+                            <td>@nonSpaceCircuit?.AmpereTrip</td>
+                            <td>@nonSpaceCircuit?.AmpereFrame</td>
                             <td>@circuit.Phase</td>
                             <td>@circuit.Pole</td>
-                            <td>@circuit.WireLength</td>
-                            <td>@(Math.Round(circuit.VoltageDrop.Value, 4).ToPercentageString())</td>
-                            <td>@circuit.CircuitProtection.GetDisplayName()</td>
-                            <td>@circuit.SetCount</td>
-                            <td>@(circuit.ConductorWireCount)-@(circuit.ConductorSize)mm² @(circuit.ConductorType.ToString())</td>
-                            <td>@(Circuit.GroundingWireCount)-@(circuit.GroundingSize)mm² @(circuit.Grounding.ToString())</td>
-                            <td>@(circuit.RacewaySize)mm ø @circuit.RacewayType.GetDisplayName()</td>
+                            
+                            @if (nonSpaceCircuit is not null && nonSpaceCircuit.WireLength > 0)
+                            {
+                                <td>@nonSpaceCircuit?.WireLength</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            
+                            @if (nonSpaceCircuit is null)
+                            {
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td>@(Math.Round(nonSpaceCircuit.VoltageDrop.Value, 4).ToPercentageString())</td>
+                            }
+                            
+                            <td>@nonSpaceCircuit?.CircuitProtection.GetDisplayName()</td>
+                            <td>@nonSpaceCircuit?.SetCount</td>
+                            <td>@nonSpaceCircuit?.ConductorTextDisplay</td>
+                            <td>@nonSpaceCircuit?.GroundingTextDisplay</td>
+                            <td>@nonSpaceCircuit?.RacewayTextDisplay</td>
                         </tr>
         
                         @if (fixtureCircuit is not null && fixtureCircuit.IsItemized)
@@ -347,7 +399,7 @@
                             <td>
                                 @if (!subDistributionBoard.GroundingSize.HasError)
                                 {
-                                    @($"{Circuit.GroundingWireCount}-{subDistributionBoard.GroundingSize}mm\u00b2 {subDistributionBoard.Grounding}")
+                                    @($"{NonSpaceCircuit.GroundingWireCount}-{subDistributionBoard.GroundingSize}mm\u00b2 {subDistributionBoard.Grounding}")
                                 }
                             </td>
                             
@@ -402,12 +454,12 @@
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
     
-    private List<IElectricalComponent> _circuitsAndSubBoards = [];
+    private List<IOrdered> _circuitsAndSubBoards = [];
 
     protected override void OnParametersSet()
     {
         _circuitsAndSubBoards =
-            DistributionBoard.Circuits.Cast<IElectricalComponent>()
+            DistributionBoard.Circuits.Cast<IOrdered>()
                 .Concat(DistributionBoard.SubDistributionBoards)
                 .OrderBy(e => e.Order)
                 .ToList();

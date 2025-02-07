@@ -5,7 +5,7 @@ using automated_electrical_schedule.Data.Validators;
 
 namespace automated_electrical_schedule.Data.Models;
 
-public partial class ConvenienceOutletCircuit : Circuit
+public partial class ConvenienceOutletCircuit : NonSpareCircuit
 {
     [Required]
     [Display(Name = "GFCI Receptacle quantity")]

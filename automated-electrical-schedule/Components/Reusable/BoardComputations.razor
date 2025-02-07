@@ -491,6 +491,39 @@
             }
         </div>
         
+        @{
+            var spareCircuitsVoltAmpere = DistributionBoard.FilterVoltAmpere<SpareCircuit>();
+            var subBoardsWithSpareCircuits =
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<SpareCircuit>() > 0
+                );
+            
+            
+        }
+        <div class="computation-subgroup">
+            <h4>Spare Circuits</h4>
+            
+            @if (spareCircuitsVoltAmpere > 0)
+            {
+                @for (var i = 0; i < _spareCircuits.Count; i++)
+                {
+                    var currentSpareCircuit = _spareCircuits[i];
+                    <p>- @($"Spare {i + 1} (CKT NO. {currentSpareCircuit.Order}) = {currentSpareCircuit.VoltAmpere}VA")</p>
+                }
+                    
+                @foreach (var subBoard in subBoardsWithSpareCircuits)
+                {
+                    <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<SpareCircuit>()}")</p>
+                }
+                    
+                <p class="underline">Sub Total = @(spareCircuitsVoltAmpere)VA</p>
+            }
+            else
+            {
+                <p>None</p>
+            }
+        </div>
+        
         <div class="computation-subgroup">
             <h4>Overall Total</h4>
             <p>Total VA (S) = @(DistributionBoard.VoltAmpere) VA</p>
@@ -593,6 +626,7 @@
     List<ConvenienceOutletCircuit> _convenienceCircuits;
     List<MotorOutletCircuit> _motorCircuits;
     List<ApplianceEquipmentOutletCircuit> _applianceEquipmentCircuits;
+    List<SpareCircuit> _spareCircuits;
     
     
     protected override void OnInitialized()
@@ -602,5 +636,6 @@
         _convenienceCircuits = DistributionBoard.Circuits.OfType<ConvenienceOutletCircuit>().ToList();
         _motorCircuits = DistributionBoard.Circuits.OfType<MotorOutletCircuit>().ToList();
         _applianceEquipmentCircuits = DistributionBoard.Circuits.OfType<ApplianceEquipmentOutletCircuit>().ToList();
+        _spareCircuits = DistributionBoard.Circuits.OfType<SpareCircuit>().ToList();
     }
 }
