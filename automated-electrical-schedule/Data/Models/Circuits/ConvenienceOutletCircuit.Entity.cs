@@ -10,6 +10,7 @@ public partial class ConvenienceOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "GFCI Receptacle quantity")]
     [Column("gfci_receptacle_quantity")]
+    [Range(0, int.MaxValue,  ErrorMessage = "The number of GFCI receptacles must be at least 0.")]
     public int GfciReceptacleQuantity { get; set; }
     
     [Required]
@@ -21,6 +22,7 @@ public partial class ConvenienceOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "1-gang quantity")]
     [Column("one_gang_quantity")]
+    [Range(0, int.MaxValue,  ErrorMessage = "The number of one-gang must be at least 0.")]
     
     public int OneGangQuantity { get; set; }
     
@@ -33,6 +35,7 @@ public partial class ConvenienceOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "2-gang quantity")]
     [Column("two_gang_quantity")]
+    [Range(0, int.MaxValue,  ErrorMessage = "The number of two-gang must be at least 0.")]
     public int TwoGangQuantity { get; set; }
     
     [Required]
@@ -44,6 +47,7 @@ public partial class ConvenienceOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "3-gang quantity")]
     [Column("three_gang_quantity")]
+    [Range(0, int.MaxValue,  ErrorMessage = "The number of three-gang must be at least 0.")]
     public int ThreeGangQuantity { get; set; }
     
     [Required]
@@ -55,6 +59,7 @@ public partial class ConvenienceOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "4-gang quantity")]
     [Column("four_gang_quantity")]
+    [Range(0, int.MaxValue,  ErrorMessage = "The number of four-gang must be at least 0.")]
     public int FourGangQuantity { get; set; }
     
     [Required]
