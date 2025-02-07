@@ -19,6 +19,14 @@ public abstract partial class NonSpaceCircuit
             : racewayTypes.Where(r => r != RacewayType.None).ToList();;
     }
     
+    public virtual List<CircuitProtection> AllowedCircuitProtections =>
+    [
+        CircuitProtection.MiniatureCircuitBreaker,
+        CircuitProtection.MoldedCaseCircuitBreaker
+    ];
+
+    public List<RacewayType> AllowedRacewayTypes => GetAllowedRacewayTypesStatic(CircuitType);
+    
     public CalculationResult<int> AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
     
     public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;

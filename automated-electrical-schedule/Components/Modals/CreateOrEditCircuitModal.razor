@@ -22,6 +22,7 @@
                 var fixtureCircuit = _newCircuit as FixtureCircuit;
                 var applianceCircuit = _newCircuit as ApplianceEquipmentOutletCircuit;
                 var convenienceCircuit = _newCircuit as ConvenienceOutletCircuit;
+                var spaceCircuit = _newCircuit as SpaceCircuit;
                 var nonSpaceCircuit = _newCircuit as NonSpaceCircuit;
                 var spareCircuit = _newCircuit as SpareCircuit;
                 var nonSpareCircuit = _newCircuit as NonSpareCircuit;
@@ -43,7 +44,7 @@
                         }
                     </InputSelect>
 
-                    @if (threePhaseBoard != null && _newCircuit.AllowedLineToLineVoltages.Count > 0)
+                    @if (threePhaseBoard is not null && !_newCircuit.AllowedLineToLineVoltages.All(new List<LineToLineVoltage> { LineToLineVoltage.None }.Contains))
                     {
                         <InputSelect
                             class="select-line-to-line"
@@ -210,72 +211,69 @@
                             }
                         }
                         
-                        @if (nonSpaceCircuit is not null)
-                        {
+                        <div class="create-or-edit-circuit-modal-field">
+                            <label class="@(nonSpareCircuit is not null ? "required" : "")">Wire Length (m)</label>
+                            <InputNumber class="input-primary" @bind-Value="nonSpaceCircuit.WireLength"/>
+                            <ValidationMessage For=@(() => nonSpaceCircuit.WireLength)/>
+                        </div>
+                        
+                        <div class="create-or-edit-circuit-modal-field">
+                            <label class="@(nonSpareCircuit is not null ? "required" : "")">Circuit Protection</label>
+                            <InputSelect @bind-Value=nonSpaceCircuit.CircuitProtection>
+                                @foreach (var circuitProtection in nonSpaceCircuit.AllowedCircuitProtections)
+                                {
+                                    <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => nonSpaceCircuit.CircuitProtection)/>
+                        </div>
+                        
+                        <div class="create-or-edit-circuit-modal-field-row">
                             <div class="create-or-edit-circuit-modal-field">
-                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Wire Length (m)</label>
-                                <InputNumber class="input-primary" @bind-Value="nonSpaceCircuit.WireLength"/>
-                                <ValidationMessage For=@(() => nonSpaceCircuit.WireLength)/>
-                            </div>
-                            
-                            <div class="create-or-edit-circuit-modal-field">
-                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Circuit Protection</label>
-                                <InputSelect @bind-Value=nonSpaceCircuit.CircuitProtection>
-                                    @foreach (var circuitProtection in nonSpaceCircuit.AllowedCircuitProtections)
+                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Conductor Type</label>
+
+                                <InputSelect @bind-Value="nonSpaceCircuit.ConductorTypeId">
+                                    @if (spareCircuit is not null)
                                     {
-                                        <option value="@circuitProtection">@circuitProtection.GetDisplayName()</option>
+                                        <option value="">-</option>
+                                    }
+                                    
+                                    @foreach (var conductorType in ConductorType.All)
+                                    {
+                                        <option value="@conductorType.Id">@conductorType.ToString()</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => nonSpaceCircuit.CircuitProtection)/>
-                            </div>
-                            
-                            <div class="create-or-edit-circuit-modal-field-row">
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label class="@(nonSpareCircuit is not null ? "required" : "")">Conductor Type</label>
-
-                                    <InputSelect @bind-Value="nonSpaceCircuit.ConductorTypeId">
-                                        @if (spareCircuit is not null)
-                                        {
-                                            <option value="">-</option>
-                                        }
-                                        
-                                        @foreach (var conductorType in ConductorType.All)
-                                        {
-                                            <option value="@conductorType.Id">@conductorType.ToString()</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => nonSpaceCircuit.ConductorTypeId)/>
-                                </div>
-
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label class="@(nonSpareCircuit is not null ? "required" : "")">Grounding</label>
-
-                                    <InputSelect
-                                        @bind-Value="@nonSpaceCircuit.GroundingId">
-                                        @if (spareCircuit is not null)
-                                        {
-                                            <option value="">-</option>
-                                        }
-                                        @foreach (var grounding in ConductorType.All)
-                                        {
-                                            <option value="@grounding.Id">@grounding.ToString()</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => nonSpaceCircuit.GroundingId)/>
-                                </div>
+                                <ValidationMessage For=@(() => nonSpaceCircuit.ConductorTypeId)/>
                             </div>
 
                             <div class="create-or-edit-circuit-modal-field">
-                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Raceway Type</label>
-                                <InputSelect @bind-Value=nonSpaceCircuit.RacewayType>
-                                    @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                                <label class="@(nonSpareCircuit is not null ? "required" : "")">Grounding</label>
+
+                                <InputSelect
+                                    @bind-Value="@nonSpaceCircuit.GroundingId">
+                                    @if (spareCircuit is not null)
                                     {
-                                        <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                                        <option value="">-</option>
+                                    }
+                                    @foreach (var grounding in ConductorType.All)
+                                    {
+                                        <option value="@grounding.Id">@grounding.ToString()</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For=@(() => nonSpaceCircuit.RacewayType)/>
+                                <ValidationMessage For=@(() => nonSpaceCircuit.GroundingId)/>
                             </div>
-                        }
+                        </div>
+
+                        <div class="create-or-edit-circuit-modal-field">
+                            <label class="@(nonSpareCircuit is not null ? "required" : "")">Raceway Type</label>
+                            <InputSelect @bind-Value=nonSpaceCircuit.RacewayType>
+                                @foreach (RacewayType racewayType in Enum.GetValues(typeof(RacewayType)))
+                                {
+                                    <option value="@racewayType">@racewayType.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For=@(() => nonSpaceCircuit.RacewayType)/>
+                        </div>
                         
                     </div>
                     <CreateOrEditCircuitModalPreview Circuit="nonSpaceCircuit" OnCircuitChange="StateHasChanged" />
@@ -325,87 +323,48 @@
         else
         {
             var allowedCircuitTypes = Circuit.GetAllowedCircuitTypesStatic(DistributionBoard.Voltage);
-            if (allowedCircuitTypes.Contains(CircuitType.LightingOutlet))
+            var initialCircuitType = allowedCircuitTypes[0];
+            
+            _newCircuit = initialCircuitType switch
             {
-                _newCircuit = new LightingOutletCircuit
-                {
-                    CircuitType = CircuitType.LightingOutlet,
-                };
-            } else if (allowedCircuitTypes.Contains(CircuitType.MotorOutlet))
-            {
-                _newCircuit = new MotorOutletCircuit
-                {
-                    CircuitType = CircuitType.MotorOutlet,
-                };
-            } else if (allowedCircuitTypes.Contains(CircuitType.ConvenienceOutlet))
-            {
-                _newCircuit = new ConvenienceOutletCircuit
-                {
-                    CircuitType = CircuitType.ConvenienceOutlet
-                };
-            }
-            else if (allowedCircuitTypes.Contains(CircuitType.ApplianceEquipmentOutlet))
-            {
-                _newCircuit = new ApplianceEquipmentOutletCircuit
-                {
-                    CircuitType = CircuitType.ApplianceEquipmentOutlet
-                };
-            }
-            else
-            {
-                _newCircuit = new SpaceCircuit
-                {
-                    CircuitType = CircuitType.SpaceOutlet
-                };
-            }
+                CircuitType.LightingOutlet => new LightingOutletCircuit(),
+                CircuitType.MotorOutlet => new MotorOutletCircuit(),
+                CircuitType.ConvenienceOutlet => new ConvenienceOutletCircuit(),
+                CircuitType.ApplianceEquipmentOutlet => new ApplianceEquipmentOutletCircuit(),
+                CircuitType.SpaceOutlet => new SpaceCircuit(),
+                CircuitType.SpareOutlet or _ => new SpareCircuit()
+            };
 
+            _newCircuit.CircuitType = initialCircuitType;
             _newCircuit.ParentDistributionBoard = DistributionBoard;
-
-            if (DistributionBoard is ThreePhaseDistributionBoard)
-            {
-                _newCircuit.LineToLineVoltage = Circuit.GetAllowedLineToLineVoltagesStatic(
-                    DistributionBoard, 
-                    _newCircuit.CircuitType
-                )[0];
-            }
+            _newCircuit.LineToLineVoltage = _newCircuit.AllowedLineToLineVoltages[0];
 
             if (_newCircuit is NonSpaceCircuit nonSpaceCircuit)
             {
+                nonSpaceCircuit.SetCount = 1;
+                nonSpaceCircuit.CircuitProtection = nonSpaceCircuit.AllowedCircuitProtections[0];
+                
                 if (nonSpaceCircuit is SpareCircuit spareCircuit)
                 {
                     spareCircuit.ConductorTypeId = string.Empty;
                     spareCircuit.GroundingId = string.Empty;
                     spareCircuit.RacewayType = RacewayType.None;
+                    spareCircuit.WireLength = 0;
                 }
                 else
                 {
                     nonSpaceCircuit.ConductorTypeId = ConductorType.All[0].Id;
                     nonSpaceCircuit.GroundingId = ConductorType.All[0].Id;
                     nonSpaceCircuit.RacewayType = RacewayType.Pvc;
+                    nonSpaceCircuit.WireLength = 1;
                 }
             }
 
             if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
             {
-                var initialMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
-                    DistributionBoard,
-                    _newCircuit.LineToLineVoltage
-                )[0];
-                
-                var initialMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
-                    DistributionBoard,
-                    _newCircuit.LineToLineVoltage
-                )[0];
-
-                var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
-                    initialMotorType,
-                    _newCircuit.LineToLineVoltage
-                )[0];
-                
-                motorOutletCircuit.MotorType = initialMotorType;
-                motorOutletCircuit.MotorApplication = initialMotorApplication;
-                motorOutletCircuit.Horsepower = initialHorsepower;
-                motorOutletCircuit.CircuitProtection = motorOutletCircuit.AllowedCircuitProtections[0];
+                motorOutletCircuit.MotorType = motorOutletCircuit.AllowedMotorTypes[0];
+                motorOutletCircuit.MotorApplication = motorOutletCircuit.AllowedMotorApplications[0];
+                motorOutletCircuit.Horsepower = motorOutletCircuit.AllowedHorsepowerValues[0];
             }
 
             if (_newCircuit is FixtureCircuit newFixtureCircuit)
@@ -415,6 +374,7 @@
         }
 
         _editContext = new EditContext(_newCircuit);
+        StateHasChanged();
     }
 
     async Task CloseModal()
@@ -433,123 +393,73 @@
 
     void UpdateCircuitType(CircuitType circuitType)
     {
-        Circuit updatedNewCircuit;
-        var allowedLineToLineVoltages = Circuit.GetAllowedLineToLineVoltagesStatic(
-            _newCircuit!.ParentDistributionBoard,
-            circuitType
-        );
-
-        LineToLineVoltage updatedNewLineToLineVoltage;
-        if (allowedLineToLineVoltages.Count > 0)
+        Circuit updatedCircuit = circuitType switch
         {
-            if (_newCircuit.LineToLineVoltage is not LineToLineVoltage.None && allowedLineToLineVoltages.Contains(_newCircuit.LineToLineVoltage))
-            {
-                updatedNewLineToLineVoltage = _newCircuit.LineToLineVoltage;
-            }
-            else
-            {
-                updatedNewLineToLineVoltage = allowedLineToLineVoltages[0];
-            }
-        }
-        else
-        {
-            updatedNewLineToLineVoltage = LineToLineVoltage.None;
-        }
-
-        switch (circuitType)
-        {
-            case CircuitType.LightingOutlet:
-                updatedNewCircuit = new LightingOutletCircuit();
-                break;
-            default:
-            case CircuitType.MotorOutlet:
-                var initialMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
-                    _newCircuit!.ParentDistributionBoard,
-                    updatedNewLineToLineVoltage
-                )[0];
-
-                var initialMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
-                    _newCircuit!.ParentDistributionBoard,
-                    updatedNewLineToLineVoltage
-                )[0];
-
-                var initialHorsepower = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
-                    initialMotorType,
-                    updatedNewLineToLineVoltage
-                )[0];
-                
-                updatedNewCircuit = new MotorOutletCircuit
-                {
-                    MotorType = initialMotorType,
-                    Horsepower = initialHorsepower,
-                    MotorApplication = initialMotorApplication
-                };
-                break;
-            case CircuitType.ConvenienceOutlet:
-                updatedNewCircuit = new ConvenienceOutletCircuit();
-                break;
-            case CircuitType.ApplianceEquipmentOutlet:
-                updatedNewCircuit = new ApplianceEquipmentOutletCircuit();
-                break;
-            case CircuitType.SpaceOutlet:
-                updatedNewCircuit = new SpaceCircuit();
-                break;
-            case CircuitType.SpareOutlet:
-                updatedNewCircuit = new SpareCircuit();
-                break;
-        }
-
-        updatedNewCircuit.Id = _newCircuit!.Id;
-        updatedNewCircuit.CircuitType = circuitType;
-        updatedNewCircuit.ParentDistributionBoardId = _newCircuit!.ParentDistributionBoardId;
-        updatedNewCircuit.ParentDistributionBoard = _newCircuit!.ParentDistributionBoard;
-        updatedNewCircuit.LineToLineVoltage = updatedNewLineToLineVoltage;
+            CircuitType.LightingOutlet => new LightingOutletCircuit(),
+            CircuitType.MotorOutlet => new MotorOutletCircuit(),
+            CircuitType.ConvenienceOutlet => new ConvenienceOutletCircuit(),
+            CircuitType.ApplianceEquipmentOutlet => new ApplianceEquipmentOutletCircuit(),
+            CircuitType.SpaceOutlet => new SpaceCircuit(),
+            CircuitType.SpareOutlet or _ => new SpareCircuit()
+        };
         
+        updatedCircuit.Id = _newCircuit!.Id;
+        updatedCircuit.CircuitType = circuitType;
+        updatedCircuit.ParentDistributionBoardId = _newCircuit!.ParentDistributionBoardId;
+        updatedCircuit.ParentDistributionBoard = _newCircuit!.ParentDistributionBoard;
         
-        @if (_newCircuit is IDescribed newDescribedCircuit && updatedNewCircuit is IDescribed updatedNewDescribedCircuit)
+        updatedCircuit.LineToLineVoltage = updatedCircuit.AllowedLineToLineVoltages.Contains(_newCircuit.LineToLineVoltage)
+            ? _newCircuit.LineToLineVoltage
+            : updatedCircuit.AllowedLineToLineVoltages[0];
+        
+        if (_newCircuit is IDescribed newDescribedCircuit && updatedCircuit is IDescribed updatedDescribedCircuit)
         {
-            updatedNewDescribedCircuit.Description = newDescribedCircuit.Description;
+            updatedDescribedCircuit.Description = newDescribedCircuit.Description;
         }
-        
-        @if (_newCircuit is NonSpaceCircuit newNonSpaceCircuit && updatedNewCircuit is NonSpaceCircuit updatedNewNonSpaceCircuit)
-        {
-            updatedNewNonSpaceCircuit.CircuitProtection =
-                updatedNewNonSpaceCircuit.AllowedCircuitProtections.Contains(newNonSpaceCircuit.CircuitProtection) ? 
-                    newNonSpaceCircuit.CircuitProtection : 
-                    updatedNewCircuit.AllowedCircuitProtections[0];
-            
-            updatedNewNonSpaceCircuit.WireLength = 
-                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.WireLength == 0 
-                    ? 1 
-                    : newNonSpaceCircuit.WireLength;
 
-            updatedNewNonSpaceCircuit.SetCount =
-                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.SetCount == 0
+        if (_newCircuit is NonSpaceCircuit newNonSpaceCircuit && updatedCircuit is NonSpaceCircuit updatedNonSpaceCircuit)
+        {
+            updatedNonSpaceCircuit.CircuitProtection = 
+                updatedNonSpaceCircuit.AllowedCircuitProtections.Contains(newNonSpaceCircuit.CircuitProtection)
+                    ? newNonSpaceCircuit.CircuitProtection
+                    : updatedNonSpaceCircuit.AllowedCircuitProtections[0];
+        
+            updatedNonSpaceCircuit.WireLength = 
+                updatedNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.WireLength == 0
                     ? 1
-                    : newNonSpaceCircuit.SetCount;
-
-            updatedNewNonSpaceCircuit.ConductorTypeId =
-                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.ConductorTypeId == string.Empty
+                    : newNonSpaceCircuit.WireLength;
+        
+            updatedNonSpaceCircuit.SetCount = newNonSpaceCircuit.SetCount;
+        
+            updatedNonSpaceCircuit.ConductorTypeId = 
+                updatedNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.ConductorTypeId == string.Empty
                     ? string.Empty
                     : newNonSpaceCircuit.ConductorTypeId;
-            
-            updatedNewNonSpaceCircuit.GroundingId = 
-                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.GroundingId == string.Empty
+        
+            updatedNonSpaceCircuit.GroundingId = 
+                updatedNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.GroundingId == string.Empty
                     ? string.Empty
                     : newNonSpaceCircuit.GroundingId;
-            
-            updatedNewNonSpaceCircuit.RacewayType = 
-                updatedNewNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.RacewayType == RacewayType.None
-                    ? RacewayType.Pvc
-                    : newNonSpaceCircuit.RacewayType;
+        
+            updatedNonSpaceCircuit.RacewayType = 
+                updatedNonSpaceCircuit.AllowedRacewayTypes.Contains(newNonSpaceCircuit.RacewayType)
+                    ? newNonSpaceCircuit.RacewayType
+                    : updatedNonSpaceCircuit.AllowedRacewayTypes[0];
         }
 
-        if (updatedNewCircuit is FixtureCircuit updatedNewFixtureCircuit)
+        if (updatedCircuit is MotorOutletCircuit updatedMotorOutletCircuit)
         {
-            updatedNewFixtureCircuit.Fixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
+            updatedMotorOutletCircuit.MotorType = updatedMotorOutletCircuit.AllowedMotorTypes[0];
+            updatedMotorOutletCircuit.MotorApplication = updatedMotorOutletCircuit.AllowedMotorApplications[0];
+            updatedMotorOutletCircuit.Horsepower = updatedMotorOutletCircuit.AllowedHorsepowerValues[0];
         }
         
-        _newCircuit = updatedNewCircuit;
+        if (updatedCircuit is FixtureCircuit updatedFixtureCircuit)
+        {
+            updatedFixtureCircuit.Fixtures.Add(new Fixture { Quantity = 1, Wattage = 0 });
+        }
+        
+        _newCircuit = updatedCircuit;
         _editContext = new EditContext(_newCircuit);
         
         StateHasChanged();
@@ -561,28 +471,12 @@
 
         if (_newCircuit is MotorOutletCircuit motorOutletCircuit)
         {
-            var newMotorType = MotorOutletCircuit.GetAllowedMotorTypesStatic(
-                _newCircuit.ParentDistributionBoard,
-                lineToLineVoltage
-            )[0];
+            motorOutletCircuit.MotorType = motorOutletCircuit.AllowedMotorTypes[0];
+            motorOutletCircuit.MotorApplication = motorOutletCircuit.AllowedMotorApplications[0];
             
-            motorOutletCircuit.MotorType = newMotorType;
-            
-            var newMotorApplication = MotorOutletCircuit.GetAllowedMotorApplicationsStatic(
-                _newCircuit.ParentDistributionBoard,
-                lineToLineVoltage
-            )[0];
-            
-            motorOutletCircuit.MotorApplication = newMotorApplication;
-            
-            var allowedHorsepowerValues = MotorOutletCircuit.GetAllowedHorsepowerValuesStatic(
-                newMotorType,
-                lineToLineVoltage
-            );
-            
-            if (!allowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
+            if (!motorOutletCircuit.AllowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
             {
-                motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
+                motorOutletCircuit.Horsepower = motorOutletCircuit.AllowedHorsepowerValues[0];
             }
         }
         
@@ -602,11 +496,9 @@
         var motorOutletCircuit = _newCircuit as MotorOutletCircuit;
         motorOutletCircuit!.MotorType = newMotorType;
 
-        var allowedHorsepowerValues = motorOutletCircuit.AllowedHorsepowerValues;
-
-        if (!allowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
+        if (!motorOutletCircuit.AllowedHorsepowerValues.Contains(motorOutletCircuit.Horsepower))
         {
-            motorOutletCircuit.Horsepower = allowedHorsepowerValues[0];
+            motorOutletCircuit.Horsepower = motorOutletCircuit.AllowedHorsepowerValues[0];
         }
 
         StateHasChanged();

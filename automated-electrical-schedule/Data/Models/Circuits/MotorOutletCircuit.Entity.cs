@@ -9,12 +9,12 @@ public partial class MotorOutletCircuit : NonSpareCircuit
     [Required]
     [Display(Name = "motor type")]
     [Column("motor_type")]
-    public MotorType MotorType { get; set; } = MotorType.SinglePhaseMotor;
+    public MotorType MotorType { get; set; }
 
     [Required]
     [Display(Name = "motor application")]
     [Column("motor_application")]
-    public MotorApplication MotorApplication { get; set; } = MotorApplication.NormalMotor;
+    public MotorApplication MotorApplication { get; set; }
     
     [Required]
     [Display(Name = "horsepower")]

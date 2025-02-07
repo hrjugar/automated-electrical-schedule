@@ -13,11 +13,6 @@ public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
     public abstract string GroundingId { get; set; }
     
     public abstract RacewayType RacewayType { get; set; }
-
-    [Display(Name = "line-to-line voltage")]
-    [Column("line_to_line_voltage")]
-    public LineToLineVoltage LineToLineVoltage { get; set; } = LineToLineVoltage.None;
-    
     
     [Required]
     [Display(Name = "circuit protection")]

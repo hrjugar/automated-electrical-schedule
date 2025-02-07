@@ -33,9 +33,10 @@ public abstract partial class Circuit : IOrdered
     [Column("circuit_type")]
     public CircuitType CircuitType { get; set; }
     
+    [Required]
     [Display(Name = "line-to-line voltage")]
     [Column("line_to_line_voltage")]
-    public LineToLineVoltage LineToLineVoltage { get; set; } = LineToLineVoltage.None;
+    public LineToLineVoltage LineToLineVoltage { get; set; }
     //
     // [Required]
     // [Display(Name = "description")]

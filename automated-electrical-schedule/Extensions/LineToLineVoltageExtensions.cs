@@ -4,7 +4,7 @@ namespace automated_electrical_schedule.Extensions;
 
 public static class LineToLineVoltageExtensions
 {
-    public static string GetDisplayName(this LineToLineVoltage lineToLineVoltage, ThreePhaseConfiguration config)
+    public static string GetDisplayName(this LineToLineVoltage lineToLineVoltage, ThreePhaseConfiguration? config = null)
     {
         return config switch
         {
@@ -14,6 +14,7 @@ public static class LineToLineVoltageExtensions
                 LineToLineVoltage.B => "BC",
                 LineToLineVoltage.C => "CA",
                 LineToLineVoltage.Abc => "ABC",
+                LineToLineVoltage.None => "",
                 _ => throw new ArgumentOutOfRangeException(nameof(lineToLineVoltage), lineToLineVoltage, null)
             },
             ThreePhaseConfiguration.Wye => lineToLineVoltage switch
@@ -22,9 +23,10 @@ public static class LineToLineVoltageExtensions
                 LineToLineVoltage.B => "BN",
                 LineToLineVoltage.C => "CN",
                 LineToLineVoltage.Abc => "ABC",
+                LineToLineVoltage.None => "",
                 _ => throw new ArgumentOutOfRangeException(nameof(lineToLineVoltage), lineToLineVoltage, null)
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(config), config, null)
+            _ => "-"
         };
     }
 }

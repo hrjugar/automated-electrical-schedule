@@ -38,7 +38,7 @@ public abstract partial class Circuit
         DistributionBoard parentDistributionBoard,
         CircuitType circuitType)
     {
-        if (parentDistributionBoard is SinglePhaseDistributionBoard) return [];
+        if (parentDistributionBoard is SinglePhaseDistributionBoard) return [LineToLineVoltage.None];
         return circuitType switch
         {
             CircuitType.LightingOutlet or CircuitType.ConvenienceOutlet =>
@@ -51,7 +51,7 @@ public abstract partial class Circuit
                 (parentDistributionBoard.Voltage is BoardVoltage.V460 or BoardVoltage.V575)
                     ? [LineToLineVoltage.Abc]
                     : [LineToLineVoltage.A, LineToLineVoltage.B, LineToLineVoltage.C, LineToLineVoltage.Abc],
-            CircuitType.SpaceOutlet => [],
+            CircuitType.SpaceOutlet => [LineToLineVoltage.None],
             CircuitType.SpareOutlet => 
             [
                 LineToLineVoltage.A,
@@ -64,12 +64,6 @@ public abstract partial class Circuit
     }
     
     public List<CircuitType> AllowedCircuitTypes => GetAllowedCircuitTypesStatic(ParentDistributionBoard.Voltage);
-    
-    public virtual List<CircuitProtection> AllowedCircuitProtections =>
-    [
-        CircuitProtection.MiniatureCircuitBreaker,
-        CircuitProtection.MoldedCaseCircuitBreaker
-    ];
     
     public List<LineToLineVoltage> AllowedLineToLineVoltages =>
         GetAllowedLineToLineVoltagesStatic(ParentDistributionBoard, CircuitType);
