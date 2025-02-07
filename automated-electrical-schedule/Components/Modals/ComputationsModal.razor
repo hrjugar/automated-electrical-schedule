@@ -1,0 +1,39 @@
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div
+            class="modal modal-wide computations-modal"
+            @onclick:stopPropagation="true">
+            
+            <div class="modal-header">
+                <h5>Computations</h5>
+            </div>
+            
+            <div class="modal-content">
+                <BoardComputations DistributionBoard="DistributionBoard"/>
+            </div>
+            
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text btn-primary"
+                    type="button"
+                    @onclick="CloseModal">
+                    Exit
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
+    
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+}

@@ -2,110 +2,156 @@
 
 <div class="board-size-cards">
     <div class="board-size-card">
-        <label>Size of Circuit Protection</label>
+        <div class="board-size-card-text">
+            <label>Size of Circuit Protection</label>
 
-        @if (DistributionBoard.AmpereTrip.HasError)
-        {
-            <p>@(DistributionBoard.AmpereTrip.ErrorMessage)</p>
-        }
-        else if (DistributionBoard.AmpereFrame.HasError)
-        {
-            <p>@(DistributionBoard.AmpereFrame.ErrorMessage)</p>
-        }
-        else if (DistributionBoard.AmpereTrip.Value == 0 || DistributionBoard.AmpereFrame.Value == 0)
-        {
-            <p>Board has no circuits.</p>
-        }
-        else
-        {
-            <ul class="board-size-content">
-                <li>Use @(DistributionBoard.AmpereTrip) Ampere Trip, @(DistributionBoard.AmpereFrame) Ampere Frame, @(DistributionBoard.Pole)-Pole, @(DistributionBoard.CircuitProtection.GetDisplayName())</li>
-            </ul>
-        }
-    </div>
-
-    <div class="board-size-card">
-        <label>Size of Wire</label>
-
-        @if (DistributionBoard.ConductorSize.HasError) 
-        {
-            if (DistributionBoard.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+            @if (DistributionBoard.AmpereTrip.HasError)
             {
-                <FormWarning
-                    WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this."
-                    WarningAction="@(() => AdjustSetCountForSizes())"
-                    WarningActionText="Adjust Number of Sets"/>
+                <p>@(DistributionBoard.AmpereTrip.ErrorMessage)</p>
             }
-            else
+            else if (DistributionBoard.AmpereFrame.HasError)
             {
-                <p>@(DistributionBoard.ConductorSize.ErrorMessage)</p>
+                <p>@(DistributionBoard.AmpereFrame.ErrorMessage)</p>
             }
-        }
-        else if (DistributionBoard.GroundingSize.HasError)
-        {
-            <p>@DistributionBoard.GroundingSize.ErrorMessage</p>
-        }
-        else if (DistributionBoard.RacewaySize.HasError)
-        {
-            @if (DistributionBoard.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
-            {
-                <FormWarning
-                    WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
-                    WarningAction="@(() => ConvertToCableTray())"
-                    WarningActionText="Convert to Cable Tray"/>
-            }
-            <p>@DistributionBoard.RacewaySize.ErrorMessage</p>
-        }
-        else if (DistributionBoard.ConductorSize.Value == 0 || DistributionBoard.GroundingSize.Value == 0 || DistributionBoard.RacewaySize.Value == 0)
-        {
-            <p>Board has no circuits.</p>
-        }
-        else
-        {
-            <ul class="board-size-content">
-                <li>Use @(DistributionBoard.SetCount) set@(DistributionBoard.SetCount > 1 ? "s" : "") of @(DistributionBoard.ConductorWireCount)-@(DistributionBoard.ConductorSize)mm² @(DistributionBoard.ConductorType.ToString()) and @(DistributionBoard.GroundingWireCount)-@(DistributionBoard.GroundingSize)mm² @(DistributionBoard.Grounding.ToString())</li>
-                <li>Use @(DistributionBoard.RacewaySize)mm ø @(DistributionBoard.RacewayType.GetDisplayName())</li>
-            </ul>
-        }
-    </div>
-
-    @if (DistributionBoard.HasTransformer)
-    {
-        <div class="board-size-card">
-            <label>Transformer</label>
-
-            @if (DistributionBoard.TransformerRating.HasError)
-            {
-                <p>@(DistributionBoard.TransformerRating.ErrorMessage)</p>
-            }
-            else if (DistributionBoard.TransformerPrimaryProtectionAmpereTrip.HasError)
-            {
-                <p>@(DistributionBoard.TransformerPrimaryProtectionAmpereTrip.ErrorMessage)</p>
-            }
-            else if (DistributionBoard.TransformerSecondaryProtectionAmpereTrip.HasError)
-            {
-                <p>@(DistributionBoard.TransformerSecondaryProtectionAmpereTrip.ErrorMessage)</p>
-            }
-            else if (DistributionBoard.TransformerRating.Value == 0)
+            else if (DistributionBoard.AmpereTrip.Value == 0 || DistributionBoard.AmpereFrame.Value == 0)
             {
                 <p>Board has no circuits.</p>
             }
             else
             {
                 <ul class="board-size-content">
-                    <li>@(DistributionBoard.TransformerRating.Value / 1000)kVA, @(DistributionBoard.ParentDistributionBoard is null ? "13.8k" : ((int) DistributionBoard.ParentDistributionBoard.Voltage))V/@((int) DistributionBoard.Voltage)V</li>
-                    <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
-                    <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
+                    <li>Use @(DistributionBoard.AmpereTrip) Ampere Trip, @(DistributionBoard.AmpereFrame) Ampere Frame, @(DistributionBoard.Pole)-Pole, @(DistributionBoard.CircuitProtection.GetDisplayName())</li>
                 </ul>
             }
         </div>
+        
+        <button
+            type="button"
+            class="btn-icon btn-primary"
+            @onclick="OpenComputationsModal">
+            <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="board-size-card">
+        <div class="board-size-card-text">
+            <label>Size of Wire</label>
+
+            @if (DistributionBoard.ConductorSize.HasError)
+            {
+                if (DistributionBoard.ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+                {
+                    <FormWarning
+                        WarningMessage="There is no possible conductor/grounding size that can accommodate the ampere trip. Adjust the number of sets to fix this."
+                        WarningAction="@(() => AdjustSetCountForSizes())"
+                        WarningActionText="Adjust Number of Sets"/>
+                }
+                else
+                {
+                    <p>@(DistributionBoard.ConductorSize.ErrorMessage)</p>
+                }
+            }
+            else if (DistributionBoard.GroundingSize.HasError)
+            {
+                <p>@DistributionBoard.GroundingSize.ErrorMessage</p>
+            }
+            else if (DistributionBoard.RacewaySize.HasError)
+            {
+                @if (DistributionBoard.RacewaySize.ErrorType == CalculationErrorType.NoFittingRacewaySize)
+                {
+                    <FormWarning
+                        WarningMessage="There is no possible raceway size that can accommodate the number of wires. Converting the raceway wire type to Cable Tray is recommended."
+                        WarningAction="@(() => ConvertToCableTray())"
+                        WarningActionText="Convert to Cable Tray"/>
+                }
+
+                <p>@DistributionBoard.RacewaySize.ErrorMessage</p>
+            }
+            else if (DistributionBoard.ConductorSize.Value == 0 || DistributionBoard.GroundingSize.Value == 0 || DistributionBoard.RacewaySize.Value == 0)
+            {
+                <p>Board has no circuits.</p>
+            }
+            else
+            {
+                <ul class="board-size-content">
+                    <li>Use @(DistributionBoard.SetCount) set@(DistributionBoard.SetCount > 1 ? "s" : "") of @(DistributionBoard.ConductorWireCount)-@(DistributionBoard.ConductorSize)mm² @(DistributionBoard.ConductorType.ToString()) and @(DistributionBoard.GroundingWireCount)-@(DistributionBoard.GroundingSize)mm² @(DistributionBoard.Grounding.ToString())</li>
+                    <li>Use @(DistributionBoard.RacewaySize)mm ø @(DistributionBoard.RacewayType.GetDisplayName())</li>
+                </ul>
+            }
+        </div>
+
+        <button
+            type="button"
+            class="btn-icon btn-primary"
+            @onclick="OpenComputationsModal">
+            <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
+            </svg>
+        </button>
+    </div>
+
+    @if (DistributionBoard.HasTransformer)
+    {
+        <div class="board-size-card">
+            <div class="board-size-card-text">
+                <label>Transformer</label>
+
+                @if (DistributionBoard.TransformerRating.HasError)
+                {
+                    <p>@(DistributionBoard.TransformerRating.ErrorMessage)</p>
+                }
+                else if (DistributionBoard.TransformerPrimaryProtectionAmpereTrip.HasError)
+                {
+                    <p>@(DistributionBoard.TransformerPrimaryProtectionAmpereTrip.ErrorMessage)</p>
+                }
+                else if (DistributionBoard.TransformerSecondaryProtectionAmpereTrip.HasError)
+                {
+                    <p>@(DistributionBoard.TransformerSecondaryProtectionAmpereTrip.ErrorMessage)</p>
+                }
+                else if (DistributionBoard.TransformerRating.Value == 0)
+                {
+                    <p>Board has no circuits.</p>
+                }
+                else
+                {
+                    <ul class="board-size-content">
+                        <li>@(DistributionBoard.TransformerRating.Value / 1000)kVA, @(DistributionBoard.ParentDistributionBoard is null ? "13.8k" : ((int)DistributionBoard.ParentDistributionBoard.Voltage))V/@((int)DistributionBoard.Voltage)V</li>
+                        <li>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection!.GetDisplayName())</li>
+                        <li>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection!.GetDisplayName())</li>
+                    </ul>
+                }
+            </div>
+
+            <button
+                type="button"
+                class="btn-icon btn-primary"
+                @onclick="OpenComputationsModal">
+                <svg class="icon-md" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path fill="currentColor" d="M8.646 4.147a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L13.812 10L8.647 4.854a.5.5 0 0 1-.001-.707m-4 0a.5.5 0 0 1 .707-.001l5.484 5.465a.55.55 0 0 1 0 .779l-5.484 5.465a.5.5 0 0 1-.706-.708L9.812 10L4.647 4.854a.5.5 0 0 1-.001-.707"/>
+                </svg>
+            </button>
+        </div>
     }
 </div>
+
+@if (_isComputationsModalOpen)
+{
+    <ComputationsModal @bind-IsOpen="_isComputationsModalOpen" DistributionBoard="DistributionBoard"/>
+}
 
 @code {
     [Parameter] public DistributionBoard DistributionBoard { get; set; } = default!;
 
     [Parameter] public EventCallback OnBoardUpdate { get; set; }
+    
+    private bool _isComputationsModalOpen;
+
+    void OpenComputationsModal()
+    {
+        _isComputationsModalOpen = true;
+    }
     
     async Task AdjustSetCountForSizes()
     {
