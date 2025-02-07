@@ -47,7 +47,7 @@ public partial class SpareCircuit
             : base.VoltageDrop; 
 
     public override CalculationResult<int> RacewaySize =>
-        RacewayType == RacewayType.None || WireLength == 0
+        ConductorType is null || Grounding is null || RacewayType == RacewayType.None || WireLength == 0
             ? CalculationResult<int>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
             : base.RacewaySize;
 

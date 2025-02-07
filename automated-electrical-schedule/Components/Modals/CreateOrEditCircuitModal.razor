@@ -344,20 +344,27 @@
                     CircuitType = CircuitType.ConvenienceOutlet
                 };
             }
-            else
+            else if (allowedCircuitTypes.Contains(CircuitType.ApplianceEquipmentOutlet))
             {
                 _newCircuit = new ApplianceEquipmentOutletCircuit
                 {
                     CircuitType = CircuitType.ApplianceEquipmentOutlet
                 };
             }
+            else
+            {
+                _newCircuit = new SpaceCircuit
+                {
+                    CircuitType = CircuitType.SpaceOutlet
+                };
+            }
 
             _newCircuit.ParentDistributionBoard = DistributionBoard;
 
-            if (_newCircuit.ParentDistributionBoard is ThreePhaseDistributionBoard)
+            if (DistributionBoard is ThreePhaseDistributionBoard)
             {
                 _newCircuit.LineToLineVoltage = Circuit.GetAllowedLineToLineVoltagesStatic(
-                    _newCircuit.ParentDistributionBoard, 
+                    DistributionBoard, 
                     _newCircuit.CircuitType
                 )[0];
             }

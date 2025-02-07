@@ -7,6 +7,12 @@ namespace automated_electrical_schedule.Data.Models;
 public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
 {
     public abstract double WireLength { get; set; }
+    
+    public abstract string ConductorTypeId { get; set; }
+    
+    public abstract string GroundingId { get; set; }
+    
+    public abstract RacewayType RacewayType { get; set; }
 
     [Display(Name = "line-to-line voltage")]
     [Column("line_to_line_voltage")]
@@ -23,19 +29,4 @@ public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
     [Column("set_count")]
     [Range(1, int.MaxValue, ErrorMessage = "The set count must be at least 1.")]
     public int SetCount { get; set; } = 1;
-    
-    [Required]
-    [Display(Name = "conductor type")]
-    [Column("conductor_type_id")]
-    public string ConductorTypeId { get; set; } = string.Empty;
-    
-    [Required]
-    [Display(Name = "grounding")]
-    [Column("grounding_id")]
-    public string GroundingId { get; set; } = string.Empty;
-
-    [Required]
-    [Display(Name = "raceway type")]
-    [Column("raceway_type")]
-    public RacewayType RacewayType { get; set; } = RacewayType.None;
 }
