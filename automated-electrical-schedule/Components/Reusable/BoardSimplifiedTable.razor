@@ -110,18 +110,16 @@
                             {
                                 <td></td>
                             }
-                            else
+                            else if (spareCircuit is not null)
                             {
-                                if (spareCircuit is not null)
-                                {
-                                    <td>@spareCircuit.VoltAmpere</td>
-                                } else if (nonSpareCircuit is not null)
-                                {
-                                    <td>@nonSpareCircuit.VoltAmpere.Value</td>
-                                }
+                                <td>@spareCircuit.VoltAmpere</td>
+                            } 
+                            else if (nonSpareCircuit is not null)
+                            {
+                                <td>@nonSpareCircuit.VoltAmpere.Value</td>
                             }
                             
-                            <td>@circuit.Voltage.ToString()</td>
+                            <td>@nonSpaceCircuit?.Voltage.ToString()</td>
                             
                             @if (DistributionBoard is ThreePhaseDistributionBoard)
                             {
@@ -167,12 +165,12 @@
             
                             <td>@nonSpaceCircuit?.AmpereTrip</td>
                             <td>@nonSpaceCircuit?.AmpereFrame</td>
-                            <td>@circuit.Phase</td>
-                            <td>@circuit.Pole</td>
+                            <td>@nonSpaceCircuit?.Phase</td>
+                            <td>@nonSpaceCircuit?.Pole</td>
                             
-                            @if (nonSpaceCircuit is not null && nonSpaceCircuit.WireLength > 0)
+                            @if (nonSpaceCircuit?.WireLength > 0)
                             {
-                                <td>@nonSpaceCircuit?.WireLength</td>
+                                <td>@nonSpaceCircuit.WireLength</td>
                             }
                             else
                             {

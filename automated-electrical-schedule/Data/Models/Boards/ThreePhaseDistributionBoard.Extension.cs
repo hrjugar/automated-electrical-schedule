@@ -172,6 +172,7 @@ public partial class ThreePhaseDistributionBoard
     public void BalanceLoads()
     {
         var toBeBalancedCircuits = Circuits
+            .OfType<NonSpaceCircuit>()
             .Where(circuit =>
                 (circuit.LineToLineVoltage == LineToLineVoltage.A
                 || circuit.LineToLineVoltage == LineToLineVoltage.B

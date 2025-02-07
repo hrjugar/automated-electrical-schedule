@@ -27,6 +27,42 @@ public abstract partial class NonSpaceCircuit
 
     public List<RacewayType> AllowedRacewayTypes => GetAllowedRacewayTypesStatic(CircuitType);
     
+    public int Voltage
+    {
+        get
+        {
+            if (
+                ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard &&
+                parentThreePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Wye &&
+                (
+                    LineToLineVoltage == LineToLineVoltage.A ||
+                    LineToLineVoltage == LineToLineVoltage.B ||
+                    LineToLineVoltage == LineToLineVoltage.C
+                )
+            )
+                return (int)BoardVoltage.V230;
+    
+            return (int)ParentDistributionBoard.Voltage;
+        }
+    }
+    
+    public int Phase => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 1;
+    
+    public int Pole
+    {
+        get
+        {
+            if (LineToLineVoltage == LineToLineVoltage.Abc) return 3;
+    
+            return ParentDistributionBoard is ThreePhaseDistributionBoard
+            {
+                ThreePhaseConfiguration: ThreePhaseConfiguration.Wye
+            }
+                ? 1
+                : 2;
+        }
+    }
+    
     public CalculationResult<int> AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
     
     public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;

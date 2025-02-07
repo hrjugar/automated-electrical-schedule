@@ -34,7 +34,9 @@ else
 
                 @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {
-                    var toBeBalancedCircuitsCount = _distributionBoard.Circuits
+                    var toBeBalancedCircuitsCount = _distributionBoard
+                        .Circuits
+                        .OfType<NonSpaceCircuit>()
                         .Count(circuit =>
                             (circuit.LineToLineVoltage == LineToLineVoltage.A
                              || circuit.LineToLineVoltage == LineToLineVoltage.B
