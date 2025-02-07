@@ -150,7 +150,7 @@
     {
         if (Circuit is ConvenienceOutletCircuit convenienceCircuit)
         {
-            convenienceCircuit.CircuitProtection = CircuitProtection.GfciCircuitBreaker;
+            convenienceCircuit.ResolveExceedingAmpereTrip();
         }
         
         return OnCircuitChange.InvokeAsync();

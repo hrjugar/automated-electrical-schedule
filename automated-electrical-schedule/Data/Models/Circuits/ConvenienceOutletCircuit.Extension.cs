@@ -37,6 +37,16 @@ public partial class ConvenienceOutletCircuit
 
     public override CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, 3.5);
 
+    public void ResolveExceedingAmpereTrip()
+    {
+        if (!HasExceedingAmpereTrip) return;
+        
+        CircuitProtection = CircuitProtection.GfciCircuitBreaker;
+        TwoGangQuantity += GfciReceptacleQuantity;
+        GfciReceptacleQuantity = 0;
+        GfciReceptacleYoke = 0;
+    }
+    
     public override Circuit Clone()
     {
         return new ConvenienceOutletCircuit

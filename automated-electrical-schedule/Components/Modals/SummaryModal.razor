@@ -22,7 +22,7 @@
             <div class="modal-content">
                 <div class="modal-content-description">
                     <p>PROJECT NAME: @(_projectName)</p>
-                    <p>SYSTEM: @(currentBoard.Phase.GetDisplayName())</p>
+                    <p>SYSTEM: @(currentBoard.Phase.GetDisplayName()) @(currentBoard is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.ThreePhaseConfiguration.GetDisplayName() : "")</p>
                     <p>DISTRIBUTION BOARD NAME: @(currentBoard.BoardName)</p>
                     <p>VOLTAGE: @((int) currentBoard.Voltage)V</p>
                 </div>
