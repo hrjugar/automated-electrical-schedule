@@ -1,0 +1,58 @@
+@if (IsOpen)
+{
+    <div class="modal-wrapper" @onclick="CloseModal">
+        <div class="modal voltage-drop-correction-modal">
+            <div class="modal-header">
+                <h3>Choose Voltage Drop Correction Method</h3>
+            </div>
+            
+            <div class="modal-content">
+                <div class="correction-btns">
+                    <button
+                        class="btn-text btn-primary"
+                        type="button"
+                        @onclick="AdjustSets">
+                        Adjust Sets
+                    </button>
+                    
+                    <button
+                        class="btn-text btn-primary"
+                        type="button"
+                        @onclick="@(() => { })">
+                        To do
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-footer-btns">
+                <button
+                    class="btn-text btn-primary"
+                    type="button"
+                    @onclick="CloseModal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public IElectricalComponent ElectricalComponent { get; set; } = default!;
+    [Parameter] public EventCallback OnVoltageCorrection { get; set; }
+
+    async Task CloseModal()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task AdjustSets()
+    {
+        ElectricalComponent.AdjustSetCountForVoltageDropCorrection();
+        await OnVoltageCorrection.InvokeAsync();
+        await CloseModal();
+    }
+}

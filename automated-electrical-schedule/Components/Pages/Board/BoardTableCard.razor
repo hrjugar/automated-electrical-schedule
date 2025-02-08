@@ -295,28 +295,12 @@
                                 <InfoButton OnClick="() => OpenInformationArea(Information.GeneratePoleInfo(nonSpaceCircuit.Pole))"/>
                             </div>
                             
-                            var voltageDrop = nonSpaceCircuit.VoltageDrop;
-                            var hasHighVoltageDrop = !voltageDrop.HasError && voltageDrop.Value * 100 >= 3;
-
-                            if (nonSpaceCircuit.WireLength == 0)
-                            {
-                                <div class="cell cell--empty"></div>
-                            }
-                            else
-                            {
-                                <p class="cell cell--text">@nonSpaceCircuit.WireLength</p>
-                            }
+                            <p class="cell cell--text">@nonSpaceCircuit.WireLength</p>
                             
-                            <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop || voltageDrop.HasError ? "cell--error" : ""))">
+                            var voltageDrop = nonSpaceCircuit.VoltageDrop;
+                            
+                            <div class="@("cell cell--group cell--info " + (voltageDrop.HasError ? "cell--error" : ""))">
                                 <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : voltageDrop.Value.ToRoundedString(true))</p>
-
-                                @if (hasHighVoltageDrop)
-                                {
-                                    <button type="button" class="btn-text btn-destructive" @onclick="@(() => CorrectVoltageDrop(nonSpaceCircuit))">
-                                        Correct
-                                    </button>
-                                }
-
                                 <InfoButton OnClick="() => OpenInformationArea(Information.VoltageDrop)"/>
                             </div>
                             <p class="cell cell--text">@nonSpaceCircuit.CircuitProtection.GetDisplayName()</p>
@@ -893,13 +877,6 @@ else
     {
         _information = information;
         _isInformationAreaOpen = true;
-    }
-
-    async Task CorrectVoltageDrop(NonSpaceCircuit circuit)
-    {
-        circuit.CorrectVoltageDrop();
-        DatabaseContext.Update(circuit);
-        await DatabaseContext.SaveChangesAsync();
     }
 
     void GoToSubBoardPage(int subBoardId)

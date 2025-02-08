@@ -123,7 +123,35 @@
     <div class="circuit-preview-value">
         <label>Voltage Drop</label>
         
-        <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Circuit.VoltageDrop.Value.ToRoundedString(true))</p>
+        @if (((IElectricalComponent)Circuit).HasHighVoltageDrop)
+        {
+            <div class="circuit-preview-value-row item-error">
+                <p>@(Circuit.VoltageDrop.Value.ToRoundedString(true))</p>
+                <InfoButton>
+                    <div class="info-tooltip-error-content">
+                        <div class="info-tooltip-error-content-group">
+                            <h6>Notice</h6>
+                            <p>Voltage drop should not exceed 3%.</p>
+                        </div>
+                        
+                        <div class="info-tooltip-error-content-group item-error">
+                            <h6>Suggestion:</h6>
+                            <p>Adjust conductor size or number of sets.</p>
+                        </div>
+                    </div>
+                </InfoButton>
+                <button
+                    type="button"
+                    class="btn-text btn-destructive"
+                    @onclick="OpenVoltageDropCorrectionModal">
+                    Correct
+                </button>
+            </div>
+        }
+        else
+        {
+            <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Circuit.VoltageDrop.Value.ToRoundedString(true))</p>
+        }
     </div>
 
     <div class="circuit-preview-value">
@@ -142,11 +170,25 @@
     </div>
 </div>
 
+@if (_isVoltageDropCorrectionModalOpen)
+{
+    <VoltageDropCorrectionModal
+        @bind-IsOpen="_isVoltageDropCorrectionModalOpen"
+        ElectricalComponent="Circuit"
+        OnVoltageCorrection="OnCircuitChange" />
+}
 @code {
     [Parameter, EditorRequired] public NonSpaceCircuit Circuit { get; set; } = default!;
     
     [Parameter, EditorRequired] public EventCallback OnCircuitChange { get; set; }
 
+    private bool _isVoltageDropCorrectionModalOpen;
+    
+    void OpenVoltageDropCorrectionModal()
+    {
+        _isVoltageDropCorrectionModalOpen = true;
+    }
+    
     private Task ResolveExceedingAmpereTrip()
     {
         if (Circuit is ConvenienceOutletCircuit convenienceCircuit)

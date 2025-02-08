@@ -132,22 +132,11 @@ public abstract partial class NonSpaceCircuit
         ? RacewaySize.ErrorMessage
         : $"{RacewaySize} mm ø {RacewayType.GetDisplayName()}";
     
-    public void CorrectVoltageDrop()
-    {
-        if (VoltageDrop.HasError) return;
-        while (VoltageDrop.Value * 100 >= 3) SetCount += 1;
-    }
-    
-    private void AdjustSetCountForConductorSize()
+    public void AdjustSetCountForSizes()
     {
         while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
         {
             SetCount += 1;
         }
-    }
-    
-    public void AdjustSetCountForSizes()
-    {
-        AdjustSetCountForConductorSize();
     }
 }

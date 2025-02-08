@@ -24,5 +24,5 @@ public enum CalculationErrorType
     [Display(Name = "Invalid motor type used")] InvalidMotorType,
     [Display(Name = "Invalid circuit protection used")] InvalidCircuitProtection,
     [Display(Name = "Invalid conductor size used")] InvalidConductorSize,
-    [Display(Name = "")] IsNullableSpareCircuitProperty,
+    [Display(Name = "")] IsUndefinedSpareCircuitProperty,
 }

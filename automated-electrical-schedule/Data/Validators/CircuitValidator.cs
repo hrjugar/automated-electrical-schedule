@@ -27,32 +27,32 @@ public sealed class CircuitValidator : ValidationAttribute
                 return new ValidationResult(nonSpaceCircuit.AmpereFrame.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.R.HasError && nonSpaceCircuit.R.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.R.HasError && nonSpaceCircuit.R.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.R.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.X.HasError && nonSpaceCircuit.X.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.X.HasError && nonSpaceCircuit.X.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.X.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.VoltageDrop.HasError && nonSpaceCircuit.VoltageDrop.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.VoltageDrop.HasError && nonSpaceCircuit.VoltageDrop.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.VoltageDrop.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.ConductorSize.HasError && nonSpaceCircuit.ConductorSize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.ConductorSize.HasError && nonSpaceCircuit.ConductorSize.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.ConductorSize.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.GroundingSize.HasError && nonSpaceCircuit.GroundingSize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.GroundingSize.HasError && nonSpaceCircuit.GroundingSize.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.GroundingSize.ErrorMessage);
             }
             
-            if (nonSpaceCircuit.RacewaySize.HasError && nonSpaceCircuit.RacewaySize.ErrorType != CalculationErrorType.IsNullableSpareCircuitProperty)
+            if (nonSpaceCircuit.RacewaySize.HasError && nonSpaceCircuit.RacewaySize.ErrorType != CalculationErrorType.IsUndefinedSpareCircuitProperty)
             {
                 return new ValidationResult(nonSpaceCircuit.RacewaySize.ErrorMessage);
             }

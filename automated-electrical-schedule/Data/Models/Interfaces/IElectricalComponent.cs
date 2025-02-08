@@ -5,6 +5,8 @@ namespace automated_electrical_schedule.Data.Models;
 
 public interface IElectricalComponent
 {
+    public const double HighVoltageDropThreshold = 0.03;
+    
     public LineToLineVoltage LineToLineVoltage { get; set; }
     public CircuitProtection CircuitProtection { get; set; }
     public RacewayType RacewayType { get; set; }
@@ -19,4 +21,13 @@ public interface IElectricalComponent
     public CalculationResult<double?> R { get; }
     public CalculationResult<double?> X { get; }
     public CalculationResult<double?> VoltageDrop { get; }
+    
+    public bool HasHighVoltageDrop =>
+        !VoltageDrop.HasError && VoltageDrop.Value > HighVoltageDropThreshold;
+    
+    public void AdjustSetCountForVoltageDropCorrection()
+    {
+        if (VoltageDrop.HasError) return;
+        while (VoltageDrop.Value * 100 >= 3) SetCount += 1;
+    }
 }

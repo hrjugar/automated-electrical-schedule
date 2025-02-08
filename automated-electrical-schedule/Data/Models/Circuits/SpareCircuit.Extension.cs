@@ -12,47 +12,47 @@ public partial class SpareCircuit
         DataUtils.GetAmpereTrip(CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 15);
     
     public override CalculationResult<double> ConductorSize =>
-        ConductorType is null || WireLength == 0
-            ? CalculationResult<double>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+        ConductorType is null
+            ? CalculationResult<double>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.ConductorSize;
 
     public override string ConductorTextDisplay =>
-        ConductorSize.ErrorType == CalculationErrorType.IsNullableSpareCircuitProperty
+        ConductorSize.ErrorType == CalculationErrorType.IsUndefinedSpareCircuitProperty
             ? "-"
             : base.ConductorTextDisplay;
 
     public override CalculationResult<double> GroundingSize =>
-        Grounding is null || WireLength == 0
-            ? CalculationResult<double>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+        Grounding is null
+            ? CalculationResult<double>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.GroundingSize;
 
     public override string GroundingTextDisplay =>
-        GroundingSize.ErrorType == CalculationErrorType.IsNullableSpareCircuitProperty
+        GroundingSize.ErrorType == CalculationErrorType.IsUndefinedSpareCircuitProperty
             ? "-"
             : base.GroundingTextDisplay;
 
     public override CalculationResult<double?> R =>
         ConductorType is null
-            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.R;
     
     public override CalculationResult<double?> X =>
         ConductorType is null
-            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.X; 
 
     public override CalculationResult<double?> VoltageDrop =>
         ConductorType is null
-            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.VoltageDrop; 
 
     public override CalculationResult<int> RacewaySize =>
-        ConductorType is null || Grounding is null || RacewayType == RacewayType.None || WireLength == 0
-            ? CalculationResult<int>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+        ConductorType is null || Grounding is null || RacewayType == RacewayType.None
+            ? CalculationResult<int>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
             : base.RacewaySize;
 
     public override string RacewayTextDisplay =>
-        RacewaySize.ErrorType == CalculationErrorType.IsNullableSpareCircuitProperty
+        RacewaySize.ErrorType == CalculationErrorType.IsUndefinedSpareCircuitProperty
             ? "-"
             : base.RacewayTextDisplay;
 

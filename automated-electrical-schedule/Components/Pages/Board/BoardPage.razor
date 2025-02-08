@@ -31,6 +31,13 @@ else
                 <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
+                
+                @if (((IElectricalComponent)_distributionBoard).HasHighVoltageDrop)
+                {
+                    <button class="btn-text btn-primary" @onclick="OpenVoltageDropCorrectionModal">
+                        Correct Voltage Drop
+                    </button>
+                }
 
                 @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {
@@ -128,6 +135,14 @@ else
     <SummaryModal @bind-IsOpen="@_isSummaryModalOpen" DistributionBoard="@_distributionBoard"/>
 }
 
+@if (_isVoltageDropCorrectionModalOpen)
+{
+    <VoltageDropCorrectionModal 
+        @bind-IsOpen="_isVoltageDropCorrectionModalOpen"
+        ElectricalComponent="_distributionBoard"
+        OnVoltageCorrection="RefreshBoard"/>
+}
+
 @code {
     [Parameter] public int BoardId { get; set; }
     DistributionBoard? _distributionBoard;
@@ -137,31 +152,19 @@ else
     private bool _isCreateCircuitModalOpen;
     private bool _isCreateBoardModalOpen;
     private bool _isSummaryModalOpen;
+    private bool _isVoltageDropCorrectionModalOpen;
     
-    void OpenEditBoardModal()
-    {
-        _isEditBoardModalOpen = true;
-    }
+    void OpenEditBoardModal() { _isEditBoardModalOpen = true; }
 
-    void OpenDeleteBoardModal()
-    {
-        _isDeleteBoardModalOpen = true;
-    }
+    void OpenDeleteBoardModal() { _isDeleteBoardModalOpen = true; }
 
-    void OpenCreateCircuitModal()
-    {
-        _isCreateCircuitModalOpen = true;
-    }
+    void OpenCreateCircuitModal() { _isCreateCircuitModalOpen = true; }
 
-    void OpenCreateBoardModal()
-    {
-        _isCreateBoardModalOpen = true;
-    }
+    void OpenCreateBoardModal() { _isCreateBoardModalOpen = true; }
     
-    void OpenSummaryModal()
-    {
-        _isSummaryModalOpen = true;
-    }
+    void OpenSummaryModal() { _isSummaryModalOpen = true; }
+    
+    void OpenVoltageDropCorrectionModal() { _isVoltageDropCorrectionModalOpen = true; }
 
     async Task BalanceLoads()
     {
