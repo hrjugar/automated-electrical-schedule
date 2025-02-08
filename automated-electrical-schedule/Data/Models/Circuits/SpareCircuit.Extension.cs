@@ -31,19 +31,19 @@ public partial class SpareCircuit
             ? "-"
             : base.GroundingTextDisplay;
 
-    public override CalculationResult<double> R =>
-        RacewayType == RacewayType.None || ConductorType is null
-            ? CalculationResult<double>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+    public override CalculationResult<double?> R =>
+        ConductorType is null
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
             : base.R;
     
-    public override CalculationResult<double> X =>
-        RacewayType == RacewayType.None || ConductorType is null
-            ? CalculationResult<double>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+    public override CalculationResult<double?> X =>
+        ConductorType is null
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
             : base.X; 
 
-    public override CalculationResult<double> VoltageDrop =>
-        RacewayType == RacewayType.None || ConductorType is null || WireLength == 0
-            ? CalculationResult<double>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
+    public override CalculationResult<double?> VoltageDrop =>
+        ConductorType is null
+            ? CalculationResult<double?>.Failure(CalculationErrorType.IsNullableSpareCircuitProperty)
             : base.VoltageDrop; 
 
     public override CalculationResult<int> RacewaySize =>

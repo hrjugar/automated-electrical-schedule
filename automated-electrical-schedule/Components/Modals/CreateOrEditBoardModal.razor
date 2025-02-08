@@ -102,15 +102,12 @@
                         </InputSelect>
                         <ValidationMessage For=@(() => _newDistributionBoard.Voltage)/>
                     </div>
-
-                    @if (_newDistributionBoard.ParentDistributionBoard is not null)
-                    {
-                        <div class="create-or-edit-board-modal-field">
-                            <label>Wire Length (m) <span class="red-asterisk">*</span></label>
-                            <InputNumber class="input-primary" @bind-Value="_newDistributionBoard.WireLength"/>
-                            <ValidationMessage For=@(() => _newDistributionBoard.WireLength)/>
-                        </div>
-                    }
+                    
+                    <div class="create-or-edit-board-modal-field">
+                        <label>Wire Length (m)</label>
+                        <InputNumber class="input-primary" @bind-Value="_newDistributionBoard.WireLength"/>
+                        <ValidationMessage For=@(() => _newDistributionBoard.WireLength)/>
+                    </div>
 
                     <div class="create-or-edit-board-modal-field">
                         <label>Circuit Protection <span class="red-asterisk">*</span></label>
@@ -313,7 +310,6 @@
             _newDistributionBoard.ParentDistributionBoard = DistributionBoard;
             _newDistributionBoard.Phase = DistributionBoard.Phase;
             _newDistributionBoard.BuildingClassification = _newDistributionBoard.AllowedBuildingClassifications[0];
-            _newDistributionBoard.WireLength = 1;
             _newDistributionBoard.Voltage = _newDistributionBoard.AllowedVoltages[0];
 
             if (_newDistributionBoard.HasTransformer)

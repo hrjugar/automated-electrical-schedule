@@ -85,6 +85,12 @@
                 </div>
 
                 <div class="create-project-modal-field">
+                    <label>Wire Length (m)</label>
+                    <InputNumber class="input-primary" @bind-Value="_newProject.MainDistributionBoard.WireLength"/>
+                    <ValidationMessage For=@(() => _newProject.MainDistributionBoard.WireLength)/>
+                </div>
+
+                <div class="create-project-modal-field">
                     <label>Circuit Protection <span class="red-asterisk">*</span></label>
                     <InputSelect @bind-Value=_newProject.MainDistributionBoard.CircuitProtection>
                         @foreach (var circuitProtection in DistributionBoard.AllowedCircuitProtections)

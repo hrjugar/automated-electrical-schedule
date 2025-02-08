@@ -183,7 +183,12 @@
                             }
                             else
                             {
-                                <td>@(Math.Round(nonSpaceCircuit.VoltageDrop.Value, 4).ToPercentageString())</td>
+                                <td>
+                                    @if (!nonSpaceCircuit.VoltageDrop.HasError)
+                                    {
+                                        @(nonSpaceCircuit.VoltageDrop.Value.ToRoundedString(true))
+                                    }
+                                </td>
                             }
                             
                             <td>@nonSpaceCircuit?.CircuitProtection.GetDisplayName()</td>
@@ -332,23 +337,23 @@
                                 else
                                 {
                                     <td>
-                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A)
+                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A && !subDistributionBoard.AmpereLoad.HasError)
                                         {
-                                            @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                            @(subDistributionBoard.AmpereLoad.Value.ToRoundedString())
                                         }
                                     </td>
                             
                                     <td>
-                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B)
+                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B && !subDistributionBoard.AmpereLoad.HasError)
                                         {
-                                            @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                            @(subDistributionBoard.AmpereLoad.Value.ToRoundedString())
                                         }
                                     </td>
                             
                                     <td>
-                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C)
+                                        @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C && !subDistributionBoard.AmpereLoad.HasError)
                                         {
-                                            @(Math.Round(subDistributionBoard.AmpereLoad, 4))
+                                            @(subDistributionBoard.AmpereLoad.Value.ToRoundedString())
                                         }
                                     </td>
                             
@@ -357,7 +362,12 @@
                             }
                             else
                             {
-                                <td>@(Math.Round(subDistributionBoard.AmpereLoad, 4))</td>
+                                <td>
+                                    @if (!subDistributionBoard.AmpereLoad.HasError)
+                                    {
+                                        @(subDistributionBoard.AmpereLoad.Value.ToRoundedString())
+                                    }
+                                </td>
                             }
                             
                             <td>
@@ -381,7 +391,7 @@
                             <td>
                                 @if (!subDistributionBoard.VoltageDrop.HasError)
                                 {
-                                    @(Math.Round(subDistributionBoard.VoltageDrop.Value, 4).ToPercentageString())
+                                    @(subDistributionBoard.VoltageDrop.Value.ToRoundedString(true))
                                 }
                             </td>
                             <td>@subDistributionBoard.CircuitProtection.GetDisplayName()</td>
@@ -430,7 +440,12 @@
                 }
                 else
                 {
-                    <td>@(Math.Round(DistributionBoard.AmpereLoad, 4))</td>
+                    <td>
+                        @if (!DistributionBoard.AmpereLoad.HasError)
+                        {
+                            @(DistributionBoard.AmpereLoad.Value.ToRoundedString())
+                        }
+                    </td>
                 }
                 
                 <td></td>

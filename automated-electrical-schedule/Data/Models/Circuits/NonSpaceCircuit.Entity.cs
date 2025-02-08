@@ -6,7 +6,6 @@ namespace automated_electrical_schedule.Data.Models;
 
 public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
 {
-    public abstract double WireLength { get; set; }
     
     public abstract string ConductorTypeId { get; set; }
     
@@ -24,4 +23,9 @@ public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
     [Column("set_count")]
     [Range(1, int.MaxValue, ErrorMessage = "The set count must be at least 1.")]
     public int SetCount { get; set; } = 1;
+    
+    [Display(Name = "wire length")]
+    [Column("wire_length")]
+    [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
+    public double? WireLength { get; set; }
 }

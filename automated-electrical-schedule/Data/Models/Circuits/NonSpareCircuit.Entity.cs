@@ -12,12 +12,6 @@ public abstract partial class NonSpareCircuit : NonSpaceCircuit, IDescribed
     public string Description { get; set; } = string.Empty;
     
     [Required]
-    [Display(Name = "wire length")]
-    [Column("wire_length")]
-    [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
-    public override double WireLength { get; set; } = 1;
-    
-    [Required]
     [Display(Name = "conductor type")]
     [Column("conductor_type_id")]
     public override string ConductorTypeId { get; set; } = Records.ConductorType.All[0].Id;

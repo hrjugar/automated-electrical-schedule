@@ -12,11 +12,6 @@ public partial class SpareCircuit : NonSpaceCircuit
     [Column("volt_ampere")]
     [Range(0d, double.MaxValue)]
     public double VoltAmpere { get; set; }
-
-    [Display(Name = "wire length")]
-    [Column("wire_length")]
-    [Range(0d, double.PositiveInfinity)]
-    public override double WireLength { get; set; } = 0;
     
     [Display(Name = "conductor type")]
     [Column("conductor_type_id")]

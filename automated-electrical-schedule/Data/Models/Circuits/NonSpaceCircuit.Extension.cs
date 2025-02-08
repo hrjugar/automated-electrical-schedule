@@ -89,47 +89,20 @@ public abstract partial class NonSpaceCircuit
     
     public int WireCount => SetCount * (ConductorWireCount + GroundingWireCount);
 
-    public virtual CalculationResult<double> R =>
-        RacewayType == RacewayType.CableTray
-            ? CalculationResult<double>.Success(0)
-            : VoltageDropTable.GetR(RacewayType, ConductorType!.Material, ConductorSize);
+    public virtual CalculationResult<double?> R => VoltageDropTable.GetR(RacewayType, ConductorType!.Material, ConductorSize);
     
-    public virtual CalculationResult<double> X =>
-        RacewayType == RacewayType.CableTray
-            ? CalculationResult<double>.Success(0)
-            : VoltageDropTable.GetX(RacewayType, ConductorSize); 
-    // {
-    //     get
-    //     {
-    //         if (RacewayType == RacewayType.CableTray)
-    //         {
-    //             return CalculationResult<double>.Success(0);
-    //         }
-    //
-    //         return VoltageDropTable.GetX(RacewayType, ConductorSize);
-    //     }
-    // }
+    public virtual CalculationResult<double?> X => VoltageDropTable.GetX(RacewayType, ConductorSize); 
     
-    public virtual CalculationResult<double> VoltageDrop
-    {
-        get
-        {
-            if (RacewayType == RacewayType.CableTray)
-            {
-                return CalculationResult<double>.Success(0);
-            }
-            
-            return VoltageDropTable.GetVoltageDrop(
-                LineToLineVoltage,
-                R,
-                X,
-                AmpereLoad,
-                WireLength,
-                SetCount,
-                Voltage
-            );            
-        }
-    }
+    public virtual CalculationResult<double?> VoltageDrop => 
+        VoltageDropTable.GetVoltageDrop(
+            LineToLineVoltage,
+            R,
+            X,
+            AmpereLoad,
+            WireLength,
+            SetCount,
+            Voltage
+        );         
 
     public virtual CalculationResult<int> RacewaySize
     {

@@ -308,7 +308,7 @@
                             }
                             
                             <div class="@("cell cell--group cell--info " + (hasHighVoltageDrop || voltageDrop.HasError ? "cell--error" : ""))">
-                                <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : Math.Round(voltageDrop.Value, 4).ToPercentageString())</p>
+                                <p>@(voltageDrop.HasError ? voltageDrop.ErrorMessage : voltageDrop.Value.ToRoundedString(true))</p>
 
                                 @if (hasHighVoltageDrop)
                                 {
@@ -505,13 +505,13 @@
 
                         @if (subDistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
                         {
-                            @if (subDistributionBoard.AmpereLoad == 0)
+                            @if (subDistributionBoard.AmpereLoad.HasError || subDistributionBoard.AmpereLoad.Value == 0)
                             {
                                 <div class="cell cell--empty cell--load cell--load--no-line"></div>
                             }
                             else
                             {
-                                <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(subDistributionBoard.AmpereLoad, 4)</p>
+                                <p class="cell cell--text cell--load cell--load--no-line">@(subDistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
                             }
                         }
                         else
@@ -558,27 +558,27 @@
                             }
                             else if (DistributionBoard is ThreePhaseDistributionBoard)
                             {
-                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A)
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.A && !subDistributionBoard.AmpereLoad.HasError)
                                 {
-                                    <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                                    <p class="cell cell--text">@(subDistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
                                 }
                                 else
                                 {
                                     <div class="cell cell--empty"></div>
                                 }
 
-                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B)
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.B && !subDistributionBoard.AmpereLoad.HasError)
                                 {
-                                    <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                                    <p class="cell cell--text">@(subDistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
                                 }
                                 else
                                 {
                                     <div class="cell cell--empty"></div>
                                 }
 
-                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C)
+                                @if (subDistributionBoard.LineToLineVoltage == LineToLineVoltage.C && !subDistributionBoard.AmpereLoad.HasError)
                                 {
-                                    <p class="cell cell--text">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                                    <p class="cell cell--text">@(subDistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
                                 }
                                 else
                                 {
@@ -589,13 +589,13 @@
                             }
                             else
                             {
-                                @if (subDistributionBoard.AmpereLoad == 0)
+                                @if (subDistributionBoard.AmpereLoad.HasError || subDistributionBoard.AmpereLoad.Value == 0)
                                 {
                                     <div class="cell cell--empty cell--load cell--load--line"></div>
                                 }
                                 else
                                 {
-                                    <p class="cell cell--text cell--load cell--load--line">@(Math.Round(subDistributionBoard.AmpereLoad, 4))</p>
+                                    <p class="cell cell--text cell--load cell--load--line">@(subDistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
                                 }
                             }
                         }
@@ -624,7 +624,7 @@
                         else
                         {
                             <div class="@("cell cell--group " + (subDistributionBoard.VoltageDrop.HasError ? "cell--error" : ""))">
-                                <p>@(subDistributionBoard.VoltageDrop.HasError ? subDistributionBoard.VoltageDrop : Math.Round(subDistributionBoard.VoltageDrop.Value, 4).ToPercentageString())</p>
+                                <p>@(subDistributionBoard.VoltageDrop.HasError ? subDistributionBoard.VoltageDrop : subDistributionBoard.VoltageDrop.Value.ToRoundedString(true))</p>
 
                                 @* TODO: Implement voltage drop correction for sub boards *@
 
@@ -723,13 +723,13 @@ else
 
     @if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
     {
-        @if (DistributionBoard.AmpereLoad == 0)
+        @if (DistributionBoard.AmpereLoad.HasError || DistributionBoard.AmpereLoad.Value == 0)
         {
             <div class="cell cell--empty cell--load cell--load--no-line"></div>
         }
         else
         {
-            <p class="cell cell--text cell--load cell--load--no-line">@Math.Round(DistributionBoard.AmpereLoad, 4)</p>
+            <p class="cell cell--text cell--load cell--load--no-line">@DistributionBoard.AmpereLoad.Value.ToRoundedString()</p>
         }
     }
     else
@@ -744,7 +744,7 @@ else
             }
             else
             {
-                <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadA, 4)</p>
+                <p class="cell cell--text">@threePhaseBoard.AmpereLoadA.ToRoundedString()</p>
             }
 
             @if (threePhaseBoard.AmpereLoadB == 0)
@@ -753,7 +753,7 @@ else
             }
             else
             {
-                <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadB, 4)</p>
+                <p class="cell cell--text">@threePhaseBoard.AmpereLoadB.ToRoundedString()</p>
             }
 
             @if (threePhaseBoard.AmpereLoadC == 0)
@@ -763,6 +763,7 @@ else
             else
             {
                 <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadC, 4)</p>
+                <p class="cell cell--text">@threePhaseBoard.AmpereLoadC.ToRoundedString()</p>
             }
 
             @if (threePhaseBoard.AmpereLoadAbc == 0)
@@ -771,18 +772,18 @@ else
             }
             else
             {
-                <p class="cell cell--text">@Math.Round(threePhaseBoard.AmpereLoadAbc, 4)</p>
+                <p class="cell cell--text">@threePhaseBoard.AmpereLoadAbc.ToRoundedString()</p>
             }
         }
         else
         {
-            @if (DistributionBoard.AmpereLoad == 0)
+            @if (DistributionBoard.AmpereLoad.HasError || DistributionBoard.AmpereLoad.Value == 0)
             {
                 <div class="cell cell--empty cell--load cell--load--line"></div>
             }
             else
             {
-                <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.AmpereLoad, 4)</p>
+                <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.AmpereLoad.Value, 4)</p>
             }
         }
     }
@@ -801,7 +802,7 @@ else
     }
     else
     {
-        <p class="cell cell--text">@(DistributionBoard.VoltageDrop.HasError ? DistributionBoard.VoltageDrop.ErrorMessage : Math.Round(DistributionBoard.VoltageDrop.Value, 4).ToPercentageString())</p>
+        <p class="cell cell--text">@(DistributionBoard.VoltageDrop.HasError ? DistributionBoard.VoltageDrop.ErrorMessage : DistributionBoard.VoltageDrop.Value.ToRoundedString(true))</p>
         @* <p>@(Math.Round(subDistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p> *@
     }
 

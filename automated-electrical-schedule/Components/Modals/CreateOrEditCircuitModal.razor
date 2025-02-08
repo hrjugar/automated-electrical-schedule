@@ -212,7 +212,7 @@
                         }
                         
                         <div class="create-or-edit-circuit-modal-field">
-                            <label class="@(nonSpareCircuit is not null ? "required" : "")">Wire Length (m)</label>
+                            <label>Wire Length (m)</label>
                             <InputNumber class="input-primary" @bind-Value="nonSpaceCircuit.WireLength"/>
                             <ValidationMessage For=@(() => nonSpaceCircuit.WireLength)/>
                         </div>
@@ -357,14 +357,12 @@
                     spareCircuit.ConductorTypeId = string.Empty;
                     spareCircuit.GroundingId = string.Empty;
                     spareCircuit.RacewayType = RacewayType.None;
-                    spareCircuit.WireLength = 0;
                 }
                 else
                 {
                     nonSpaceCircuit.ConductorTypeId = ConductorType.All[0].Id;
                     nonSpaceCircuit.GroundingId = ConductorType.All[0].Id;
                     nonSpaceCircuit.RacewayType = RacewayType.Pvc;
-                    nonSpaceCircuit.WireLength = 1;
                 }
             }
 
@@ -437,10 +435,7 @@
                     ? newNonSpaceCircuit.CircuitProtection
                     : updatedNonSpaceCircuit.AllowedCircuitProtections[0];
         
-            updatedNonSpaceCircuit.WireLength = 
-                updatedNonSpaceCircuit is NonSpareCircuit && newNonSpaceCircuit.WireLength == 0
-                    ? 1
-                    : newNonSpaceCircuit.WireLength;
+            updatedNonSpaceCircuit.WireLength = newNonSpaceCircuit.WireLength;
         
             updatedNonSpaceCircuit.SetCount = newNonSpaceCircuit.SetCount;
         

@@ -11,12 +11,12 @@ public interface IElectricalComponent
     public string ConductorTypeId { get; set; }
     public string GroundingId { get; set; }
     public int SetCount { get; set; }
-    public double WireLength { get; set; }
+    public double? WireLength { get; set; }
     
     public CalculationResult<double> AmpereLoad { get; }
     public CalculationResult<int> AmpereTrip { get; }
     public CalculationResult<int> AmpereFrame { get; }
-    public CalculationResult<double> R { get; }
-    public CalculationResult<double> X { get; }
-    public CalculationResult<double> VoltageDrop { get; }
+    public CalculationResult<double?> R { get; }
+    public CalculationResult<double?> X { get; }
+    public CalculationResult<double?> VoltageDrop { get; }
 }

@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Wrappers;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
@@ -38,7 +39,7 @@ public partial class SinglePhaseDistributionBoard
     //     }
     // }
 
-    public override double AmpereLoad
+    public override CalculationResult<double> AmpereLoad
     {
         get
         {
@@ -48,9 +49,10 @@ public partial class SinglePhaseDistributionBoard
                 .Sum();
             var subBoardsAmpereLoad = SubDistributionBoards
                 .OfType<SinglePhaseDistributionBoard>()
-                .Sum(subBoard => subBoard.AmpereLoad);
+                .Select(subBoard => subBoard.AmpereLoad)
+                .Sum();
 
-            return childCircuitsAmpereLoad + subBoardsAmpereLoad;
+            return CalculationResult<double>.Success(childCircuitsAmpereLoad + subBoardsAmpereLoad); 
         }
     }
 

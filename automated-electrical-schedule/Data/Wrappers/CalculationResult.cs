@@ -26,15 +26,10 @@ public struct CalculationResult<T>
 
     public override string ToString()
     {
-        return HasError
-            ? ErrorType.GetDisplayName()
-            : Value?.ToString() ?? "X";
+        if (HasError) return ErrorType.GetDisplayName();
+        if (Value is double doubleValue) return doubleValue.ToRoundedString();
+        return Value?.ToString() ?? "";
     }
-
-    // public string ErrorString()
-    // {
-    //     return ErrorType.GetDisplayName();
-    // }
 
     public string ErrorMessage => ErrorType.GetDisplayName();
 }

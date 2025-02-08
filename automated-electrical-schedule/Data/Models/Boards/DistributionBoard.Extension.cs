@@ -383,7 +383,7 @@ public abstract partial class DistributionBoard
         }
     }
 
-    public abstract double AmpereLoad { get; }
+    public abstract CalculationResult<double> AmpereLoad { get; }
 
     public CalculationResult<int> AmpereFrame
     {
@@ -395,33 +395,20 @@ public abstract partial class DistributionBoard
         }
     }
 
-    protected CalculationResult<double> R => 
-        RacewayType == RacewayType.CableTray
-            ? CalculationResult<double>.Success(0)
-            : VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
+    public CalculationResult<double?> R => VoltageDropTable.GetR(RacewayType, ConductorType.Material, ConductorSize);
 
-    protected CalculationResult<double> X => 
-        RacewayType == RacewayType.CableTray
-            ? CalculationResult<double>.Success(0)
-            : VoltageDropTable.GetX(RacewayType, ConductorSize);
+    public CalculationResult<double?> X => VoltageDropTable.GetX(RacewayType, ConductorSize);
 
-    public CalculationResult<double> VoltageDrop
-    {
-        get
-        {
-            if (RacewayType == RacewayType.CableTray || WireLength is null) return CalculationResult<double>.Success(0);
-
-            return VoltageDropTable.GetVoltageDrop(
-                this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : LineToLineVoltage.None,
-                R,
-                X,
-                CalculationResult<double>.Success(AmpereLoad),
-                WireLength.Value,
-                SetCount,
-                (int)Voltage
-            );
-        }
-    }
+    public CalculationResult<double?> VoltageDrop => 
+        VoltageDropTable.GetVoltageDrop(
+            this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : LineToLineVoltage.None,
+            R,
+            X,
+            AmpereLoad,
+            WireLength,
+            SetCount,
+            (int)Voltage
+        );
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 

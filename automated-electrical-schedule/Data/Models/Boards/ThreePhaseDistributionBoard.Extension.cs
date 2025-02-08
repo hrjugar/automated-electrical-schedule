@@ -1,4 +1,5 @@
 using automated_electrical_schedule.Data.Enums;
+using automated_electrical_schedule.Data.Wrappers;
 using automated_electrical_schedule.Extensions;
 
 namespace automated_electrical_schedule.Data.Models;
@@ -88,23 +89,25 @@ public partial class ThreePhaseDistributionBoard
     //     }
     // }
 
-    public double AmpereLoadA => CalculateAmpereLoad(Enums.LineToLineVoltage.A);
-    public double AmpereLoadB => CalculateAmpereLoad(Enums.LineToLineVoltage.B);
-    public double AmpereLoadC => CalculateAmpereLoad(Enums.LineToLineVoltage.C);
-    public double AmpereLoadAbc => CalculateAmpereLoad(Enums.LineToLineVoltage.Abc);
+    public double AmpereLoadA => CalculateLineAmpereLoad(Enums.LineToLineVoltage.A);
+    public double AmpereLoadB => CalculateLineAmpereLoad(Enums.LineToLineVoltage.B);
+    public double AmpereLoadC => CalculateLineAmpereLoad(Enums.LineToLineVoltage.C);
+    public double AmpereLoadAbc => CalculateLineAmpereLoad(Enums.LineToLineVoltage.Abc);
 
-    public override double AmpereLoad
+    public override CalculationResult<double> AmpereLoad
     {
         get
         {
-            return LineToLineVoltage switch
+            var ampereLoad = LineToLineVoltage switch
             {
-                Enums.LineToLineVoltage.A => AmpereLoadA,
-                Enums.LineToLineVoltage.B => AmpereLoadB,
-                Enums.LineToLineVoltage.C => AmpereLoadC,
-                Enums.LineToLineVoltage.Abc => AmpereLoadA + AmpereLoadB + AmpereLoadC + AmpereLoadAbc,
+                LineToLineVoltage.A => AmpereLoadA,
+                LineToLineVoltage.B => AmpereLoadB,
+                LineToLineVoltage.C => AmpereLoadC,
+                LineToLineVoltage.Abc => AmpereLoadA + AmpereLoadB + AmpereLoadC + AmpereLoadAbc,
                 _ => throw new ArgumentOutOfRangeException(nameof(LineToLineVoltage))
             };
+            
+            return CalculationResult<double>.Success(ampereLoad);
         }
     }
 
@@ -140,7 +143,7 @@ public partial class ThreePhaseDistributionBoard
         };
     }
 
-    private double CalculateAmpereLoad(LineToLineVoltage lineToLineVoltage)
+    private double CalculateLineAmpereLoad(LineToLineVoltage lineToLineVoltage)
     {
         double totalAmpereLoad = 0;
 
@@ -158,11 +161,11 @@ public partial class ThreePhaseDistributionBoard
             switch (subBoard)
             {
                 case ThreePhaseDistributionBoard subThreePhaseBoard:
-                    totalAmpereLoad += subThreePhaseBoard.CalculateAmpereLoad(lineToLineVoltage);
+                    totalAmpereLoad += subThreePhaseBoard.CalculateLineAmpereLoad(lineToLineVoltage);
                     break;
                 case SinglePhaseDistributionBoard subSinglePhaseBoard:
-                    if (subSinglePhaseBoard.LineToLineVoltage == lineToLineVoltage)
-                        totalAmpereLoad += subSinglePhaseBoard.AmpereLoad;
+                    if (subSinglePhaseBoard.LineToLineVoltage == lineToLineVoltage && !subSinglePhaseBoard.AmpereLoad.HasError)
+                        totalAmpereLoad += subSinglePhaseBoard.AmpereLoad.Value;
                     break;
             }
 

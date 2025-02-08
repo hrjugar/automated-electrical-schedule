@@ -22,6 +22,19 @@ public static class DoubleExtensions
         return Math.Abs(value - other) < tolerance;
     }
 
+    public static string ToRoundedString(this double value, bool isPercentage = false)
+    {
+        var roundedValue = Math.Round(value, 4);
+        if (isPercentage) return $"{Math.Round(value * 100, 2)}%";
+        return roundedValue.ToString(CultureInfo.InvariantCulture);
+    }
+    
+    public static string ToRoundedString(this double? value, bool isPercentage = false)
+    {
+        if (value is null) return string.Empty;
+        return value.Value.ToRoundedString(isPercentage);
+    }
+
     public static string ToPercentageString(this double value)
     {
         return $"{Math.Round(value * 100, 2)}%";

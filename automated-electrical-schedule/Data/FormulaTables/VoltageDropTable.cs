@@ -208,9 +208,10 @@ public static class VoltageDropTable
         0.025
     ];
 
-    public static CalculationResult<double> GetX(RacewayType racewayType, CalculationResult<double> conductorSize)
+    public static CalculationResult<double?> GetX(RacewayType racewayType, CalculationResult<double> conductorSize)
     {
-        if (conductorSize.HasError) return CalculationResult<double>.Failure(conductorSize.ErrorType);
+        if (racewayType is RacewayType.CableTray or RacewayType.None) return CalculationResult<double?>.Success(null);
+        if (conductorSize.HasError) return CalculationResult<double?>.Failure(conductorSize.ErrorType);
         
         List<double> column;
         switch (racewayType)
@@ -225,21 +226,21 @@ public static class VoltageDropTable
             case RacewayType.Rmc:
                 column = XColumnTwoValues;
                 break;
-            case RacewayType.CableTray:
             default:
-                return CalculationResult<double>.Failure(CalculationErrorType.InvalidRacewayType);
+                return CalculationResult<double?>.Failure(CalculationErrorType.InvalidRacewayType);
         }
         
         var index = DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize.Value));
 
         return index == -1
-            ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingConductorSize)
-            : CalculationResult<double>.Success(column[index]);
+            ? CalculationResult<double?>.Failure(CalculationErrorType.NoFittingConductorSize)
+            : CalculationResult<double?>.Success(column[index]);
     }
 
-    public static CalculationResult<double> GetR(RacewayType racewayType, ConductorMaterial conductorMaterial, CalculationResult<double> conductorSize)
+    public static CalculationResult<double?> GetR(RacewayType racewayType, ConductorMaterial conductorMaterial, CalculationResult<double> conductorSize)
     {
-        if (conductorSize.HasError) return CalculationResult<double>.Failure(conductorSize.ErrorType);
+        if (racewayType is RacewayType.CableTray or RacewayType.None) return CalculationResult<double?>.Success(null);
+        if (conductorSize.HasError) return CalculationResult<double?>.Failure(conductorSize.ErrorType);
 
         List<double> column;
         switch (conductorMaterial)
@@ -259,9 +260,8 @@ public static class VoltageDropTable
                     case RacewayType.Rmc:
                         column = RCuColumnThreeValues;
                         break;
-                    case RacewayType.CableTray:
                     default:
-                        return CalculationResult<double>.Failure(CalculationErrorType.InvalidRacewayType);
+                        return CalculationResult<double?>.Failure(CalculationErrorType.InvalidRacewayType);
                 }
 
                 break;
@@ -280,40 +280,44 @@ public static class VoltageDropTable
                     case RacewayType.Rmc:
                         column = RAlColumnThreeValues;
                         break;
-                    case RacewayType.CableTray:
                     default:
-                        return CalculationResult<double>.Failure(CalculationErrorType.InvalidRacewayType);
+                        return CalculationResult<double?>.Failure(CalculationErrorType.InvalidRacewayType);
                 }
 
                 break;
             default:
-                return CalculationResult<double>.Failure(CalculationErrorType.InvalidConductorMaterial);
+                return CalculationResult<double?>.Failure(CalculationErrorType.InvalidConductorMaterial);
         }
         
         var index = DataConstants.ConductorSizes.FindIndex(size => size.IsRoughlyEqualTo(conductorSize.Value));
         
         return index == -1
-            ? CalculationResult<double>.Failure(CalculationErrorType.NoFittingConductorSize)
-            : CalculationResult<double>.Success(column[index]);
+            ? CalculationResult<double?>.Failure(CalculationErrorType.NoFittingConductorSize)
+            : CalculationResult<double?>.Success(column[index]);
     }
 
-    public static CalculationResult<double> GetVoltageDrop(LineToLineVoltage lineToLineVoltage,
-        CalculationResult<double> r,
-        CalculationResult<double> x,
+    public static CalculationResult<double?> GetVoltageDrop(
+        LineToLineVoltage lineToLineVoltage,
+        CalculationResult<double?> r,
+        CalculationResult<double?> x,
         CalculationResult<double> ampereLoad,
-        double wireLength,
+        double? wireLength,
         int setCount,
-        int voltage)
+        int voltage
+    )
     {
-        if (r.HasError) return CalculationResult<double>.Failure(r.ErrorType);
-        if (x.HasError) return CalculationResult<double>.Failure(x.ErrorType);
-        if (ampereLoad.HasError) return CalculationResult<double>.Failure(ampereLoad.ErrorType);
+        if (wireLength is null) return CalculationResult<double?>.Success(null);
+        if (r.HasError) return CalculationResult<double?>.Failure(r.ErrorType);
+        if (r.Value is null) return CalculationResult<double?>.Success(null);
+        if (x.HasError) return CalculationResult<double?>.Failure(x.ErrorType);
+        if (x.Value is null) return CalculationResult<double?>.Success(null);
+        if (ampereLoad.HasError) return CalculationResult<double?>.Failure(ampereLoad.ErrorType);
 
         var factor = lineToLineVoltage == LineToLineVoltage.Abc ? Math.Sqrt(3) : 2;
 
-        var value = factor * ampereLoad.Value * Math.Sqrt(Math.Pow(r.Value, 2) + Math.Pow(x.Value, 2)) * (wireLength / (305 * setCount)) *
+        var value = factor * ampereLoad.Value * Math.Sqrt(Math.Pow(r.Value.Value, 2) + Math.Pow(x.Value.Value, 2)) * (wireLength / (305 * setCount)) *
                (1.0 / voltage);
         
-        return CalculationResult<double>.Success(value);
+        return CalculationResult<double?>.Success(value);
     }
 }

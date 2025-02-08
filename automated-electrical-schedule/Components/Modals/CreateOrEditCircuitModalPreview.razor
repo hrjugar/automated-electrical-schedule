@@ -122,7 +122,8 @@
 
     <div class="circuit-preview-value">
         <label>Voltage Drop</label>
-        <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Math.Round(Circuit.VoltageDrop.Value, 4).ToPercentageString())</p>
+        
+        <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Circuit.VoltageDrop.Value.ToRoundedString(true))</p>
     </div>
 
     <div class="circuit-preview-value">

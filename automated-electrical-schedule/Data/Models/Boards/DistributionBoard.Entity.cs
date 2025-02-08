@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace automated_electrical_schedule.Data.Models;
 
 [Table(TableName)]
-public abstract partial class DistributionBoard : IOrdered
+public abstract partial class DistributionBoard : IOrdered, IElectricalComponent
 {
     private const string TableName = "distribution_boards";
 
