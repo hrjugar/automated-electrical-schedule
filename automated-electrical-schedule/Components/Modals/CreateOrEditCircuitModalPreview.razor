@@ -21,7 +21,7 @@
             {
                 foreach (var fixture in fixtureCircuit.Fixtures)
                 {
-                    <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage) Watts)</p>
+                    <p class="item-sub">@(fixture.Description == string.Empty ? "Fixture" : fixture.Description) (@(fixture.Wattage.ToRoundedString()) Watts)</p>
                 }
             }
             else if (convenienceCircuit != null)
@@ -58,13 +58,13 @@
     {
         <div class="circuit-preview-value">
             <label>Volt Amps</label>
-            <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : Math.Round(nonSpareCircuit.VoltAmpere.Value, 4))</p>
+            <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : nonSpareCircuit.VoltAmpere.Value.ToRoundedString())</p>
         </div>
     }
 
     <div class="circuit-preview-value">
         <label>Ampere Load</label>
-        <p class="@(Circuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(Circuit.AmpereLoad)</p>
+        <p class="@(Circuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(Circuit.AmpereLoad.HasError ? Circuit.AmpereLoad.ErrorMessage : Circuit.AmpereLoad.Value.ToRoundedString())</p>
         @if (isAmpereLoadExceeding)
         {
         <p class="item-error item-sub">*As per PEC Part 1 2017 2.10.2.6 (D) p.45, it cannot be greater than 50 A</p>
@@ -112,12 +112,12 @@
 
     <div class="circuit-preview-value">
         <label>R</label>
-        <p class="@(Circuit.R.HasError ? "item-error" : "")">@(Circuit.R)</p>
+        <p class="@(Circuit.R.HasError ? "item-error" : "")">@(Circuit.R.HasError ? Circuit.R.ErrorMessage : Circuit.R.Value.ToRoundedString())</p>
     </div>
 
     <div class="circuit-preview-value">
         <label>X</label>
-        <p class="@(Circuit.X.HasError ? "item-error" : "")">@(Circuit.X)</p>
+        <p class="@(Circuit.X.HasError ? "item-error" : "")">@(Circuit.X.HasError ? Circuit.X.ErrorMessage : Circuit.X.Value.ToRoundedString())</p>
     </div>
 
     <div class="circuit-preview-value">

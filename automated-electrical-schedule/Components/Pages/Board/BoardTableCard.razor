@@ -187,14 +187,14 @@
                             @if (spareCircuit is not null)
                             {
                                 <div class="cell cell--group cell--info">
-                                    <p>@(Math.Round(spareCircuit.VoltAmpere, 4))</p>
+                                    <p>@(spareCircuit.VoltAmpere.ToRoundedString())</p>
                                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
                                 </div>
                             }
                             else if (nonSpareCircuit is not null)
                             {
                                 <div class="@("cell cell--group cell--info " + (nonSpareCircuit.VoltAmpere.HasError ? "cell--error" : ""))">
-                                    <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : Math.Round(nonSpareCircuit.VoltAmpere.Value, 4))</p>
+                                    <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : nonSpareCircuit.VoltAmpere.Value.ToRoundedString())</p>
                                     <InfoButton OnClick="() => OpenInformationArea(Information.GenerateVoltAmpereInfo(circuit.CircuitType))"/>
                                 </div>
                             }
@@ -206,7 +206,7 @@
                             
                             var ampereLoadDisplay = nonSpaceCircuit.AmpereLoad.HasError
                                 ? nonSpaceCircuit.AmpereLoad.ErrorMessage
-                                : Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4).ToString(CultureInfo.InvariantCulture);
+                                : nonSpaceCircuit.AmpereLoad.Value.ToRoundedString();
                             
                             if (DistributionBoard.LineToLineVoltage is LineToLineVoltage.None)
                             {
@@ -409,7 +409,7 @@
                         {
                             foreach (var fixture in fixtureCircuit.Fixtures)
                             {
-                                <p class="cell cell--text cell--desc">@fixture.Description (@(Math.Round(fixture.Wattage, 2)) Watts)</p>
+                                <p class="cell cell--text cell--desc">@fixture.Description (@fixture.Wattage.ToRoundedString()) Watts)</p>
                                 <p class="cell cell--text cell--qty">@fixture.Quantity</p>
                             }
                         }
@@ -471,7 +471,7 @@
                         }
                         else
                         {
-                            <p class="cell cell--text">@(Math.Round(subDistributionBoard.VoltAmpere, 4))</p>
+                            <p class="cell cell--text">@(subDistributionBoard.VoltAmpere.ToRoundedString())</p>
                         }
 
                         @if ((int)DistributionBoard.Voltage > (int)subDistributionBoard.Voltage && subDistributionBoard.LineToLineVoltage == LineToLineVoltage.Abc)
@@ -510,7 +510,7 @@
                                 }
                                 else
                                 {
-                                    <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadA, 4)</p>
+                                    <p class="cell cell--text">@(subThreePhaseBoard.AmpereLoadA.ToRoundedString())</p>
                                 }
 
                                 @if (subThreePhaseBoard.AmpereLoadB == 0)
@@ -519,7 +519,7 @@
                                 }
                                 else
                                 {
-                                    <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadB, 4)</p>
+                                    <p class="cell cell--text">@(subThreePhaseBoard.AmpereLoadB.ToRoundedString())</p>
                                 }
 
                                 @if (subThreePhaseBoard.AmpereLoadC == 0)
@@ -528,7 +528,7 @@
                                 }
                                 else
                                 {
-                                    <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadC, 4)</p>
+                                    <p class="cell cell--text">@(subThreePhaseBoard.AmpereLoadC.ToRoundedString())</p>
                                 }
 
                                 @if (subThreePhaseBoard.AmpereLoadAbc == 0)
@@ -537,7 +537,7 @@
                                 }
                                 else
                                 {
-                                    <p class="cell cell--text">@Math.Round(subThreePhaseBoard.AmpereLoadAbc, 4)</p>
+                                    <p class="cell cell--text">@(subThreePhaseBoard.AmpereLoadAbc.ToRoundedString())</p>
                                 }
                             }
                             else if (DistributionBoard is ThreePhaseDistributionBoard)
@@ -700,7 +700,7 @@ else
     }
     else
     {
-        <p class="cell cell--text">@(Math.Round(DistributionBoard.VoltAmpere, 4))</p>
+        <p class="cell cell--text">@(DistributionBoard.VoltAmpere.ToRoundedString())</p>
     }
 
     <div class="cell cell--empty"></div>
@@ -767,7 +767,7 @@ else
             }
             else
             {
-                <p class="cell cell--text cell--load cell--load--line">@Math.Round(DistributionBoard.AmpereLoad.Value, 4)</p>
+                <p class="cell cell--text cell--load cell--load--line">@(DistributionBoard.AmpereLoad.Value.ToRoundedString())</p>
             }
         }
     }

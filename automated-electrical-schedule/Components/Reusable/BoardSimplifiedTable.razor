@@ -112,11 +112,11 @@
                             }
                             else if (spareCircuit is not null)
                             {
-                                <td>@spareCircuit.VoltAmpere</td>
+                                <td>@spareCircuit.VoltAmpere.ToRoundedString()</td>
                             } 
                             else if (nonSpareCircuit is not null)
                             {
-                                <td>@nonSpareCircuit.VoltAmpere.Value</td>
+                                <td>@nonSpareCircuit.VoltAmpere.Value.ToRoundedString()</td>
                             }
                             
                             <td>@nonSpaceCircuit?.Voltage.ToString()</td>
@@ -126,28 +126,28 @@
                                 <td>
                                     @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.A)
                                     {
-                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
+                                        @(nonSpaceCircuit.AmpereLoad.Value.ToRoundedString())
                                     }
                                 </td>
                                 
                                 <td>
                                     @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.B)
                                     {
-                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
+                                        @(nonSpaceCircuit.AmpereLoad.Value.ToRoundedString())
                                     }
                                 </td>
                 
                                 <td>
                                     @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.C)
                                     {
-                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
+                                        @(nonSpaceCircuit.AmpereLoad.Value.ToRoundedString())
                                     }
                                 </td>
                                 
                                 <td>
                                     @if (nonSpaceCircuit?.LineToLineVoltage == LineToLineVoltage.Abc)
                                     {
-                                        @(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))
+                                        @(nonSpaceCircuit.AmpereLoad.Value.ToRoundedString())
                                     }
                                 </td>
                             }
@@ -159,7 +159,7 @@
                                 }
                                 else
                                 {
-                                    <td>@(Math.Round(nonSpaceCircuit.AmpereLoad.Value, 4))</td>
+                                    <td>@(nonSpaceCircuit.AmpereLoad.Value.ToRoundedString())</td>
                                 }
                             }
             
@@ -299,7 +299,7 @@
                             <td>@(subDistributionBoard.Order)</td>
                             <td>@subDistributionBoard.BoardName</td>
                             <td></td>
-                            <td>@subDistributionBoard.VoltAmpere</td>
+                            <td>@subDistributionBoard.VoltAmpere.ToRoundedString()</td>
                             <td>@((int) subDistributionBoard.Voltage)</td>
                             
                             @if (DistributionBoard is ThreePhaseDistributionBoard)
@@ -309,28 +309,28 @@
                                     <td>
                                         @if (subThreePhaseBoard.AmpereLoadA != 0)
                                         {
-                                            @(Math.Round(subThreePhaseBoard.AmpereLoadA, 4))
+                                            @(subThreePhaseBoard.AmpereLoadA.ToRoundedString())
                                         }
                                     </td>
                             
                                     <td>
                                         @if (subThreePhaseBoard.AmpereLoadB != 0)
                                         {
-                                            @(Math.Round(subThreePhaseBoard.AmpereLoadB, 4))
+                                            @(subThreePhaseBoard.AmpereLoadB.ToRoundedString())
                                         }
                                     </td>
                             
                                     <td>
                                         @if (subThreePhaseBoard.AmpereLoadC != 0)
                                         {
-                                            @(Math.Round(subThreePhaseBoard.AmpereLoadC, 4))
+                                            @(subThreePhaseBoard.AmpereLoadC.ToRoundedString())
                                         }
                                     </td>
                             
                                     <td>
                                         @if (subThreePhaseBoard.AmpereLoadAbc != 0)
                                         {
-                                            @(Math.Round(subThreePhaseBoard.AmpereLoadAbc, 4))
+                                            @(subThreePhaseBoard.AmpereLoadAbc.ToRoundedString())
                                         }
                                     </td>
                                 }
@@ -433,10 +433,10 @@
                 
                 @if (DistributionBoard is ThreePhaseDistributionBoard threePhaseBoard)
                 {
-                    <td>@(Math.Round(threePhaseBoard.AmpereLoadA, 4))</td>
-                    <td>@(Math.Round(threePhaseBoard.AmpereLoadB, 4))</td>
-                    <td>@(Math.Round(threePhaseBoard.AmpereLoadC, 4))</td>
-                    <td>@(Math.Round(threePhaseBoard.AmpereLoadAbc, 4))</td>
+                    <td>@(threePhaseBoard.AmpereLoadA.ToRoundedString())</td>
+                    <td>@(threePhaseBoard.AmpereLoadB.ToRoundedString())</td>
+                    <td>@(threePhaseBoard.AmpereLoadC.ToRoundedString())</td>
+                    <td>@(threePhaseBoard.AmpereLoadAbc.ToRoundedString())</td>
                 }
                 else
                 {
