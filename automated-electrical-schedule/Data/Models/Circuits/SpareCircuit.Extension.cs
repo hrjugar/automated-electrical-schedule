@@ -44,7 +44,10 @@ public partial class SpareCircuit
     public override CalculationResult<double?> VoltageDrop =>
         ConductorType is null
             ? CalculationResult<double?>.Failure(CalculationErrorType.IsUndefinedSpareCircuitProperty)
-            : base.VoltageDrop; 
+            : base.VoltageDrop;
+
+    public override bool CanCorrectVoltageDropWithConductorSize =>
+        ConductorType is not null && base.CanCorrectVoltageDropWithConductorSize;
 
     public override CalculationResult<int> RacewaySize =>
         ConductorType is null || Grounding is null || RacewayType == RacewayType.None

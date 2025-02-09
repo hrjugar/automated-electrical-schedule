@@ -10,6 +10,11 @@ public sealed class CircuitValidator : ValidationAttribute
     {
         if (value is not Circuit circuit) return ValidationResult.Success;
 
+        if (circuit is IElectricalComponent { HasHighVoltageDrop: true })
+        {
+            return new ValidationResult("Voltage drop exceeds the threshold.");
+        }
+        
         if (circuit is NonSpaceCircuit nonSpaceCircuit)
         {
             if (nonSpaceCircuit.AmpereLoad.HasError)

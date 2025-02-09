@@ -120,6 +120,11 @@ public abstract partial class DistributionBoard : IOrdered, IElectricalComponent
     [Display(Name = "breaker raceway type")]
     [Column("breaker_raceway_type")]
     public RacewayType? BreakerRacewayType { get; set; }
+    
+    /* USE WHEN CORRECTING VOLTAGE DROP USING CONDUCTOR SIZE */
+    
+    [Column("voltage_drop_correction_conductor_size")]
+    public double? VoltageDropCorrectionConductorSize { get; set; }
 
     /* LISTS OF REFERENCES */
 

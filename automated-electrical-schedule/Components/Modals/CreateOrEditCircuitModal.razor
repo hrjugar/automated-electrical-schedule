@@ -380,6 +380,7 @@
         }
 
         _editContext = new EditContext(_newCircuit);
+        _editContext.OnFieldChanged += OnFieldChanged;
         StateHasChanged();
     }
     
@@ -392,6 +393,14 @@
     {
         IsOpen = false;
         await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+    
+    void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (_newCircuit is IElectricalComponent electricalComponent)
+        {
+            electricalComponent.UpdateVoltageDropCorrectionConductorSize();
+        }
     }
 
     void ResetSetCount()
@@ -469,7 +478,7 @@
         
         _newCircuit = updatedCircuit;
         _editContext = new EditContext(_newCircuit);
-        
+        _editContext.OnFieldChanged += OnFieldChanged;
         StateHasChanged();
     }
 
@@ -527,6 +536,11 @@
         if (_newCircuit is FixtureCircuit fixtureCircuit)
         {
             fixtureCircuit.Fixtures.Remove(fixture);
+        }
+
+        if (_newCircuit is IElectricalComponent electricalComponent)
+        {
+            electricalComponent.UpdateVoltageDropCorrectionConductorSize();
         }
         
         StateHasChanged();

@@ -18,8 +18,9 @@
                     <button
                         class="btn-text btn-primary"
                         type="button"
-                        @onclick="@(() => { })">
-                        To do
+                        @onclick="AdjustConductorSize"
+                        disabled="@(!ElectricalComponent.CanCorrectVoltageDropWithConductorSize)">
+                        Adjust Conductor Size
                     </button>
                 </div>
             </div>
@@ -52,6 +53,13 @@
     async Task AdjustSets()
     {
         ElectricalComponent.AdjustSetCountForVoltageDropCorrection();
+        await OnVoltageCorrection.InvokeAsync();
+        await CloseModal();
+    }
+
+    async Task AdjustConductorSize()
+    {
+        ElectricalComponent.AdjustConductorSizeForVoltageDropCorrection();
         await OnVoltageCorrection.InvokeAsync();
         await CloseModal();
     }

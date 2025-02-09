@@ -25,4 +25,5 @@ public enum CalculationErrorType
     [Display(Name = "Invalid circuit protection used")] InvalidCircuitProtection,
     [Display(Name = "Invalid conductor size used")] InvalidConductorSize,
     [Display(Name = "")] IsUndefinedSpareCircuitProperty,
+    [Display(Name = "No fitting conductor size to correct voltage drop")] NoFittingConductorSizeForVoltageDropCorrection
 }

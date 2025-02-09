@@ -69,8 +69,13 @@ public abstract partial class NonSpaceCircuit
     
     public ConductorType? ConductorType => ConductorType.FindByIdOrNull(ConductorTypeId);
     
-    public virtual CalculationResult<double> ConductorSize =>
+    public CalculationResult<double> InitialConductorSize =>
         ConductorSizeTable.GetConductorSize(ConductorType!, AmpereTrip, SetCount, 0, false);
+
+    public virtual CalculationResult<double> ConductorSize =>
+        VoltageDropCorrectionConductorSize is null
+            ? InitialConductorSize
+            : CalculationResult<double>.Success(VoltageDropCorrectionConductorSize.Value);
     
     public virtual string ConductorTextDisplay => ConductorSize.HasError ? 
         ConductorSize.ErrorMessage :
@@ -102,7 +107,41 @@ public abstract partial class NonSpaceCircuit
             WireLength,
             SetCount,
             Voltage
-        );         
+        );
+
+    public virtual bool CanCorrectVoltageDropWithConductorSize
+    {
+        get
+        {
+            var currentVoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize;
+            
+            var newVoltageDropCorrectionConductorSize =
+                DataUtils.GetVoltageDropCorrectionConductorSize
+                (
+                    LineToLineVoltage,
+                    RacewayType,
+                    ConductorType!,
+                    InitialConductorSize,
+                    AmpereLoad,
+                    WireLength,
+                    SetCount,
+                    Voltage
+                );
+            
+            if (newVoltageDropCorrectionConductorSize.HasError || newVoltageDropCorrectionConductorSize.Value is null)
+            {
+                return false;
+            }
+            
+            if (currentVoltageDropCorrectionConductorSize is null) return true;
+            if (currentVoltageDropCorrectionConductorSize.Value.IsRoughlyEqualTo(newVoltageDropCorrectionConductorSize.Value.Value))
+            {
+                return false;
+            }
+            
+            return currentVoltageDropCorrectionConductorSize.Value < newVoltageDropCorrectionConductorSize.Value;
+        }
+    }
 
     public virtual CalculationResult<int> RacewaySize
     {
@@ -131,6 +170,59 @@ public abstract partial class NonSpaceCircuit
     public virtual string RacewayTextDisplay => RacewaySize.HasError 
         ? RacewaySize.ErrorMessage
         : $"{RacewaySize} mm ø {RacewayType.GetDisplayName()}";
+
+    public void AdjustConductorSizeForVoltageDropCorrection()
+    {
+        var newVoltageDropCorrectionConductorSize =
+            DataUtils.GetVoltageDropCorrectionConductorSize
+            (
+                LineToLineVoltage,
+                RacewayType,
+                ConductorType!,
+                InitialConductorSize,
+                AmpereLoad,
+                WireLength,
+                SetCount,
+                Voltage
+            );
+        
+        if (newVoltageDropCorrectionConductorSize.HasError) return;
+        VoltageDropCorrectionConductorSize = newVoltageDropCorrectionConductorSize.Value;
+    }
+    
+    public void UpdateVoltageDropCorrectionConductorSize()
+    {
+        if (VoltageDropCorrectionConductorSize is null) return;
+        
+        if 
+        (
+            (InitialConductorSize.HasError) ||
+            (
+                InitialConductorSize.Value.IsRoughlyEqualTo(VoltageDropCorrectionConductorSize.Value) || 
+                InitialConductorSize.Value >= VoltageDropCorrectionConductorSize.Value
+            )
+        )
+        {
+            VoltageDropCorrectionConductorSize = null;
+        }
+
+        var newR = VoltageDropTable.GetR(RacewayType, ConductorType!.Material, InitialConductorSize);
+        var newX = VoltageDropTable.GetX(RacewayType, InitialConductorSize);
+        var newVoltageDrop = VoltageDropTable.GetVoltageDrop(
+            LineToLineVoltage,
+            newR,
+            newX,
+            AmpereLoad,
+            WireLength,
+            SetCount,
+            Voltage
+        );
+
+        if (!newVoltageDrop.HasError && newVoltageDrop.Value is not null && newVoltageDrop.Value < 0.03)
+        {
+            VoltageDropCorrectionConductorSize = null;
+        }
+    }
     
     public void AdjustSetCountForSizes()
     {

@@ -182,6 +182,28 @@ public static class ConductorSizeTable
         485
     ];
 
+    public static CalculationResult<List<int>> GetColumn(ConductorType conductorType)
+    {
+        return conductorType.Material switch
+        {
+            ConductorMaterial.Copper => conductorType.TemperatureRating switch
+            {
+                ConductorTemperatureRating.C60 => CalculationResult<List<int>>.Success(Cu60Column),
+                ConductorTemperatureRating.C75 => CalculationResult<List<int>>.Success(Cu75Column),
+                ConductorTemperatureRating.C90 => CalculationResult<List<int>>.Success(Cu90Column),
+                _ => CalculationResult<List<int>>.Failure(CalculationErrorType.InvalidConductorTemperatureRating)
+            },
+            ConductorMaterial.Aluminum => conductorType.TemperatureRating switch
+            {
+                ConductorTemperatureRating.C60 => CalculationResult<List<int>>.Success(Al60Column),
+                ConductorTemperatureRating.C75 => CalculationResult<List<int>>.Success(Al75Column),
+                ConductorTemperatureRating.C90 => CalculationResult<List<int>>.Success(Al90Column),
+                _ => CalculationResult<List<int>>.Failure(CalculationErrorType.InvalidConductorTemperatureRating)
+            },
+            _ => CalculationResult<List<int>>.Failure(CalculationErrorType.InvalidConductorMaterial)
+        };
+    }
+
     public static CalculationResult<double> GetConductorSize(
         ConductorType conductorType, 
         CalculationResult<int> ampereTrip,
@@ -191,48 +213,9 @@ public static class ConductorSizeTable
     {
         if (ampereTrip.HasError) return CalculationResult<double>.Failure(ampereTrip.ErrorType);
 
-        List<int> column;
-        switch (conductorType.Material)
-        {
-            case ConductorMaterial.Copper:
-                switch (conductorType.TemperatureRating)
-                {
-                    case ConductorTemperatureRating.C60:
-                        column = Cu60Column;
-                        break;
-                    case ConductorTemperatureRating.C75:
-                        column = Cu75Column;
-                        break;
-                    case ConductorTemperatureRating.C90:
-                        column = Cu90Column;
-                        break;
-                    default:
-                        return CalculationResult<double>.Failure(CalculationErrorType
-                            .InvalidConductorTemperatureRating);
-                }
-
-                break;
-            case ConductorMaterial.Aluminum:
-                switch (conductorType.TemperatureRating)
-                {
-                    case ConductorTemperatureRating.C60:
-                        column = Al60Column;
-                        break;
-                    case ConductorTemperatureRating.C75:
-                        column = Al75Column;
-                        break;
-                    case ConductorTemperatureRating.C90:
-                        column = Al90Column;
-                        break;
-                    default:
-                        return CalculationResult<double>.Failure(CalculationErrorType
-                            .InvalidConductorTemperatureRating);
-                }
-
-                break;
-            default:
-                return CalculationResult<double>.Failure(CalculationErrorType.InvalidConductorMaterial);
-        }
+        var columnResult = GetColumn(conductorType);
+        if (columnResult.HasError) return CalculationResult<double>.Failure(columnResult.ErrorType);
+        var column = columnResult.Value;
         
         var index = column.FindIndex(columnAmpereTrip => columnAmpereTrip >= ampereTrip.Value);
 
@@ -265,21 +248,9 @@ public static class ConductorSizeTable
         
         if (conductorSizeIndex == -1) return CalculationResult<int>.Failure(CalculationErrorType.InvalidConductorSize);
 
-        var column = conductorType.Material switch
-        {
-            ConductorMaterial.Copper => conductorType.TemperatureRating switch
-            {
-                ConductorTemperatureRating.C60 => Cu60Column,
-                ConductorTemperatureRating.C75 => Cu75Column,
-                ConductorTemperatureRating.C90 => Cu90Column
-            },
-            ConductorMaterial.Aluminum => conductorType.TemperatureRating switch
-            {
-                ConductorTemperatureRating.C60 => Al60Column,
-                ConductorTemperatureRating.C75 => Al75Column,
-                ConductorTemperatureRating.C90 => Al90Column
-            },
-        };
+        var columnResult = GetColumn(conductorType);
+        if (columnResult.HasError) return CalculationResult<int>.Failure(columnResult.ErrorType);
+        var column = columnResult.Value;
 
         return CalculationResult<int>.Success(column[conductorSizeIndex]);
     }

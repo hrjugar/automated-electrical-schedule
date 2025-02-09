@@ -409,6 +409,36 @@ public abstract partial class DistributionBoard
             SetCount,
             (int)Voltage
         );
+    
+    public bool CanCorrectVoltageDropWithConductorSize
+    {
+        get
+        {
+            var currentVoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize;
+
+            var newVoltageDropCorrectionConductorSize =
+                DataUtils.GetVoltageDropCorrectionConductorSize
+                (
+                    LineToLineVoltage,
+                    RacewayType,
+                    ConductorType,
+                    TemperatureAffectedConductorSize,
+                    AmpereLoad,
+                    WireLength,
+                    SetCount,
+                    (int)Voltage
+                );
+
+            if (newVoltageDropCorrectionConductorSize.HasError || newVoltageDropCorrectionConductorSize.Value is null)
+            {
+                return false;
+            }
+            
+            if (currentVoltageDropCorrectionConductorSize is null) return true;
+
+            return currentVoltageDropCorrectionConductorSize.Value < newVoltageDropCorrectionConductorSize.Value;
+        }
+    }
 
     public ConductorType ConductorType => ConductorType.FindById(ConductorTypeId);
 
@@ -428,13 +458,17 @@ public abstract partial class DistributionBoard
             ConductorType
         );
     
+    public string InitialConductorTextDisplay => InitialConductorSize.HasError ? 
+        ConductorSize.ErrorMessage :
+        $"{ConductorWireCount}-{InitialConductorSize} mm\u00b2 {ConductorType}";
+    
     public double AmbientTemperatureMultiplier =>
         AmbientTemperatureTable.GetAmbientTemperatureMultiplier(
             AmbientTemperature,
             ConductorType.TemperatureRating
         );
     
-    public CalculationResult<double> ConductorSize
+    public CalculationResult<double> TemperatureAffectedConductorSize
     {
         get
         {
@@ -449,11 +483,12 @@ public abstract partial class DistributionBoard
         }
     }
 
-    public int ConductorWireCount => LineToLineVoltage == Enums.LineToLineVoltage.Abc ? 3 : 2;
+    public CalculationResult<double> ConductorSize =>
+        VoltageDropCorrectionConductorSize is null
+            ? TemperatureAffectedConductorSize
+            : CalculationResult<double>.Success(VoltageDropCorrectionConductorSize.Value);
     
-    public string InitialConductorTextDisplay => InitialConductorSize.HasError ? 
-        ConductorSize.ErrorMessage :
-        $"{ConductorWireCount}-{InitialConductorSize} mm\u00b2 {ConductorType}";
+    public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;
     
     public string ConductorTextDisplay => ConductorSize.HasError ? 
         ConductorSize.ErrorMessage :
@@ -609,6 +644,59 @@ public abstract partial class DistributionBoard
     }
     
     public abstract DistributionBoard Clone();
+    
+    public void AdjustConductorSizeForVoltageDropCorrection()
+    {
+        var newVoltageDropCorrectionConductorSize =
+            DataUtils.GetVoltageDropCorrectionConductorSize
+            (
+                LineToLineVoltage,
+                RacewayType,
+                ConductorType,
+                TemperatureAffectedConductorSize,
+                AmpereLoad,
+                WireLength,
+                SetCount,
+                (int)Voltage
+            );
+
+        if (newVoltageDropCorrectionConductorSize.HasError) return;
+        VoltageDropCorrectionConductorSize = newVoltageDropCorrectionConductorSize.Value;
+    }
+    
+    public void UpdateVoltageDropCorrectionConductorSize()
+    {
+        if (VoltageDropCorrectionConductorSize is null) return;
+        
+        if 
+        (
+            (InitialConductorSize.HasError) ||
+            (
+                InitialConductorSize.Value.IsRoughlyEqualTo(VoltageDropCorrectionConductorSize.Value) || 
+                InitialConductorSize.Value >= VoltageDropCorrectionConductorSize.Value
+            )
+        )
+        {
+            VoltageDropCorrectionConductorSize = null;
+        }
+
+        var newR = VoltageDropTable.GetR(RacewayType, ConductorType!.Material, InitialConductorSize);
+        var newX = VoltageDropTable.GetX(RacewayType, InitialConductorSize);
+        var newVoltageDrop = VoltageDropTable.GetVoltageDrop(
+            LineToLineVoltage,
+            newR,
+            newX,
+            AmpereLoad,
+            WireLength,
+            SetCount,
+            (int)Voltage
+        );
+
+        if (!newVoltageDrop.HasError && newVoltageDrop.Value is not null && newVoltageDrop.Value < 0.03)
+        {
+            VoltageDropCorrectionConductorSize = null;
+        }
+    }
     
     private void AdjustSetCountForConductorSize()
     {
