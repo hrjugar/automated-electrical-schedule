@@ -185,6 +185,9 @@ else
     async Task RefreshBoard()
     {
         _distributionBoard = await GetCompleteDistributionBoard(BoardId);
+        _distributionBoard.UpdateVoltageDropCorrectionConductorSize();
+        DatabaseContext.Update(_distributionBoard);
+        await DatabaseContext.SaveChangesAsync();
         StateHasChanged();
     }
 
