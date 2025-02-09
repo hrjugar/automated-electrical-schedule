@@ -69,7 +69,7 @@ public abstract partial class NonSpaceCircuit
     
     public ConductorType? ConductorType => ConductorType.FindByIdOrNull(ConductorTypeId);
     
-    public CalculationResult<double> InitialConductorSize =>
+    public virtual CalculationResult<double> InitialConductorSize =>
         ConductorSizeTable.GetConductorSize(ConductorType!, AmpereTrip, SetCount, 0, false);
 
     public virtual CalculationResult<double> ConductorSize =>

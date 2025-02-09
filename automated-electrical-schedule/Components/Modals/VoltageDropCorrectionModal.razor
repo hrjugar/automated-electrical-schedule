@@ -1,7 +1,7 @@
 @if (IsOpen)
 {
     <div class="modal-wrapper" @onclick="CloseModal">
-        <div class="modal voltage-drop-correction-modal">
+        <div class="modal voltage-drop-correction-modal" @onclick:stopPropagation="true">
             <div class="modal-header">
                 <h3>Choose Voltage Drop Correction Method</h3>
             </div>

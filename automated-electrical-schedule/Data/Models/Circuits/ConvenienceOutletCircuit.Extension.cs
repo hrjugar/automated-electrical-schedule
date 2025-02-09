@@ -35,7 +35,7 @@ public partial class ConvenienceOutletCircuit
         20
     );
 
-    public override CalculationResult<double> ConductorSize => ConductorSizeTable.GetConductorSize(ConductorType, AmpereTrip, SetCount, 3.5);
+    public override CalculationResult<double> InitialConductorSize => ConductorSizeTable.GetConductorSize(ConductorType!, AmpereTrip, SetCount, 3.5);
 
     public void ResolveExceedingAmpereTrip()
     {
