@@ -390,3 +390,8 @@ select {
 .red-asterisk {
     color: red;
 }
+
+.math-expression {
+    padding: 1rem;
+    font-size: 1.125rem;
+}

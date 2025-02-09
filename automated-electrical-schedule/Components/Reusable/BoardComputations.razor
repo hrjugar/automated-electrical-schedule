@@ -36,10 +36,10 @@
                         var subBoardLightingCircuitsVoltAmpere = subBoard.FilterVoltAmpere<LightingOutletCircuit>();
                         var subBoardConvenienceCircuitsVoltAmpere = subBoard.FilterVoltAmpere<ConvenienceOutletCircuit>();
                         
-                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardLightingCircuitsVoltAmpere + subBoardConvenienceCircuitsVoltAmpere}")</p>
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {(subBoardLightingCircuitsVoltAmpere + subBoardConvenienceCircuitsVoltAmpere).ToRoundedString()}")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(lightingAndConvenienceCircuitsVoltAmpere)VA</p>
+                    <p class="underline">Sub Total = @(lightingAndConvenienceCircuitsVoltAmpere.ToRoundedString())VA</p>
 
                     var lightingAndConvenienceCircuitsVoltAmpereRanges = 
                         DemandFactorFormulas.ApplyDemandFactorToDwellingUnitLightingAndConvenienceCircuits(
@@ -50,20 +50,20 @@
                     var secondRangeValue = lightingAndConvenienceCircuitsVoltAmpereRanges[1];
                     var thirdRangeValue = lightingAndConvenienceCircuitsVoltAmpereRanges[2];
                     
-                    <p>First 3000 VA @("@") 100% = @(firstRangeValue)</p>
+                    <p>First 3000 VA @("@") 100% = @(firstRangeValue.ToRoundedString())</p>
                     
                     @if (secondRangeValue > 0)
                     {
-                        <p>From 3001 to 120000 VA @@ 35% = @(secondRangeValue)</p>
+                        <p>From 3001 to 120000 VA @@ 35% = @(secondRangeValue.ToRoundedString())</p>
                     }
                     
                     @if (thirdRangeValue > 0)
                     {
-                        <p>Remainder over 120000 VA @@ 25% = @(thirdRangeValue)</p>
+                        <p>Remainder over 120000 VA @@ 25% = @(thirdRangeValue.ToRoundedString())</p>
                     }
                     
                     <p></p>
-                    <h6>Final total = @(firstRangeValue + secondRangeValue + thirdRangeValue) VA</h6>
+                    <h6>Final total = @((firstRangeValue + secondRangeValue + thirdRangeValue).ToRoundedString()) VA</h6>
                     <p>Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.</p>
                 }
                 else
@@ -86,17 +86,17 @@
                 
                 @if (lightingCircuitsVoltAmpere > 0)
                 {
-                    @foreach (var lightingCircuit in _lightingCircuits)
+                    @foreach (var lightingCircuit in _lightingCircuits.Where(lc => !lc.VoltAmpere.HasError))
                     {
-                        <p>- @($"{lightingCircuit.Description} = {lightingCircuit.VoltAmpere}VA")</p>
+                        <p>- @($"{lightingCircuit.Description} = {lightingCircuit.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
                     
                     @foreach (var subBoard in subBoardsWithLightingCircuits)
                     {
-                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<LightingOutletCircuit>()}")</p>
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<LightingOutletCircuit>().ToRoundedString()}")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(lightingCircuitsVoltAmpere)VA</p>
+                    <p class="underline">Sub Total = @(lightingCircuitsVoltAmpere.ToRoundedString())VA</p>
                     
                     double nonDwellingLightingCircuitsVoltAmpereWithDemandFactor;
                     @if (DistributionBoard.BuildingClassification == BuildingClassification.Hospital)
@@ -108,11 +108,11 @@
                         var firstHospitalLightingRangeValue = hospitalLightingCircuitsVoltAmpereRanges[0];
                         var secondHospitalLightingRangeValue = hospitalLightingCircuitsVoltAmpereRanges[1];
                         
-                        <p>First 50000 @@ 40% = @firstHospitalLightingRangeValue VA</p>
+                        <p>First 50000 @@ 40% = @(firstHospitalLightingRangeValue.ToRoundedString()) VA</p>
                         
                         @if (secondHospitalLightingRangeValue > 0)
                         {
-                            <p>Remainder over 50000 @@ 20% = @secondHospitalLightingRangeValue VA</p>
+                            <p>Remainder over 50000 @@ 20% = @(secondHospitalLightingRangeValue.ToRoundedString()) VA</p>
                         }
                         
                         nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = 
@@ -128,16 +128,16 @@
                         var secondHotelLightingRangeValue = hotelLightingCircuitsVoltAmpereRanges[1];
                         var thirdHotelLightingRangeValue = hotelLightingCircuitsVoltAmpereRanges[2];
                         
-                        <p>First 20000 @@ 50% = @firstHotelLightingRangeValue VA</p>
+                        <p>First 20000 @@ 50% = @(firstHotelLightingRangeValue.ToRoundedString()) VA</p>
                         
                         @if (secondHotelLightingRangeValue > 0)
                         {
-                            <p>From 20001 to 100000 @@ 40% = @secondHotelLightingRangeValue VA</p>
+                            <p>From 20001 to 100000 @@ 40% = @(secondHotelLightingRangeValue.ToRoundedString()) VA</p>
                         }
                         
                         @if (thirdHotelLightingRangeValue > 0)
                         {
-                            <p>Remainder over 100000 @@ 30% = @thirdHotelLightingRangeValue VA</p>
+                            <p>Remainder over 100000 @@ 30% = @(thirdHotelLightingRangeValue.ToRoundedString()) VA</p>
                         }
                         
                         nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = 
@@ -154,11 +154,11 @@
                         var firstWarehouseLightingRangeValue = warehouseCircuitsVoltAmpereRanges[0];
                         var secondWarehouseLightingRangeValue = warehouseCircuitsVoltAmpereRanges[1];
                         
-                        <p>First 12500 @@ 100% = @(firstWarehouseLightingRangeValue)</p>
+                        <p>First 12500 @@ 100% = @(firstWarehouseLightingRangeValue.ToRoundedString())</p>
                         
                         @if (secondWarehouseLightingRangeValue > 0)
                         {
-                            <p>Remainder over 12500 @@ 50% = @(secondWarehouseLightingRangeValue)</p>
+                            <p>Remainder over 12500 @@ 50% = @(secondWarehouseLightingRangeValue.ToRoundedString())</p>
                         }
 
                         nonDwellingLightingCircuitsVoltAmpereWithDemandFactor =
@@ -170,7 +170,7 @@
                         nonDwellingLightingCircuitsVoltAmpereWithDemandFactor = lightingCircuitsVoltAmpere;
                     }
                     
-                    <h6>Final total = @(nonDwellingLightingCircuitsVoltAmpereWithDemandFactor) VA</h6>
+                    <h6>Final total = @(nonDwellingLightingCircuitsVoltAmpereWithDemandFactor.ToRoundedString()) VA</h6>
                     <p>Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.</p>
                 }
                 else
@@ -191,14 +191,14 @@
                 
                 @if (convenienceCircuitsVoltAmpere > 0)
                 {
-                    @foreach (var convenienceCircuit in _convenienceCircuits)
+                    @foreach (var convenienceCircuit in _convenienceCircuits.Where(cc => !cc.VoltAmpere.HasError))
                     {
-                        <p>- @($"{convenienceCircuit.Description} = {convenienceCircuit.VoltAmpere}VA")</p>
+                        <p>- @($"{convenienceCircuit.Description} = {convenienceCircuit.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
 
                     @foreach (var subBoard in subBoardsWithConvenienceCircuits)
                     {
-                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<ConvenienceOutletCircuit>()}")</p>
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<ConvenienceOutletCircuit>().ToRoundedString()}")</p>
                     }
                     
                     <p class="underline">Sub Total = @(convenienceCircuitsVoltAmpere)VA</p>
@@ -210,14 +210,14 @@
                     var firstNonDwellingConvenienceRangeValue = nonDwellingConvenienceCircuitsVoltAmpereRanges[0];
                     var secondNonDwellingConvenienceRangeValue = nonDwellingConvenienceCircuitsVoltAmpereRanges[1];
                     
-                    <p>First 10000 @@ 100% = @(firstNonDwellingConvenienceRangeValue) VA</p>
+                    <p>First 10000 @@ 100% = @(firstNonDwellingConvenienceRangeValue.ToRoundedString()) VA</p>
                     
                     @if (secondNonDwellingConvenienceRangeValue > 0)
                     {
-                        <p>Remainder over 10000 @@ 50% = @secondNonDwellingConvenienceRangeValue</p>
+                        <p>Remainder over 10000 @@ 50% = @(secondNonDwellingConvenienceRangeValue.ToRoundedString())</p>
                     }
                     
-                    <h6>Final total = @(nonDwellingConvenienceCircuitsVoltAmpereRanges.Sum()) VA</h6>
+                    <h6>Final total = @(nonDwellingConvenienceCircuitsVoltAmpereRanges.Sum().ToRoundedString()) VA</h6>
                     <p>Reference: Demand Factors for Non-Dwelling Receptacle Loads, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.5, pp. 56, 2017.</p>
                 }
                 else
@@ -279,18 +279,18 @@
                 {
                     <h6>For Normal Motors:</h6>
                     
-                    @foreach (var normalMotor in normalMotors)
+                    @foreach (var normalMotor in normalMotors.Where(nm => !nm.VoltAmpere.HasError))
                     {
-                        <p>- @($"{normalMotor.Description} = {normalMotor.VoltAmpere}VA")</p>
+                        <p>- @($"{normalMotor.Description} = {normalMotor.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
                     
                     @foreach (var subBoard in subBoardsWithNormalMotors)
                     {
                         var subBoardNormalMotorsVoltAmpere = subBoard.FilterVoltAmpere<MotorOutletCircuit>(mc => mc.MotorApplication == MotorApplication.NormalMotor);
-                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardNormalMotorsVoltAmpere}")</p>
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardNormalMotorsVoltAmpere.ToRoundedString()}")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(normalMotorsVoltAmpere)</p>
+                    <p class="underline">Sub Total = @(normalMotorsVoltAmpere.ToRoundedString())</p>
                     <p>No Demand Factors</p>
                 }
                 
@@ -298,29 +298,29 @@
                 {
                     <h6>For Elevator Feeders:</h6>
                     
-                    @foreach (var feeder in feeders)
+                    @foreach (var feeder in feeders.Where(f => !f.VoltAmpere.HasError))
                     {
                         <p>- @($"{feeder.Description} = {feeder.VoltAmpere}VA")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(feedersVoltAmpere)</p>
-                    <p>Sub Total with Demand Factor for Elevator Feeders = @(feedersVoltAmpereWithDemandFactor)</p>
+                    <p class="underline">Sub Total = @(feedersVoltAmpere.ToRoundedString())</p>
+                    <p>Sub Total with Demand Factor for Elevator Feeders = @(feedersVoltAmpereWithDemandFactor.ToRoundedString())</p>
                 }
                 
                 @if (cranesAndHoistVoltAmpere > 0)
                 {
                     <h6>For Cranes and Hoists:</h6>
                     
-                    @foreach (var craneAndHoist in cranesAndHoists)
+                    @foreach (var craneAndHoist in cranesAndHoists.Where(ch => !ch.VoltAmpere.HasError))
                     {
-                        <p>- @($"{craneAndHoist.Description} = {craneAndHoist.VoltAmpere}VA")</p>
+                        <p>- @($"{craneAndHoist.Description} = {craneAndHoist.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(cranesAndHoistVoltAmpere)</p>
-                    <p>Sub Total with Demand Factor for Cranes and Hoists = @(cranesAndHoistsVoltAmpereWithDemandFactor)</p>
+                    <p class="underline">Sub Total = @(cranesAndHoistVoltAmpere.ToRoundedString())</p>
+                    <p>Sub Total with Demand Factor for Cranes and Hoists = @(cranesAndHoistsVoltAmpereWithDemandFactor.ToRoundedString())</p>
                 }
                 
-                <h6>Final total = @(normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor)</h6>
+                <h6>Final total = @((normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor).ToRoundedString())</h6>
             }
             else
             {
@@ -402,13 +402,13 @@
                 {
                     <h6>For Dryers:</h6>
                     
-                    @foreach (var dryer in dryers)
+                    @foreach (var dryer in dryers.Where(d => !d.VoltAmpere.HasError))
                     {
-                        <p>- @($"{dryer.Description} = {dryer.VoltAmpere}VA")</p>
+                        <p>- @($"{dryer.Description} = {dryer.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(dryersVoltAmpere)</p>
-                    <p>Sub Total with Demand Factor for Dryers = @(dryersVoltAmpereWithDemandFactor)</p>
+                    <p class="underline">Sub Total = @(dryersVoltAmpere.ToRoundedString())</p>
+                    <p>Sub Total with Demand Factor for Dryers = @(dryersVoltAmpereWithDemandFactor.ToRoundedString())</p>
                     <p>Reference: “Demand Factors for Household Electric Clothes Dryers”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.15, pp. 57, 2017</p>
                 }
                 
@@ -429,36 +429,36 @@
                         
                         @if (kitchenEquipmentsLessThan3500VaTotalVoltAmpere > 0)
                         {
-                            @foreach (var kitchenEquipment in kitchenEquipmentsLessThan3500Va)
+                            @foreach (var kitchenEquipment in kitchenEquipmentsLessThan3500Va.Where(k => !k.VoltAmpere.HasError))
                             {
-                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere.Value.ToRoundedString()}VA")</p>
                             }
                             
-                            <p>Sub Total = @(kitchenEquipmentsLessThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum())</p>
-                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Less than 3500 VA = @(kitchenEquipmentsLessThan3500VaTotalVoltAmpere)</p>
+                            <p>Sub Total = @(kitchenEquipmentsLessThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum().ToRoundedString())</p>
+                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Less than 3500 VA = @(kitchenEquipmentsLessThan3500VaTotalVoltAmpere.ToRoundedString())</p>
                         }
                         
                         @if (kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere > 0)
                         {
-                            @foreach (var kitchenEquipment in kitchenEquipmentsGreaterThan3500Va)
+                            @foreach (var kitchenEquipment in kitchenEquipmentsGreaterThan3500Va.Where(ke => !ke.VoltAmpere.HasError))
                             {
-                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                                <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere.Value.ToRoundedString()}VA")</p>
                             }
                             
-                            <p>Sub Total = @(kitchenEquipmentsGreaterThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum())</p>
-                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Greater than 3500 VA = @(kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere)</p>
+                            <p>Sub Total = @(kitchenEquipmentsGreaterThan3500Va.Select(ke => ke.VoltAmpere.Value).Sum().ToRoundedString())</p>
+                            <p>Sub Total with Demand Factor for Dwelling Unit Kitchen Equipment with Greater than 3500 VA = @(kitchenEquipmentsGreaterThan3500VaTotalVoltAmpere.ToRoundedString())</p>
                             <p>Reference: “Demand Factors and Loads for Household Electric Ranges, Wall Mounted Ovens, Counter-Mounted Cooking Units, and Other Household Cooking Appliances over 1 ¾ kW”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.</p>
                         }
                     }
                     else
                     {
-                        @foreach (var kitchenEquipment in kitchenEquipments)
+                        @foreach (var kitchenEquipment in kitchenEquipments.Where(ke => !ke.VoltAmpere.HasError))
                         {
-                            <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere}VA")</p>
+                            <p>- @($"{kitchenEquipment.Description} = {kitchenEquipment.VoltAmpere.Value.ToRoundedString()}VA")</p>
                         }
                         
-                        <p>Sub Total = @(kitchenEquipmentsVoltAmpere)</p>
-                        <p>Sub Total with Demand Factor for Non-Dwelling Unit Kitchen Equipment = @(nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor)</p>
+                        <p>Sub Total = @(kitchenEquipmentsVoltAmpere.ToRoundedString())</p>
+                        <p>Sub Total with Demand Factor for Non-Dwelling Unit Kitchen Equipment = @(nonDwellingUnitKitchenEquipmentsVoltAmpereWithDemandFactor.ToRoundedString())</p>
                         <p>Reference: “Demand Factors for Kitchen Equipment – other than Dwelling Units”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.</p>
                     }
                 }
@@ -466,9 +466,9 @@
                 @if (otherApplianceEquipmentsVoltAmpere > 0)
                 {
                     <h6> For Other Equipment:</h6>
-                    @foreach (var otherApplianceEquipment in otherApplianceEquipments)
+                    @foreach (var otherApplianceEquipment in otherApplianceEquipments.Where(oae => !oae.VoltAmpere.HasError))
                     {
-                        <p>- @($"{otherApplianceEquipment.Description} = {otherApplianceEquipment.VoltAmpere}VA")</p>
+                        <p>- @($"{otherApplianceEquipment.Description} = {otherApplianceEquipment.VoltAmpere.Value.ToRoundedString()}VA")</p>
                     }
                     
                     @foreach (var subBoard in subBoardsWithOtherApplianceEquipments)
@@ -476,14 +476,14 @@
                         var subBoardOtherApplianceEquipmentsVoltAmpere = subBoard.FilterVoltAmpere<ApplianceEquipmentOutletCircuit>(
                             aec => aec.ApplianceType == ApplianceType.Other
                         );
-                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardOtherApplianceEquipmentsVoltAmpere}")</p>
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardOtherApplianceEquipmentsVoltAmpere.ToRoundedString()}")</p>
                     }
                     
-                    <p class="underline">Sub Total = @(otherApplianceEquipmentsVoltAmpere)</p>
+                    <p class="underline">Sub Total = @(otherApplianceEquipmentsVoltAmpere.ToRoundedString())</p>
                     <p>No Demand Factors</p>
                 }
                 
-                <h6>Final total = @(applianceEquipmentVoltAmpereWithDemandFactor) VA</h6>
+                <h6>Final total = @(applianceEquipmentVoltAmpereWithDemandFactor.ToRoundedString()) VA</h6>
             }
             else
             {
@@ -508,15 +508,15 @@
                 @for (var i = 0; i < _spareCircuits.Count; i++)
                 {
                     var currentSpareCircuit = _spareCircuits[i];
-                    <p>- @($"Spare {i + 1} (CKT NO. {currentSpareCircuit.Order}) = {currentSpareCircuit.VoltAmpere}VA")</p>
+                    <p>- @($"Spare {i + 1} (CKT NO. {currentSpareCircuit.Order}) = {currentSpareCircuit.VoltAmpere.ToRoundedString()}VA")</p>
                 }
                     
                 @foreach (var subBoard in subBoardsWithSpareCircuits)
                 {
-                    <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<SpareCircuit>()}")</p>
+                    <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoard.FilterVoltAmpere<SpareCircuit>().ToRoundedString()}")</p>
                 }
                     
-                <p class="underline">Sub Total = @(spareCircuitsVoltAmpere)VA</p>
+                <p class="underline">Sub Total = @(spareCircuitsVoltAmpere.ToRoundedString())VA</p>
             }
             else
             {
@@ -526,16 +526,131 @@
         
         <div class="computation-subgroup">
             <h4>Overall Total</h4>
-            <p>Total VA (S) = @(DistributionBoard.VoltAmpere) VA</p>
+            <p>Total VA (S) = @(DistributionBoard.VoltAmpere.ToRoundedString()) VA</p>
             
-            @if (DistributionBoard.Phase == BoardPhase.ThreePhase)
-            {
-                <p>@(DistributionBoard.VoltAmpere) VA / (√3 x @((int) DistributionBoard.Voltage)V) = @(DistributionBoard.Current.Value)A</p>
+            @* @if (DistributionBoard.Phase == BoardPhase.ThreePhase) *@
+            @* { *@
+            @*     <p>@(DistributionBoard.VoltAmpere.ToRoundedString()) VA / (√3 x @((int) DistributionBoard.Voltage)V) = @(DistributionBoard.Current.Value.ToRoundedString())A</p> *@
+            @* } *@
+            @* else *@
+            @* { *@
+            @*     <p>@(DistributionBoard.VoltAmpere.ToRoundedString()) VA / @((int) DistributionBoard.Voltage)V = @(DistributionBoard.Current.Value.ToRoundedString())A</p> *@
+            @* } *@
+            
+            @{
+                string overallTotalFormulaExpression = DistributionBoard.Phase == BoardPhase.ThreePhase
+                    ? $@"
+                        <math>
+                            <mrow>
+                                <mi>I</mi>
+                                <mo>=</mo>
+                                <mfrac>
+                                    <mrow>
+                                        <mi>Total VA</mi>
+                                    </mrow>
+                                    
+                                    <mrow>
+                                        <mtext>&radic;</mtext>
+                                        <msqrt><mi>3</mi></msqrt>
+                                        <mo>&times;</mo>
+                                        <mn>{(int)DistributionBoard.Voltage}</mn>
+                                        <mi>V</mi>
+                                    </mrow>
+                                </mfrac>
+                            </mrow>
+                        </math>
+                    "
+                    : $@"
+                        <math>
+                            <mrow>
+                                <mi>I</mi>
+                                <mo>=</mo>
+                                <mfrac>
+                                    <mrow>
+                                        <mi>Total VA</mi>
+                                    </mrow>
+                                    
+                                    <mrow>
+                                        <mn>{(int)DistributionBoard.Voltage}</mn>
+                                        <mi>V</mi>
+                                    </mrow>
+                                </mfrac>
+                            </mrow>
+                        </math>
+                    ";
+
+                string overallTotalExpression = DistributionBoard.Phase == BoardPhase.ThreePhase
+                    ? $@"
+                        <math>
+                            <mrow>
+                                <mi>I</mi>
+                                <mo>=</mo>
+                                <mfrac>
+                                    <mrow>
+                                        <mn>{DistributionBoard.VoltAmpere.ToRoundedString()}</mn>
+                                        <mi>VA</mi>
+                                    </mrow>
+                                    
+                                    <mrow>
+                                        <mtext>&radic;</mtext>
+                                        <msqrt><mi>3</mi></msqrt>
+                                        <mo>&times;</mo>
+                                        <mn>{(int)DistributionBoard.Voltage}</mn>
+                                        <mi>V</mi>
+                                    </mrow>
+                                </mfrac>
+                                <mo>=</mo>
+                                <mrow>
+                                    <mn>{DistributionBoard.Current.Value.ToRoundedString()}</mn>
+                                    <mi>A</mi>
+                                </mrow>
+                            </mrow>
+                        </math>
+                    "
+                    : $@"
+                        <math>
+                            <mrow>
+                                <mi>I</mi>
+                                <mo>=</mo>
+                                <mfrac>
+                                    <mrow>
+                                        <mn>{DistributionBoard.VoltAmpere.ToRoundedString()}</mn>
+                                        <mi>VA</mi>
+                                    </mrow>
+                                    
+                                    <mrow>
+                                        <mn>{(int)DistributionBoard.Voltage}</mn>
+                                        <mi>V</mi>
+                                    </mrow>
+                                </mfrac>
+                                <mo>=</mo>
+                                <mrow>
+                                    <mn>{DistributionBoard.Current.Value.ToRoundedString()}</mn>
+                                    <mi>A</mi>
+                                </mrow>
+                            </mrow>
+                        </math>
+                    ";             
             }
-            else
-            {
-                <p>@(DistributionBoard.VoltAmpere) VA / @((int) DistributionBoard.Voltage)V = @(DistributionBoard.Current.Value)A</p>
-            }
+            
+            <div class="math-expression">@((MarkupString) overallTotalFormulaExpression)</div>
+            <div class="math-expression">@((MarkupString) overallTotalExpression)</div>
+            @* <math display="block"> *@
+            @*     <mrow> *@
+            @*         <mi>I</mi> *@
+            @*         <mo>=</mo> *@
+            @*         <mfrac> *@
+            @*             <mrow> *@
+            @*                 <mi>Total VA</mi> *@
+            @*             </mrow> *@
+            @*              *@
+            @*             <mrow> *@
+            @*                 <mn>@((int) DistributionBoard.Voltage)</mn> *@
+            @*                 <mi>V</mi> *@
+            @*             </mrow> *@
+            @*         </mfrac> *@
+            @*     </mrow> *@
+            @* </math> *@
         </div>
     </div>
     
@@ -547,7 +662,7 @@
             
             @if (DistributionBoard.HasNestedCircuits)
             {
-                <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 1.25) = @(DistributionBoard.CircuitProtectionAmpere)</p>
+                <p>Overall Total = @(DistributionBoard.Current.Value.ToRoundedString())A + (@(DistributionBoard.HighestMotorLoad.ToRoundedString())A × 1.25) = @(DistributionBoard.CircuitProtectionAmpere.ToRoundedString())</p>
                 <strong>• Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</strong>
             }
             else
@@ -565,7 +680,7 @@
             
             @if (DistributionBoard.HasNestedCircuits)
             {
-                <p>Overall Total = @(DistributionBoard.Current.Value)A + (@(DistributionBoard.HighestMotorLoad)A × 0.25) = @(DistributionBoard.ConductorAmpere)</p>
+                <p>Overall Total = @(DistributionBoard.Current.Value.ToRoundedString())A + (@(DistributionBoard.HighestMotorLoad.ToRoundedString())A × 0.25) = @(DistributionBoard.ConductorAmpere.ToRoundedString())</p>
                 <p>• Conductor = @(DistributionBoard.InitialConductorTextDisplay)</p>
                 
                 @if (DistributionBoard.InitialConductorSize.HasError)
@@ -577,8 +692,20 @@
                     <h6>For Ambient Temperature Conductors Correction Factor under 90 degrees</h6>
                     <p>Chosen Temperature: @(DistributionBoard.AmbientTemperature.GetDisplayName()) degrees</p>
                     <p>• Ampacity of @(DistributionBoard.InitialConductorSize) mm² = @(DistributionBoard.InitialConductorSizeAmpacity) × @(DistributionBoard.AmbientTemperatureMultiplier) = @(DistributionBoard.InitialConductorSizeAmpacity.Value * DistributionBoard.AmbientTemperatureMultiplier)</p>
+                }
+                
+                @if (DistributionBoard.VoltageDropCorrectionConductorSize is null)
+                {
                     <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
                 }
+                else
+                {
+                    <p>• Conductor = Use @(DistributionBoard.TemperatureAffectedConductorTextDisplay)</p>
+                    
+                    <h6>With Voltage Drop Correction</h6>
+                    <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
+                }
+                
                 <strong>Ground = Use @(DistributionBoard.GroundingTextDisplay)</strong>
             }
             else
@@ -601,6 +728,140 @@
         </div>
     </div>
     
+    <div class="computation-group">
+        <h6>D.) Voltage Drop</h6>
+        
+        @if (!DistributionBoard.HasNestedCircuits)
+        {
+            <p>No Circuits</p>
+        } else if
+        (
+            DistributionBoard.AmpereLoad.HasError ||
+            DistributionBoard.R.HasError ||
+            DistributionBoard.X.HasError ||
+            DistributionBoard.VoltageDrop.HasError
+        )
+        {
+            <p>Cannot calculate voltage drop</p>
+        } else if
+        (
+            DistributionBoard.WireLength is null ||
+            DistributionBoard.R.Value is null ||
+            DistributionBoard.X.Value is null ||
+            DistributionBoard.VoltageDrop.Value is null
+        )
+        {
+            <p>No voltage drop</p>
+        }
+        else
+        {
+            string voltageDropFormulaExpression = @"
+                <math>
+                    <mrow>
+                        <mi>VD</mi>
+                        <mo>=</mo>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&times;</mo>
+                            <mi>Ampere Load</mi>
+                            <mo>&times;</mo>
+
+                            <mrow>
+                                <mtext>&radic;</mtext>
+                                <msqrt>
+                                    <msup>
+                                        <mi>R</mi>
+                                        <mn>2</mn>
+                                    </msup>
+                                    <mo>+</mo>
+                                    <msup>
+                                        <mi>X</mi>
+                                        <mn>2</mn>                
+                                    </msup>
+                                </msqrt>
+                            </mrow>
+
+                            <mo>&times;</mo>
+
+                            <mfrac>
+                                <mi>Length</mi>
+                                <mrow>
+                                    <mn>305</mn>
+                                    <mo>&times;</mo>
+                                    <mi>No. of Sets</mi>
+                                </mrow>
+                            </mfrac>
+                            
+                            <mo>&times;</mo>
+
+                            <mfrac>
+                                <mn>100%</mn>
+                                <mi>Voltage</mi>
+                            </mfrac>
+                        </mrow>
+                    </mrow>
+                </math>
+            ";
+            
+            string voltageDropExpression = $@"
+                <math>
+                    <mrow>
+                        <mi>VD</mi>
+                        <mo>=</mo>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&times;</mo>
+                            <mi>{DistributionBoard.AmpereLoad.Value.ToRoundedString()}</mi>
+                            <mo>&times;</mo>
+
+                            <mrow>
+                                <mtext>&radic;</mtext>
+                                <msqrt>
+                                    <msup>
+                                        <mi>{DistributionBoard.R.Value.ToRoundedString()}</mi>
+                                        <mn>2</mn>
+                                    </msup>
+                                    <mo>+</mo>
+                                    <msup>
+                                        <mi>{DistributionBoard.X.Value.ToRoundedString()}</mi>
+                                        <mn>2</mn>                
+                                    </msup>
+                                </msqrt>
+                            </mrow>
+
+                            <mo>&times;</mo>
+
+                            <mfrac>
+                                <mi>{DistributionBoard.WireLength}</mi>
+                                <mrow>
+                                    <mn>305</mn>
+                                    <mo>&times;</mo>
+                                    <mi>{DistributionBoard.SetCount}</mi>
+                                </mrow>
+                            </mfrac>
+                            
+                            <mo>&times;</mo>
+
+                            <mfrac>
+                                <mn>100%</mn>
+                                <mi>{(int) DistributionBoard.Voltage}</mi>
+                            </mfrac>
+                        </mrow>
+                        <mo>=</mo>
+                        <mn>{DistributionBoard.VoltageDrop.Value.ToRoundedString(true)}</mn>
+                    </mrow>
+                </math>
+            ";
+            
+            <div class="computation-subgroup">
+                <div class="math-expression">@((MarkupString) voltageDropFormulaExpression)</div>
+                <div class="math-expression">@((MarkupString) voltageDropExpression)</div>
+            </div>
+            
+        }
+        
+    </div>
+    
     @if (
         DistributionBoard.HasTransformer && 
         DistributionBoard.TransformerPrimaryProtection != null &&
@@ -611,10 +872,13 @@
     )
     {
         <div class="computation-group">
-            <h5>D.) Transformer</h5>
-            <strong>TX = @(DistributionBoard.TransformerRating.Value / 1000)kVA</strong>
-            <p>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereWithoutMultiplier) A × @(DistributionBoard.TransformerPrimaryProtectionMultiplier) = @(DistributionBoard.TransformerPrimaryProtectionAmpere) A = <strong>Use @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection.GetDisplayName())</strong></p>
-            <p>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereWithoutMultiplier) A × @(DistributionBoard.TransformerSecondaryProtectionMultiplier) = @(DistributionBoard.TransformerSecondaryProtectionAmpere) A = <strong>Use @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection.GetDisplayName())</strong></p>
+            <h5>E.) Transformer</h5>
+            
+            <div class="computation-subgroup">
+                <strong>TX = @(DistributionBoard.TransformerRating.Value / 1000)kVA</strong>
+                <p>Primary Protection: @(DistributionBoard.TransformerPrimaryProtectionAmpereWithoutMultiplier.ToRoundedString()) A × @(DistributionBoard.TransformerPrimaryProtectionMultiplier) = @(DistributionBoard.TransformerPrimaryProtectionAmpere.ToRoundedString()) A = <strong>Use @(DistributionBoard.TransformerPrimaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerPrimaryProtection.GetDisplayName())</strong></p>
+                <p>Secondary Protection: @(DistributionBoard.TransformerSecondaryProtectionAmpereWithoutMultiplier.ToRoundedString()) A × @(DistributionBoard.TransformerSecondaryProtectionMultiplier) = @(DistributionBoard.TransformerSecondaryProtectionAmpere.ToRoundedString()) A = <strong>Use @(DistributionBoard.TransformerSecondaryProtectionAmpereTrip)AT @(DistributionBoard.TransformerSecondaryProtection.GetDisplayName())</strong></p>
+            </div>
         </div>
     }
 </div>
@@ -627,7 +891,6 @@
     List<MotorOutletCircuit> _motorCircuits;
     List<ApplianceEquipmentOutletCircuit> _applianceEquipmentCircuits;
     List<SpareCircuit> _spareCircuits;
-    
     
     protected override void OnInitialized()
     {

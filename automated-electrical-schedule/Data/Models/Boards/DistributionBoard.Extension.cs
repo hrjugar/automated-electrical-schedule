@@ -482,6 +482,10 @@ public abstract partial class DistributionBoard
             return ConductorSizeTable.GetConductorSize(ConductorType, ampacityWithMultiplierAmpereTrip, SetCount, MinimumConductorSize);
         }
     }
+    
+    public string TemperatureAffectedConductorTextDisplay => TemperatureAffectedConductorSize.HasError ? 
+        TemperatureAffectedConductorSize.ErrorMessage :
+        $"{ConductorWireCount}-{TemperatureAffectedConductorSize} mm\u00b2 {ConductorType}";
 
     public CalculationResult<double> ConductorSize =>
         VoltageDropCorrectionConductorSize is null

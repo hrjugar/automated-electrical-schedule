@@ -462,6 +462,8 @@
 
     async Task HandleValidFormSubmit()
     {
+        ((IElectricalComponent) _newDistributionBoard!).UpdateVoltageDropCorrectionConductorSize();
+        
         if (IsNew)
         {
             var createBoardCallback = async () =>
