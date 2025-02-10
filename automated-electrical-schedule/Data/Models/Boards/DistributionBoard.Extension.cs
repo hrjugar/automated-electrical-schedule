@@ -481,12 +481,11 @@ public abstract partial class DistributionBoard
         {
             if (InitialConductorSizeAmpacity.HasError) return CalculationResult<double>.Failure(InitialConductorSizeAmpacity.ErrorType);
 
-            var ampacityWithMultiplier = InitialConductorSizeAmpacity.Value * AmbientTemperatureMultiplier;
+            var ampacityWithMultiplier = CalculationResult<int>.Success(
+                (int) (InitialConductorSizeAmpacity.Value * AmbientTemperatureMultiplier)
+            );
 
-            var ampacityWithMultiplierAmpereTrip =
-                DataUtils.GetAmpereTrip(CalculationResult<double>.Success(ampacityWithMultiplier), 20);
-
-            return ConductorSizeTable.GetConductorSize(ConductorType, ampacityWithMultiplierAmpereTrip, SetCount, MinimumConductorSize);
+            return ConductorSizeTable.GetConductorSize(ConductorType, ampacityWithMultiplier, SetCount, MinimumConductorSize);
         }
     }
     
