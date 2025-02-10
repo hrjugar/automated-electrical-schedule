@@ -100,6 +100,7 @@
                             <div class="create-or-edit-circuit-modal-checkbox">
                                 <InputCheckbox
                                     @bind-Value="@fixtureCircuit.IsItemized"
+                                    @bind-Value:after="ToggleIsItemized"
                                     disabled="@(fixtureCircuit.Fixtures.Count > 1)"/>
                                 <label>Itemized</label>
                             </div>
@@ -521,6 +522,20 @@
         StateHasChanged();
     }
 
+    async Task ToggleIsItemized()
+    {
+        if (_newCircuit is FixtureCircuit fixtureCircuit)
+        {
+            var oldQuantity = fixtureCircuit.Fixtures[0].Quantity;
+            var oldWattage = fixtureCircuit.Fixtures[0].Wattage;
+            
+            fixtureCircuit.Fixtures.Clear();
+            fixtureCircuit.Fixtures.Add(new Fixture { Quantity = oldQuantity, Wattage = oldWattage });
+        }
+        
+        StateHasChanged();
+    }
+
     void AddFixture()
     {
         if (_newCircuit is FixtureCircuit fixtureCircuit)
@@ -608,7 +623,5 @@
             await CloseModal();
             await OnCircuitCreateOrEdit.InvokeAsync();
         }
-        
     }
-
 }
