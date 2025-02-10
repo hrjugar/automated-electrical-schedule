@@ -14,7 +14,6 @@ public partial class ConvenienceOutletCircuit
     ];
 
     public bool HasExceedingAmpereTrip =>
-        CircuitProtection != CircuitProtection.GfciCircuitBreaker &&
         GfciReceptacleQuantity > 0 &&
         AmpereTrip.Value > 20;
 

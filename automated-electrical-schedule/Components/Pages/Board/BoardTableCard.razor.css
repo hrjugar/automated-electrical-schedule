@@ -61,6 +61,14 @@
                 padding-inline: 1rem 2rem;
             }
 
+            &.cell--error {
+                color: var(--clr-destructive-700);
+
+                p {
+                    color: var(--clr-destructive-700);
+                }
+            }
+
             &.cell--group {
                 padding-inline: 1rem 2rem;
                 display: flex;
@@ -273,14 +281,6 @@
                             .info-btn {
                                 opacity: 1;
                             }
-                        }
-                    }
-
-                    &.cell--error {
-                        color: var(--clr-destructive-700);
-                        
-                        p {
-                            color: var(--clr-destructive-700);
                         }
                     }
 

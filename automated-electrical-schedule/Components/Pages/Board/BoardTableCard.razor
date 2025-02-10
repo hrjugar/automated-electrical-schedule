@@ -607,7 +607,7 @@
                         }
                         else
                         {
-                            <div class="@("cell cell--group " + (subDistributionBoard.VoltageDrop.HasError ? "cell--error" : ""))">
+                            <div class="@("cell cell--group " + (subDistributionBoard.VoltageDrop.HasError || subDistributionBoard.VoltageDrop.Value > 0.03 ? "cell--error" : ""))">
                                 <p>@(subDistributionBoard.VoltageDrop.HasError ? subDistributionBoard.VoltageDrop : subDistributionBoard.VoltageDrop.Value.ToRoundedString(true))</p>
 
                                 @* TODO: Implement voltage drop correction for sub boards *@
@@ -780,15 +780,7 @@ else
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>
 
-    @if (DistributionBoard.ParentDistributionBoard is null)
-    {
-        <div class="cell cell--empty"></div>
-    }
-    else
-    {
-        <p class="cell cell--text">@(DistributionBoard.VoltageDrop.HasError ? DistributionBoard.VoltageDrop.ErrorMessage : DistributionBoard.VoltageDrop.Value.ToRoundedString(true))</p>
-        @* <p>@(Math.Round(subDistributionBoard.GetVoltageDrop(), 4).ToPercentageString())</p> *@
-    }
+    <p class="cell cell--text">@(DistributionBoard.VoltageDrop.HasError ? DistributionBoard.VoltageDrop.ErrorMessage : DistributionBoard.VoltageDrop.Value.ToRoundedString(true))</p>
 
     <div class="cell cell--empty"></div>
     <div class="cell cell--empty"></div>

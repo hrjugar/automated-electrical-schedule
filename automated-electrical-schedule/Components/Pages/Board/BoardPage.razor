@@ -20,6 +20,13 @@ else
             </div>
 
             <div class="header-controls">
+                @if (((IElectricalComponent)_distributionBoard).HasHighVoltageDrop)
+                {
+                    <button class="btn-text btn-primary" @onclick="OpenVoltageDropCorrectionModal">
+                        Correct Voltage Drop
+                    </button>
+                }            
+                
                 <button class="btn-text btn-primary" @onclick="OpenSummaryModal">
                     View Summary
                 </button>
@@ -31,13 +38,6 @@ else
                 <button class="btn-text btn-primary" @onclick="OpenCreateCircuitModal">
                     Add New Circuit
                 </button>
-                
-                @if (((IElectricalComponent)_distributionBoard).HasHighVoltageDrop)
-                {
-                    <button class="btn-text btn-primary" @onclick="OpenVoltageDropCorrectionModal">
-                        Correct Voltage Drop
-                    </button>
-                }
 
                 @if (_distributionBoard is ThreePhaseDistributionBoard)
                 {

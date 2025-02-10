@@ -806,6 +806,8 @@
                     </mrow>
                 </math>
             ";
+
+            string vdClass = DistributionBoard.VoltageDrop.Value.Value > 0.03 ? "error" : "";
             
             string voltageDropExpression = $@"
                 <math>
@@ -854,7 +856,7 @@
                             </mfrac>
                         </mrow>
                         <mo>=</mo>
-                        <mn>{DistributionBoard.VoltageDrop.Value.ToRoundedString(true)}</mn>
+                        <mn class={vdClass}>{DistributionBoard.VoltageDrop.Value.ToRoundedString(true)}</mn>
                     </mrow>
                 </math>
             ";
