@@ -15,7 +15,7 @@ public class ProjectNameValidator : ValidationAttribute
             throw new InvalidOperationException("DatabaseContext is not available.");
         }
         
-        return context.Projects.Any(existingProject => existingProject.ProjectName == name)
+        return context.Projects.Any(existingProject => existingProject.ProjectName.Trim() == name.Trim())
             ? new ValidationResult("Project name already exists.", new[] { validationContext.MemberName })
             : ValidationResult.Success;
     }
