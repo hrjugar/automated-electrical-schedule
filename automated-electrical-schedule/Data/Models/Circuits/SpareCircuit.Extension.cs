@@ -74,7 +74,8 @@ public partial class SpareCircuit
             SetCount = SetCount,
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
-            RacewayType = RacewayType
+            RacewayType = RacewayType,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize
         };
     }
 }

@@ -63,6 +63,7 @@ public partial class ConvenienceOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
             
             GfciReceptacleQuantity = GfciReceptacleQuantity,
             GfciReceptacleYoke = GfciReceptacleYoke,

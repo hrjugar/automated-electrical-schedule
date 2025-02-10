@@ -183,6 +183,7 @@ public partial class MotorOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
 
             MotorType = MotorType,
             Horsepower = Horsepower

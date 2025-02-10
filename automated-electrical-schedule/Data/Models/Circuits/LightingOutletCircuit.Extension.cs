@@ -25,6 +25,7 @@ public partial class LightingOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
             
             IsItemized = IsItemized,
             Fixtures = Fixtures.Select(fixture => fixture.Clone()).ToList()

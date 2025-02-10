@@ -45,6 +45,7 @@ public partial class ApplianceEquipmentOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
             
             ApplianceType = ApplianceType,
             IsItemized = IsItemized,
