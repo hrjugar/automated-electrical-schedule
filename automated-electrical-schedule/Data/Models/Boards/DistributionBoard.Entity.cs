@@ -19,7 +19,7 @@ public abstract partial class DistributionBoard : IOrdered, IElectricalComponent
     [Required]
     [Display(Name = "board name")]
     [Column("name")]
-    [MaxLength(255)]
+    [StringLength(26, ErrorMessage = "Max board name character count is 26.")]
     public string BoardName { get; set; } = string.Empty;
 
     [Column("parent_distribution_board_id")]

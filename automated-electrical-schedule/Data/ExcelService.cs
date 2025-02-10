@@ -38,7 +38,7 @@ public class ExcelService
 
     private void _createScheduleSheet(ExcelPackage? package, DistributionBoard board)
     {
-        var scheduleSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - Schedule of Loads");
+        var scheduleSheet = package!.Workbook.Worksheets.Add($"{board.BoardName}: SOL");
         scheduleSheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
         scheduleSheet.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
         
@@ -580,7 +580,7 @@ public class ExcelService
 
     private void _createComputationsSheet(ExcelPackage? package, DistributionBoard board)
     {
-        var compSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - Computations");
+        var compSheet = package!.Workbook.Worksheets.Add($"{board.BoardName}: Com");
         var threePhaseBoard = board as ThreePhaseDistributionBoard;
         
         // PROJECT & BOARD DESCRIPTION -------------------------------------
