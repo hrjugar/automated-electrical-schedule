@@ -70,7 +70,7 @@ public abstract partial class NonSpaceCircuit
     public ConductorType? ConductorType => ConductorType.FindByIdOrNull(ConductorTypeId);
     
     public virtual CalculationResult<double> InitialConductorSize =>
-        ConductorSizeTable.GetConductorSize(ConductorType!, AmpereTrip, SetCount, 0, false);
+        ConductorSizeTable.GetConductorSize(ConductorType!, AmpereTrip, SetCount);
 
     public virtual CalculationResult<double> ConductorSize =>
         VoltageDropCorrectionConductorSize is null
@@ -226,7 +226,10 @@ public abstract partial class NonSpaceCircuit
     
     public void AdjustSetCountForSizes()
     {
-        while (ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize)
+        while (
+            ConductorSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForConductorSize ||
+            GroundingSize.ErrorType == CalculationErrorType.NoFittingAmpereTripForGroundingSize
+        )
         {
             SetCount += 1;
         }
