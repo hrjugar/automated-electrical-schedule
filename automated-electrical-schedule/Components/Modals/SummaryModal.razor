@@ -74,7 +74,7 @@
                     <button
                         class="btn-text btn-primary"
                         type="button"
-                        @onclick="@(() => { })">
+                        @onclick="ExportToExcel">
                         Export
                     </button>
                 </div>
@@ -164,5 +164,12 @@
     {
         IsOpen = false;
         await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    async Task ExportToExcel()
+    {
+        var excelService = new ExcelService(_projectName, _distributionBoards);
+        await excelService.Export();
+        await CloseModal();
     }
 }

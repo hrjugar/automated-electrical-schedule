@@ -1,5 +1,6 @@
 ﻿using automated_electrical_schedule.Data;
 using automated_electrical_schedule.Data.Validators;
+using CommunityToolkit.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -12,6 +13,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => { fonts.AddFont("Heebo.ttf", "Heebo"); });
 
         builder.Services.AddMauiBlazorWebView();

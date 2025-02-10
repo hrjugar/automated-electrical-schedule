@@ -150,6 +150,13 @@ public abstract partial class DistributionBoard
 
         return (currentChild, nextChild);
     }
+
+    public List<IOrdered> CircuitsAndSubBoards => 
+        Circuits
+            .Cast<IOrdered>()
+            .Concat(SubDistributionBoards)
+            .OrderBy(e => e.Order)
+            .ToList();
     
     public string LineToLineVoltageDisplay
     {
