@@ -5,6 +5,7 @@ using automated_electrical_schedule.Extensions;
 using CommunityToolkit.Maui.Storage;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Color = System.Drawing.Color;
 
 namespace automated_electrical_schedule.Data;
 
@@ -38,7 +39,7 @@ public class ExcelService
 
     private void _createScheduleSheet(ExcelPackage? package, DistributionBoard board)
     {
-        var scheduleSheet = package!.Workbook.Worksheets.Add($"{board.BoardName}: SOL");
+        var scheduleSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - SOL");
         scheduleSheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
         scheduleSheet.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
         
@@ -69,86 +70,86 @@ public class ExcelService
         int colI = 0;
         int row = 3;
 
-        scheduleSheet.InitRange("CKT NO", colI, row, colI, row + 1);
+        scheduleSheet.InitSchedRange("CKT NO", colI, row, colI, row + 1);
         colI += 1;
         
-        scheduleSheet.InitRange("Load Description", colI, row, colI, row + 1);
+        scheduleSheet.InitSchedRange("Load Description", colI, row, colI, row + 1);
         colI += 1;
         
-        scheduleSheet.InitRange("QTY", colI, row, colI, row + 1);
+        scheduleSheet.InitSchedRange("QTY", colI, row, colI, row + 1);
         colI += 1;
         
-        scheduleSheet.InitRange("VA", colI, row, colI, row + 1);
+        scheduleSheet.InitSchedRange("VA", colI, row, colI, row + 1);
         colI += 1;
         
-        scheduleSheet.InitRange("Voltage", colI, row, colI, row + 1);
+        scheduleSheet.InitSchedRange("Voltage", colI, row, colI, row + 1);
         colI += 1;
 
         if (threePhaseBoard is null)
         {
-            scheduleSheet.InitRange("Ampere Load", colI, row, colI, row + 1);
+            scheduleSheet.InitSchedRange("Ampere Load", colI, row, colI, row + 1);
         }
         else
         {
-            scheduleSheet.InitRange("Ampere Load", colI, row, colI + 3, row);
+            scheduleSheet.InitSchedRange("Ampere Load", colI, row, colI + 3, row);
             row = 4;
             
             var headerA = threePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? "AB" : "AN";
-            scheduleSheet.InitRange(headerA, colI, row);
+            scheduleSheet.InitSchedRange(headerA, colI, row);
             colI += 1;
             
             var headerB = threePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? "BC" : "BN";
-            scheduleSheet.InitRange(headerB, colI, row);
+            scheduleSheet.InitSchedRange(headerB, colI, row);
             colI += 1;
             
             var headerC = threePhaseBoard.ThreePhaseConfiguration == ThreePhaseConfiguration.Delta ? "CA" : "CN";
-            scheduleSheet.InitRange(headerC, colI, row);
+            scheduleSheet.InitSchedRange(headerC, colI, row);
             colI += 1;
             
-            scheduleSheet.InitRange("ABC", colI, row);
+            scheduleSheet.InitSchedRange("ABC", colI, row);
             row = 3;
         }
 
         colI += 1;
         
-        scheduleSheet.InitRange("Circuit Protection", colI, row, colI + 6, row);
+        scheduleSheet.InitSchedRange("Circuit Protection", colI, row, colI + 6, row);
         row = 4;
         
-        scheduleSheet.InitRange("AT", colI, row);
+        scheduleSheet.InitSchedRange("AT", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("AF", colI, row);
+        scheduleSheet.InitSchedRange("AF", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Phase", colI, row);
+        scheduleSheet.InitSchedRange("Phase", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Pole", colI, row);
+        scheduleSheet.InitSchedRange("Pole", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Length", colI, row);
+        scheduleSheet.InitSchedRange("Length", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("VD", colI, row);
+        scheduleSheet.InitSchedRange("VD", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Type", colI, row);
+        scheduleSheet.InitSchedRange("Type", colI, row);
         colI += 1;
         row = 3;
         
-        scheduleSheet.InitRange("Conductor Size", colI, row, colI + 3, row);
+        scheduleSheet.InitSchedRange("Conductor Size", colI, row, colI + 3, row);
         row = 4;
         
-        scheduleSheet.InitRange("Sets", colI, row);
+        scheduleSheet.InitSchedRange("Sets", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Line+Neutral", colI, row);
+        scheduleSheet.InitSchedRange("Line+Neutral", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Ground", colI, row);
+        scheduleSheet.InitSchedRange("Ground", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Raceway", colI, row);
+        scheduleSheet.InitSchedRange("Raceway", colI, row);
         
         // TABLE ROWS
         
@@ -182,18 +183,18 @@ public class ExcelService
                 if (convenienceCircuit.FourGangQuantity > 0) rowSpan += 1;
             }
             
-            scheduleSheet.InitRange(item.Order.ToString(), colI, row, colI, row + rowSpan - 1);
+            scheduleSheet.InitSchedRange(item.Order.ToString(), colI, row, colI, row + rowSpan - 1);
             colI += 1;
 
             if (spaceCircuit is not null)
             {
-                scheduleSheet.InitRange("Space", colI, row);
+                scheduleSheet.InitSchedRange("Space", colI, row);
                 colI += 1;
 
                 var remainingSpaceCols = threePhaseBoard is null ? 16 : 19;
                 for (var i = 0; i < remainingSpaceCols; i++)
                 {
-                    scheduleSheet.InitRange(string.Empty, colI, row);
+                    scheduleSheet.InitSchedRange(string.Empty, colI, row);
                     colI += 1;
                 }
             } 
@@ -205,7 +206,7 @@ public class ExcelService
                 var isDescriptionBordered =
                     (fixtureCircuit is not null && fixtureCircuit.IsItemized) || 
                     convenienceCircuit is not null;
-                scheduleSheet.InitRange(description, colI, row, null, null, !isDescriptionBordered);
+                scheduleSheet.InitSchedRange(description, colI, row, null, null, !isDescriptionBordered);
                 colI += 1;
 
                 int? quantity = null;
@@ -217,7 +218,7 @@ public class ExcelService
                 {
                     quantity = 1;
                 }
-                scheduleSheet.InitRange(quantity?.ToString() ?? string.Empty, colI, row);
+                scheduleSheet.InitSchedRange(quantity?.ToString() ?? string.Empty, colI, row);
                 colI += 1;
 
                 var voltAmpereDisplay = string.Empty;
@@ -229,10 +230,10 @@ public class ExcelService
                 {
                     voltAmpereDisplay = nonSpareCircuit.VoltAmpere.Value.ToRoundedString();
                 }
-                scheduleSheet.InitRange(voltAmpereDisplay, colI, row);
+                scheduleSheet.InitSchedRange(voltAmpereDisplay, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.Voltage.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.Voltage.ToString(), colI, row);
                 colI += 1;
 
                 var circuitAmpereLoadDisplay = nonSpaceCircuit.AmpereLoad.HasError
@@ -241,32 +242,32 @@ public class ExcelService
 
                 if (threePhaseBoard is null)
                 {
-                    scheduleSheet.InitRange(circuitAmpereLoadDisplay, colI, row);
+                    scheduleSheet.InitSchedRange(circuitAmpereLoadDisplay, colI, row);
                 }
                 else
                 {
                     var circuitAmpereLoadADisplay = nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.A
                         ? circuitAmpereLoadDisplay
                         : string.Empty;
-                    scheduleSheet.InitRange(circuitAmpereLoadADisplay, colI, row);
+                    scheduleSheet.InitSchedRange(circuitAmpereLoadADisplay, colI, row);
                     colI += 1;
                     
                     var circuitAmpereLoadBDisplay = nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.B
                         ? circuitAmpereLoadDisplay
                         : string.Empty;
-                    scheduleSheet.InitRange(circuitAmpereLoadBDisplay, colI, row);
+                    scheduleSheet.InitSchedRange(circuitAmpereLoadBDisplay, colI, row);
                     colI += 1;
                     
                     var circuitAmpereLoadCDisplay = nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.C
                         ? circuitAmpereLoadDisplay
                         : string.Empty;
-                    scheduleSheet.InitRange(circuitAmpereLoadCDisplay, colI, row);
+                    scheduleSheet.InitSchedRange(circuitAmpereLoadCDisplay, colI, row);
                     colI += 1;
                     
                     var circuitAmpereLoadAbcDisplay = nonSpaceCircuit.LineToLineVoltage == LineToLineVoltage.Abc
                         ? circuitAmpereLoadDisplay
                         : string.Empty;
-                    scheduleSheet.InitRange(circuitAmpereLoadAbcDisplay, colI, row);
+                    scheduleSheet.InitSchedRange(circuitAmpereLoadAbcDisplay, colI, row);
                 }
 
                 colI += 1;
@@ -274,52 +275,52 @@ public class ExcelService
                 var ampereTripDisplay = nonSpaceCircuit.AmpereTrip.HasError
                     ? string.Empty
                     : nonSpaceCircuit.AmpereTrip.Value.ToString();
-                scheduleSheet.InitRange(ampereTripDisplay, colI, row);
+                scheduleSheet.InitSchedRange(ampereTripDisplay, colI, row);
                 colI += 1;
 
                 var ampereFrameDisplay = nonSpaceCircuit.AmpereFrame.HasError
                     ? string.Empty
                     : nonSpaceCircuit.AmpereFrame.Value.ToString();
-                scheduleSheet.InitRange(ampereFrameDisplay, colI, row);
+                scheduleSheet.InitSchedRange(ampereFrameDisplay, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.Phase.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.Phase.ToString(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.Pole.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.Pole.ToString(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.WireLength.ToRoundedString(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.WireLength.ToRoundedString(), colI, row);
                 colI += 1;
                 
                 var voltageDropDisplay = nonSpaceCircuit.VoltageDrop.HasError
                     ? string.Empty
                     : nonSpaceCircuit.VoltageDrop.Value.ToRoundedString();
-                scheduleSheet.InitRange(voltageDropDisplay, colI, row);
+                scheduleSheet.InitSchedRange(voltageDropDisplay, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.CircuitProtection.GetDisplayName(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.CircuitProtection.GetDisplayName(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(nonSpaceCircuit.SetCount.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(nonSpaceCircuit.SetCount.ToString(), colI, row);
                 colI += 1;
                 
                 var conductorDisplay = nonSpaceCircuit.ConductorSize.HasError 
                     ? string.Empty
                     : $"{nonSpaceCircuit.ConductorWireCount}-{nonSpaceCircuit.ConductorSize} mm\u00b2 {nonSpaceCircuit.ConductorType}";
-                scheduleSheet.InitRange(conductorDisplay, colI, row);
+                scheduleSheet.InitSchedRange(conductorDisplay, colI, row);
                 colI += 1;
                 
                 var groundDisplay = nonSpaceCircuit.GroundingSize.HasError
                     ? string.Empty
                     : $"{NonSpaceCircuit.GroundingWireCount}-{nonSpaceCircuit.GroundingSize} mm\u00b2 {nonSpaceCircuit.Grounding}";
-                scheduleSheet.InitRange(groundDisplay, colI, row);
+                scheduleSheet.InitSchedRange(groundDisplay, colI, row);
                 colI += 1;
                 
                 var racewayDisplay = nonSpaceCircuit.RacewaySize.HasError
                     ? string.Empty
                     : nonSpaceCircuit.RacewayTextDisplay;
-                scheduleSheet.InitRange(racewayDisplay, colI, row);
+                scheduleSheet.InitSchedRange(racewayDisplay, colI, row);
 
                 if (fixtureCircuit is not null && fixtureCircuit.IsItemized)
                 {
@@ -327,18 +328,18 @@ public class ExcelService
                     {
                         row += 1;
                         colI = 1;
-                        scheduleSheet.InitRange(fixture.Description, colI, row, null, null, false);
+                        scheduleSheet.InitSchedRange(fixture.Description, colI, row, null, null, false);
                         scheduleSheet.GetRange(colI, row).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                         scheduleSheet.GetRange(colI, row).Style.Font.Italic = true;
                         colI += 1;
                         
-                        scheduleSheet.InitRange(fixture.Quantity.ToString(), colI, row);
+                        scheduleSheet.InitSchedRange(fixture.Quantity.ToString(), colI, row);
                         colI += 1;
 
                         var remainingFixtureCols = threePhaseBoard is null ? 14 : 17;
                         for (var i = 0; i < remainingFixtureCols; i++)
                         {
-                            scheduleSheet.InitRange(string.Empty, colI, row);
+                            scheduleSheet.InitSchedRange(string.Empty, colI, row);
                             colI += 1;
                         }
                     }
@@ -380,19 +381,19 @@ public class ExcelService
                     {
                         row += 1;
                         colI = 1;
-                        scheduleSheet.InitRange(desc, colI, row, null, null, false);
+                        scheduleSheet.InitSchedRange(desc, colI, row, null, null, false);
                         scheduleSheet.GetRange(colI, row).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                         scheduleSheet.GetRange(colI, row).Style.Font.Italic = true;
                         colI += 1;
                         
-                        scheduleSheet.InitRange(qty.ToString(), colI, row);
+                        scheduleSheet.InitSchedRange(qty.ToString(), colI, row);
                         colI += 1;
                         
                         var remainingConvenienceCols = threePhaseBoard is null ? 14 : 17;
                         
                         for (var i = 0; i < remainingConvenienceCols; i++)
                         {
-                            scheduleSheet.InitRange(string.Empty, colI, row);
+                            scheduleSheet.InitSchedRange(string.Empty, colI, row);
                             colI += 1;
                         }
                     }
@@ -402,16 +403,16 @@ public class ExcelService
             }
             else if (subBoard is not null)
             {
-                scheduleSheet.InitRange(subBoard.BoardName, colI, row);
+                scheduleSheet.InitSchedRange(subBoard.BoardName, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(string.Empty, colI, row);
+                scheduleSheet.InitSchedRange(string.Empty, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(subBoard.VoltAmpere.ToRoundedString(), colI, row);
+                scheduleSheet.InitSchedRange(subBoard.VoltAmpere.ToRoundedString(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(((int) subBoard.Voltage).ToString(), colI, row);
+                scheduleSheet.InitSchedRange(((int) subBoard.Voltage).ToString(), colI, row);
                 colI += 1;
                 
                 string subBoardAmpereLoadDisplay = subBoard.AmpereLoad.HasError
@@ -420,7 +421,7 @@ public class ExcelService
 
                 if (threePhaseBoard is null)
                 {
-                    scheduleSheet.InitRange(subBoardAmpereLoadDisplay, colI, row);
+                    scheduleSheet.InitSchedRange(subBoardAmpereLoadDisplay, colI, row);
                 }
                 else
                 {
@@ -429,47 +430,47 @@ public class ExcelService
                         var subBoardAmpereLoadADisplay = subThreePhaseBoard.AmpereLoadA == 0
                             ? string.Empty
                             : subThreePhaseBoard.AmpereLoadA.ToRoundedString();
-                        scheduleSheet.InitRange(subBoardAmpereLoadADisplay, colI, row);
+                        scheduleSheet.InitSchedRange(subBoardAmpereLoadADisplay, colI, row);
                         colI += 1;
                         
                         var subBoardAmpereLoadBDisplay = subThreePhaseBoard.AmpereLoadB == 0
                             ? string.Empty
                             : subThreePhaseBoard.AmpereLoadB.ToRoundedString();
-                        scheduleSheet.InitRange(subBoardAmpereLoadBDisplay, colI, row);
+                        scheduleSheet.InitSchedRange(subBoardAmpereLoadBDisplay, colI, row);
                         colI += 1;
                         
                         var subBoardAmpereLoadCDisplay = subThreePhaseBoard.AmpereLoadC == 0
                             ? string.Empty
                             : subThreePhaseBoard.AmpereLoadC.ToRoundedString();
-                        scheduleSheet.InitRange(subBoardAmpereLoadCDisplay, colI, row);
+                        scheduleSheet.InitSchedRange(subBoardAmpereLoadCDisplay, colI, row);
                         colI += 1;
                         
                         var subBoardAmpereLoadAbcDisplay = subThreePhaseBoard.AmpereLoadAbc == 0
                             ? string.Empty
                             : subThreePhaseBoard.AmpereLoadAbc.ToRoundedString();
-                        scheduleSheet.InitRange(subBoardAmpereLoadAbcDisplay, colI, row);
+                        scheduleSheet.InitSchedRange(subBoardAmpereLoadAbcDisplay, colI, row);
                     }
                     else
                     {
                         var boardAmpereLoadADisplay = subBoard.LineToLineVoltage == LineToLineVoltage.A
                             ? subBoardAmpereLoadDisplay
                             : string.Empty;
-                        scheduleSheet.InitRange(boardAmpereLoadADisplay, colI, row);
+                        scheduleSheet.InitSchedRange(boardAmpereLoadADisplay, colI, row);
                         colI += 1;
                         
                         var boardAmpereLoadBDisplay = subBoard.LineToLineVoltage == LineToLineVoltage.B
                             ? subBoardAmpereLoadDisplay
                             : string.Empty;
-                        scheduleSheet.InitRange(boardAmpereLoadBDisplay, colI, row);
+                        scheduleSheet.InitSchedRange(boardAmpereLoadBDisplay, colI, row);
                         colI += 1;
                         
                         var boardAmpereLoadCDisplay = subBoard.LineToLineVoltage == LineToLineVoltage.C
                             ? subBoardAmpereLoadDisplay
                             : string.Empty;
-                        scheduleSheet.InitRange(boardAmpereLoadCDisplay, colI, row);
+                        scheduleSheet.InitSchedRange(boardAmpereLoadCDisplay, colI, row);
                         colI += 1;
                         
-                        scheduleSheet.InitRange(string.Empty, colI, row);
+                        scheduleSheet.InitSchedRange(string.Empty, colI, row);
                     }
                 }
                 
@@ -478,53 +479,53 @@ public class ExcelService
                 var ampereTripDisplay = subBoard.AmpereTrip.HasError
                     ? string.Empty
                     : subBoard.AmpereTrip.Value.ToString();
-                scheduleSheet.InitRange(ampereTripDisplay, colI, row);
+                scheduleSheet.InitSchedRange(ampereTripDisplay, colI, row);
                 colI += 1;
                 
                 var ampereFrameDisplay = subBoard.AmpereFrame.HasError
                     ? string.Empty
                     : subBoard.AmpereFrame.Value.ToString();
-                scheduleSheet.InitRange(ampereFrameDisplay, colI, row);
+                scheduleSheet.InitSchedRange(ampereFrameDisplay, colI, row);
                 colI += 1;
 
                 var phaseInt = subBoard.Phase == BoardPhase.SinglePhase ? 1 : 3;
-                scheduleSheet.InitRange(phaseInt.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(phaseInt.ToString(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(subBoard.Pole.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(subBoard.Pole.ToString(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(subBoard.WireLength.ToRoundedString(), colI, row);
+                scheduleSheet.InitSchedRange(subBoard.WireLength.ToRoundedString(), colI, row);
                 colI += 1;
                 
                 var voltageDropDisplay = subBoard.VoltageDrop.HasError
                     ? string.Empty
                     : subBoard.VoltageDrop.Value.ToRoundedString();
-                scheduleSheet.InitRange(voltageDropDisplay, colI, row);
+                scheduleSheet.InitSchedRange(voltageDropDisplay, colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(subBoard.CircuitProtection.GetDisplayName(), colI, row);
+                scheduleSheet.InitSchedRange(subBoard.CircuitProtection.GetDisplayName(), colI, row);
                 colI += 1;
                 
-                scheduleSheet.InitRange(subBoard.SetCount.ToString(), colI, row);
+                scheduleSheet.InitSchedRange(subBoard.SetCount.ToString(), colI, row);
                 colI += 1;
                 
                 var conductorDisplay = subBoard.ConductorSize.HasError 
                     ? string.Empty
                     : $"{subBoard.ConductorWireCount}-{subBoard.ConductorSize} mm\u00b2 {subBoard.ConductorType}";
-                scheduleSheet.InitRange(conductorDisplay, colI, row);
+                scheduleSheet.InitSchedRange(conductorDisplay, colI, row);
                 colI += 1;
                 
                 var groundDisplay = subBoard.GroundingSize.HasError
                     ? string.Empty
                     : $"{DistributionBoard.GroundingWireCount}-{subBoard.GroundingSize} mm\u00b2 {subBoard.Grounding}";
-                scheduleSheet.InitRange(groundDisplay, colI, row);
+                scheduleSheet.InitSchedRange(groundDisplay, colI, row);
                 colI += 1;
                 
                 var racewayDisplay = subBoard.RacewaySize.HasError
                     ? string.Empty
                     : subBoard.RacewayTextDisplay;
-                scheduleSheet.InitRange(racewayDisplay, colI, row);                
+                scheduleSheet.InitSchedRange(racewayDisplay, colI, row);                
             }
             
             row += 1;
@@ -533,81 +534,85 @@ public class ExcelService
         // TABLE FOOTER ---------------------------------------------------
         colI = 0;
         
-        scheduleSheet.InitRange(string.Empty, colI, row);
+        scheduleSheet.InitSchedRange(string.Empty, colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange("Total", colI, row);
+        scheduleSheet.InitSchedRange("Total", colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange(string.Empty, colI, row);
+        scheduleSheet.InitSchedRange(string.Empty, colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange(board.VoltAmpere.ToRoundedString(), colI, row);
+        scheduleSheet.InitSchedRange(board.VoltAmpere.ToRoundedString(), colI, row);
         colI += 1;
         
-        scheduleSheet.InitRange(string.Empty, colI, row);
+        scheduleSheet.InitSchedRange(string.Empty, colI, row);
         colI += 1;
 
         if (threePhaseBoard is not null)
         {
-            scheduleSheet.InitRange(threePhaseBoard.AmpereLoadA.ToRoundedString(), colI, row);
+            scheduleSheet.InitSchedRange(threePhaseBoard.AmpereLoadA.ToRoundedString(), colI, row);
             colI += 1;
             
-            scheduleSheet.InitRange(threePhaseBoard.AmpereLoadB.ToRoundedString(), colI, row);
+            scheduleSheet.InitSchedRange(threePhaseBoard.AmpereLoadB.ToRoundedString(), colI, row);
             colI += 1;
             
-            scheduleSheet.InitRange(threePhaseBoard.AmpereLoadC.ToRoundedString(), colI, row);
+            scheduleSheet.InitSchedRange(threePhaseBoard.AmpereLoadC.ToRoundedString(), colI, row);
             colI += 1;
             
-            scheduleSheet.InitRange(threePhaseBoard.AmpereLoadAbc.ToRoundedString(), colI, row);
+            scheduleSheet.InitSchedRange(threePhaseBoard.AmpereLoadAbc.ToRoundedString(), colI, row);
         }
         else
         {
             var boardAmpereLoadDisplay = board.AmpereLoad.HasError
                 ? string.Empty
                 : board.AmpereLoad.Value.ToRoundedString();
-            scheduleSheet.InitRange(boardAmpereLoadDisplay, colI, row);
+            scheduleSheet.InitSchedRange(boardAmpereLoadDisplay, colI, row);
         }
 
         colI += 1;
 
         for (var i = 0; i < 11; i++)
         {
-            scheduleSheet.InitRange(string.Empty, colI, row);
+            scheduleSheet.InitSchedRange(string.Empty, colI, row);
             colI += 1;
         }
+
+        scheduleSheet.Columns.AutoFit();
     }
 
     private void _createComputationsSheet(ExcelPackage? package, DistributionBoard board)
     {
-        var compSheet = package!.Workbook.Worksheets.Add($"{board.BoardName}: Com");
+        var compSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - Com");
         var threePhaseBoard = board as ThreePhaseDistributionBoard;
         
         // PROJECT & BOARD DESCRIPTION -------------------------------------
-        compSheet.Cells["A1:E1"].Merge = true;
         compSheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         compSheet.Cells["A1"].Value = $"PROJECT NAME: {ProjectName}";
         
-        compSheet.Cells["F1:J1"].Merge = true;
-        compSheet.Cells["F1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["B1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         var configText = threePhaseBoard is null
             ? ""
             : " " + threePhaseBoard.ThreePhaseConfiguration.GetDisplayName();
-        compSheet.Cells["F1"].Value =
+        compSheet.Cells["B1"].Value =
             $"SYSTEM: {board.Phase.GetDisplayName()}{configText}";
             
-        compSheet.Cells["A2:E2"].Merge = true;
         compSheet.Cells["A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         compSheet.Cells["A2"].Value = $"DISTRIBUTION BOARD NAME: {board.BoardName}";
             
-        compSheet.Cells["F2:J2"].Merge = true;
-        compSheet.Cells["F2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-        compSheet.Cells["F2"].Value = $"VOLTAGE: {(int) board.Voltage} V";
+        compSheet.Cells["B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["B2"].Value = $"VOLTAGE: {(int) board.Voltage} V";
         
         // COMPUTATIONS ----------------------------------------------------
         
         var colI = 0;
-        var row = 6;
+        var row = 4;
+        
+        // COMPUTATION GROUP ONE = APPLICATION OF DEMAND FACTORS
+
+        compSheet.InitCompCell("A.) Application of Demand Factors", colI, row, 18, true);
+
+        row += 2;
 
         var childLightingOutlets =
             board
@@ -717,7 +722,7 @@ public class ExcelService
                     row += 1;
                 }
 
-                row += 1;
+                row += 2;
                 var finalTotalText = $"Final total = {firstRangeText + secondRangeValue + thirdRangeValue}VA";
                 compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
                 row += 1;
@@ -725,6 +730,7 @@ public class ExcelService
                 var referenceText =
                     "Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
             }
         }
         else
@@ -857,6 +863,7 @@ public class ExcelService
                     nonDwellingLightingOutletsVoltAmpereWithDemandFactor = lightingOutletsVoltAmpere;
                 }
 
+                row += 1;
                 var finalTotalText =
                     $"Final total = {nonDwellingLightingOutletsVoltAmpereWithDemandFactor.ToRoundedString()}VA";
                 compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
@@ -865,6 +872,7 @@ public class ExcelService
                 var referenceText =
                     "Reference: Lighting load Demand Factors, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.3, pp. 56, 2017.";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
                 row += 1;
             }
 
@@ -922,7 +930,8 @@ public class ExcelService
                     compSheet.InitCompCell(secondRangeText, colI, row);
                     row += 1;
                 }
-                
+
+                row += 1;
                 var finalTotalText =
                     $"Final total = {nonDwellingConvenienceOutletsVoltAmpereRanges.Sum().ToRoundedString()}VA";
                 compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
@@ -931,6 +940,7 @@ public class ExcelService
                 var referenceText =
                     "Reference: Demand Factors for Non-Dwelling Receptacle Loads, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.5, pp. 56, 2017.";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
             }
         }
         
@@ -990,7 +1000,8 @@ public class ExcelService
                                 mc => mc.MotorApplication == MotorApplication.NormalMotor
                             ) > 0
                         );
-                
+
+                row += 1;
                 compSheet.InitCompCell("For Normal Motors", colI, row, 16, true);
                 row += 1;
 
@@ -1035,7 +1046,8 @@ public class ExcelService
                                 mc => mc.MotorApplication == MotorApplication.ElevatorFeeder
                             ) > 0
                         );
-                
+
+                row += 1;
                 compSheet.InitCompCell("For Elevator Feeders", colI, row, 16, true);
                 row += 1;
 
@@ -1069,6 +1081,7 @@ public class ExcelService
                 var referenceText =
                     "“Demand Factors for Elevators”, Philippine Electrical Code Part 1, Chap. 6.20, no. 6.20.2.4, pp. 600, 2017";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
                 row += 1;
             }
 
@@ -1085,7 +1098,8 @@ public class ExcelService
                                 mc => mc.MotorApplication == MotorApplication.CranesAndHoist
                             ) > 0
                         );
-                
+
+                row += 1;
                 compSheet.InitCompCell("For Cranes and Hoists", colI, row, 16, true);
                 row += 1;
 
@@ -1119,9 +1133,11 @@ public class ExcelService
                 var referenceText =
                     $"“Demand Factors for Cranes and Hoist”, Philippine Electrical Code Part 1, Chap. 6.10, no. 6.10.2.4(E), pp. 594, 2017";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
                 row += 1;
             }
 
+            row += 1;
             var finalTotalText = $"Final total = {(normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesVoltAmpereWithDemandFactor).ToRoundedString()}VA";
             compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
         }
@@ -1204,6 +1220,7 @@ public class ExcelService
 
             if (dryersVoltAmpere > 0)
             {
+                row += 1;
                 compSheet.InitCompCell("For Dryers", colI, row, 16, true);
                 row += 1;
                 
@@ -1226,11 +1243,13 @@ public class ExcelService
                 var referenceText =
                     "“Demand Factors for Household Electric Clothes Dryers”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.15, pp. 57, 2017";
                 compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
                 row += 1;
             }
 
             if (kitchenEquipmentsVoltAmpere > 0)
             {
+                row += 1;
                 compSheet.InitCompCell("For Kitchen Equipment", colI, row, 16, true);
                 row += 1;
 
@@ -1294,6 +1313,7 @@ public class ExcelService
                     var referenceText =
                         "<p>Reference: “Demand Factors and Loads for Household Electric Ranges, Wall Mounted Ovens, Counter-Mounted Cooking Units, and Other Household Cooking Appliances over 1 \u00be kW”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.</p>";
                     compSheet.InitCompCell(referenceText, colI, row);
+                    compSheet.GetRange(colI, row).Style.WrapText = true;
                 }
                 else
                 {
@@ -1317,12 +1337,14 @@ public class ExcelService
                     var referenceText =
                         "Reference: “Demand Factors for Kitchen Equipment – other than Dwelling Units”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.3.16, pp. 58, 2017.";
                     compSheet.InitCompCell(referenceText, colI, row);
+                    compSheet.GetRange(colI, row).Style.WrapText = true;
                 }
                 row += 1;
             }
 
             if (otherApplianceEquipmentsVoltAmpere > 0)
             {
+                row += 1;
                 compSheet.InitCompCell("For Other Equipment:", colI, row, 16, true);
                 row += 1;
                 
@@ -1353,7 +1375,7 @@ public class ExcelService
                 row += 1;
             }
             
-            row += 1;
+            row += 2;
             var finalTotalText = $"Final total = {applianceEquipmentVoltAmpereWithDemandFactor.ToRoundedString()}VA";
             compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
         }
@@ -1402,9 +1424,236 @@ public class ExcelService
         row += 1;
 
         var vaText = $"Total VA (S) = {board.VoltAmpere.ToRoundedString()}";
-        compSheet.InitCompCell(vaText, colI, row, 14, true);
+        compSheet.InitCompCell(vaText, colI, row);
+        row += 1;
+
+        var multiplierText = threePhaseBoard is not null ? "\u221a3" : "2";
+        
+        var currFormulaText = $"I = (Total VA)/({multiplierText} \u00d7 {(int)board.Voltage})";
+        compSheet.InitCompCell(currFormulaText, colI, row, 16);
         row += 1;
         
-        // TODO: Show current
+        var currRange = compSheet.GetRange(colI, row).RichText.Add($"I = ({board.VoltAmpere.ToRoundedString()})/({multiplierText} \u00d7 {(int)board.Voltage})");
+        currRange.Size = 16;
+        
+        var currResultRange = compSheet.GetRange(colI, row).RichText.Add($" = {board.Current.Value.ToRoundedString()}");
+        currResultRange.Size = 16;
+        currResultRange.Bold = true;
+
+        // COMPUTATION GROUP TWO = SIZING OF CIRCUIT PROTECTION
+        colI = 1;
+        row = 4;
+        
+        compSheet.InitCompCell("B.) Sizing of Circuit Protection", colI, row, 18, true);
+
+        row += 2;
+        
+        compSheet.InitCompCell("For Circuit Protection", colI, row, 20, true, true);
+        row += 1;
+
+        if (board.HasNestedCircuits)
+        {
+            var circuitProtectionTotalText =
+                $"Overall Total = {board.Current.Value.ToRoundedString()}A + ({board.HighestMotorLoad.ToRoundedString()}A \u00d7 1.25) = {board.CircuitProtectionAmpere.ToRoundedString()}";
+            compSheet.InitCompCell(circuitProtectionTotalText, colI, row);
+            row += 1;
+
+            var circuitProtectionText =
+                $"• Circuit Protection = Use {board.AmpereTrip}AT; Use {board.AmpereFrame}AF";
+            compSheet.InitCompCell(circuitProtectionText, colI, row, null, true);
+        }
+        else
+        {
+            compSheet.InitCompCell("No Circuits", colI, row);
+        }
+
+        // COMPUTATION GROUP THREE = SIZING OF CONDUCTORS AND RACEWAY
+        colI = 2;
+        row = 4;
+        
+        compSheet.InitCompCell("C.) Sizing of Conductors and Raceway", colI, row, 18, true);
+
+        row += 2;
+        
+        compSheet.InitCompCell("For Conductors", colI, row, 20, true, true);
+        row += 1;
+
+        if (board.HasNestedCircuits)
+        {
+            var conductorTotalText = 
+                $"Overall Total = {board.Current.Value.ToRoundedString()}A + ({board.HighestMotorLoad.ToRoundedString()}A \u00d7 0.25) = {board.ConductorAmpere.ToRoundedString()}";
+            compSheet.InitCompCell(conductorTotalText, colI, row);
+            row += 1;
+
+            var initialConductorText =
+                $"• Conductor = {board.InitialConductorTextDisplay}";
+            compSheet.InitCompCell(initialConductorText, colI, row);
+            row += 1;
+            
+            if (board.InitialConductorSize.HasError)
+            {
+                compSheet.InitCompCell(board.InitialConductorSize.ErrorMessage, colI, row);
+            }
+            else
+            {
+                row += 1;
+                compSheet.InitCompCell("For Ambient Temperature Conductors Correction Factor under 90 degrees", colI, row, 16, true);
+                row += 1;
+
+                var ambientTempText = $"Chosen Temperature: {board.AmbientTemperature.GetDisplayName()} degrees";
+                compSheet.InitCompCell(ambientTempText, colI, row);
+                row += 1;
+
+                var temperatureAmpacityText =
+                    $"• Ampacity of {board.InitialConductorSize} mm\u00b2 = {board.InitialConductorSizeAmpacity.Value} \u00d7 {board.AmbientTemperatureMultiplier} = {board.InitialConductorSizeAmpacity.Value * board.AmbientTemperatureMultiplier}";
+                compSheet.InitCompCell(temperatureAmpacityText, colI, row);
+                row += 1;
+
+                var conductorText = $"Conductor = Use {board.ConductorTextDisplay}";
+                
+                if (board.VoltageDropCorrectionConductorSize is null)
+                {
+                    compSheet.InitCompCell(conductorText, colI, row, null, true);
+                }
+                else
+                {
+                    var temperatureAffectedConductorText =
+                        $"• Conductor = Use {board.TemperatureAffectedConductorTextDisplay}";
+                    compSheet.InitCompCell(temperatureAffectedConductorText, colI, row);
+                    row += 1;
+                    
+                    compSheet.InitCompCell("With Voltage Drop Correction", colI, row);
+                    row += 1;
+                    
+                    compSheet.InitCompCell(conductorText, colI, row, null, true);
+                }
+
+                row += 1;
+                    
+                var groundText = $"Ground = Use {board.GroundingTextDisplay}";
+                compSheet.InitCompCell(groundText, colI, row, null, true);
+            }
+        }
+        else
+        {
+            compSheet.InitCompCell("No Circuits", colI, row);
+        }
+
+        row += 2;
+        
+        compSheet.InitCompCell("For Raceway", colI, row, 20, true, true);
+        row += 1;
+
+        if (board.HasNestedCircuits)
+        {
+            var racewayText = $"Raceway = Use {board.RacewayTextDisplay}";
+            compSheet.InitCompCell(racewayText, colI, row, null, true);
+        }
+        else
+        {
+            compSheet.InitCompCell("No Circuits", colI, row);
+        }
+        
+        // COMPUTATION GROUP FOUR = VOLTAGE DROP
+        colI = 3;
+        row = 4;
+        
+        compSheet.InitCompCell("D.) Voltage Drop", colI, row, 18, true);
+        row += 1;
+
+        if (!board.HasNestedCircuits)
+        {
+            compSheet.InitCompCell("No Circuits", colI, row);
+        } 
+        else if
+        (
+            board.AmpereLoad.HasError ||
+            board.R.HasError ||
+            board.X.HasError ||
+            board.VoltageDrop.HasError
+        )
+        {
+            compSheet.InitCompCell("Cannot calculate voltage drop", colI, row);
+        }
+        else if
+        (
+            board.WireLength is null ||
+            board.R.Value is null ||
+            board.X.Value is null ||
+            board.VoltageDrop.Value is null
+        )
+        {
+            compSheet.InitCompCell("No voltage drop", colI, row);
+        }
+        else
+        {
+            var factorText = threePhaseBoard is not null ? "\u221a3" : "2";
+            var vdFormulaText =
+                $"VD = {factorText} \u00d7 Ampere Load \u00d7 \u221a(R\u00b2 + X\u00b2) \u00d7 (Length/(305 \u00d7 No. of Sets)) \u00f7 (100%/Voltage)";
+            compSheet.InitCompCell(vdFormulaText, colI, row, 16);
+            row += 1;
+            
+            var vdText =
+                $"VD = {factorText} \u00d7 {board.AmpereLoad.Value.ToRoundedString()} \u00d7 \u221a({board.R.Value.ToRoundedString()}² + {board.X.Value.ToRoundedString()}²) \u00d7 ({board.WireLength.Value}/(305 \u00d7 {board.SetCount})) \u00f7 (100%/{(int)board.Voltage}) =";
+            var vdRange = compSheet.GetRange(colI, row).RichText.Add(vdText);
+            vdRange.Size = 16;
+            
+            var vdResultText =
+                $" {board.VoltageDrop.Value.ToRoundedString(true)}";
+            var vdResultRange =
+                compSheet.GetRange(colI, row).RichText.Add(vdResultText);
+            vdResultRange.Size = 16;
+
+            if (((IElectricalComponent)board).HasHighVoltageDrop)
+            {
+                vdResultRange.Color = Color.Red;
+            }
+        }
+        
+        // COMPUTATION GROUP FIVE = TRANSFORMER
+
+        if (
+            board.HasTransformer &&
+            board.TransformerPrimaryProtection != null &&
+            board.TransformerSecondaryProtection != null &&
+            !board.TransformerRating.HasError &&
+            !board.TransformerPrimaryProtectionAmpereTrip.HasError &&
+            !board.TransformerSecondaryProtectionAmpereTrip.HasError
+        )
+        {
+            colI = 4;
+            row = 4;
+            
+            compSheet.InitCompCell("E.) Transformer", colI, row, 18, true);
+            row += 1;
+            
+            var txText = $"TX = {board.TransformerRating.Value / 1000}kVA";
+            compSheet.InitCompCell(txText, colI, row, null, true);
+            row += 1;
+            
+            var primaryProtectionText =
+                $"Primary Protection: {board.TransformerPrimaryProtectionAmpereWithoutMultiplier.ToRoundedString()}A \u00d7 {board.TransformerPrimaryProtectionMultiplier} = {board.TransformerPrimaryProtectionAmpere.ToRoundedString()}A";
+            compSheet.GetRange(colI, row).RichText.Add(primaryProtectionText);
+            
+            var primaryProtectionResultText =
+                $"= Use {board.TransformerPrimaryProtectionAmpereTrip}AT {board.TransformerPrimaryProtection.GetDisplayName()}";
+            var primaryProtectionResultRange =
+                compSheet.GetRange(colI, row).RichText.Add(primaryProtectionResultText);
+            primaryProtectionResultRange.Bold = true;
+            
+            row += 1;
+            
+            var secondaryProtectionText =
+                    $"Secondary Protection: {board.TransformerSecondaryProtectionAmpereWithoutMultiplier.ToRoundedString()}A \u00d7 {board.TransformerSecondaryProtectionMultiplier} = {board.TransformerSecondaryProtectionAmpere.ToRoundedString()}A";
+            compSheet.GetRange(colI, row).RichText.Add(secondaryProtectionText);
+            
+            var secondaryProtectionResultText =
+                    $"= Use {board.TransformerSecondaryProtectionAmpereTrip}AT {board.TransformerSecondaryProtection.GetDisplayName()}";
+            var secondaryProtectionResultRange =
+                compSheet.GetRange(colI, row).RichText.Add(secondaryProtectionResultText);
+            secondaryProtectionResultRange.Bold = true;
+        }
+        
+        compSheet.Columns.AutoFit();
     }
 }

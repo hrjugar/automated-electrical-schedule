@@ -20,8 +20,21 @@ public static class ExcelWorksheetExtensions
         
         return excelWorksheet.Cells[$"{excelColumns[startColIndex]}{startRow}:{excelColumns[endColIndex.Value]}{endRow.Value}"];
     }
-
-    public static void InitRange(
+    
+    public static void InitSchedCell(
+        this ExcelWorksheet excelWorksheet,
+        string value,
+        int colIndex,
+        int row
+    )
+    {
+        var cell = excelWorksheet.Cells[$"{excelColumns[colIndex]}{row}"];
+        cell.Value = value;
+        cell.Style.Font.Bold = true;
+        cell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+    }
+    
+    public static void InitSchedRange(
         this ExcelWorksheet excelWorksheet,
         string value,
         int startColIndex,
@@ -31,6 +44,18 @@ public static class ExcelWorksheetExtensions
         bool shouldBorder = true
     )
     {
+        if (endColIndex is null && endRow is null)
+        {
+            InitSchedCell(
+                excelWorksheet,
+                value,
+                startColIndex,
+                startRow
+            );
+
+            return;
+        }
+        
         var range = GetRange(
             excelWorksheet,
             startColIndex,
