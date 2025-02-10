@@ -130,10 +130,18 @@ public static class DemandFactorFormulas
 
     public static double ApplyDemandFactorToDryers(List<ApplianceEquipmentOutletCircuit> dryers)
     {
-        var count = dryers.Count();
+        int quantity = 0;
+        foreach (var dryer in dryers)
+        {
+            foreach (var dryerFixture in dryer.Fixtures)
+            {
+                quantity += dryerFixture.Quantity;
+            }
+        }
+        
         var voltAmpere = dryers.Sum(d => d.VoltAmpere.Value);
         
-        var demandFactor = count switch
+        var demandFactor = quantity switch
         {
             0 => 0,
             > 0 and <= 4 => 1,
@@ -144,8 +152,8 @@ public static class DemandFactorFormulas
             9 => 0.55,
             10 => 0.5,
             11 => 0.47,
-            <= 23 => (47 - (count - 11.0)) / 100,
-            <= 42 => (35 - 0.5 * (count - 23)) / 100,
+            <= 23 => (47 - (quantity - 11.0)) / 100,
+            <= 42 => (35 - 0.5 * (quantity - 23)) / 100,
             _ => 43
         };
 
@@ -156,7 +164,16 @@ public static class DemandFactorFormulas
     {
         var lessThan3500 = kitchenEquipment.Where(ke => ke.VoltAmpere.Value < 3500);
         var lessThan3500VoltAmpere = lessThan3500.Sum(ke => ke.VoltAmpere.Value);
-        var lessThan3500DemandFactor = lessThan3500.Count() switch
+        int lessThan3500Quantity = 0;
+        foreach (var ke in lessThan3500)
+        {
+            foreach (var fixture in ke.Fixtures)
+            {
+                lessThan3500Quantity += fixture.Quantity;
+            }
+        }
+        
+        var lessThan3500DemandFactor = lessThan3500Quantity switch
         {
             0 => 0,
             1 => 0.8,
@@ -188,7 +205,16 @@ public static class DemandFactorFormulas
         
         var greaterThan3500 = kitchenEquipment.Where(ke => ke.VoltAmpere.Value >= 3500);
         var greaterThan3500VoltAmpere = greaterThan3500.Sum(ke => ke.VoltAmpere.Value);
-        var greaterThan3500DemandFactor = greaterThan3500.Count() switch
+        int greaterThan3500Quantity = 0;
+        foreach (var ke in greaterThan3500)
+        {
+            foreach (var fixture in ke.Fixtures)
+            {
+                greaterThan3500Quantity += fixture.Quantity;
+            }
+        }
+        
+        var greaterThan3500DemandFactor = greaterThan3500Quantity switch
         {
             0 => 0,
             1 => 0.8,
@@ -221,8 +247,16 @@ public static class DemandFactorFormulas
         IEnumerable<ApplianceEquipmentOutletCircuit> kitchenEquipment)
     {
         var sum = kitchenEquipment.Sum(ke => ke.VoltAmpere.Value);
+        int quantity = 0;
+        foreach (var ke in kitchenEquipment)
+        {
+            foreach (var fixture in ke.Fixtures)
+            {
+                quantity += fixture.Quantity;
+            }
+        }
 
-        var demandFactor = kitchenEquipment.Count() switch
+        var demandFactor = quantity switch
         {
             0 => 0,
             <= 2 => 1,
