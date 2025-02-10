@@ -756,13 +756,14 @@
         }
         else
         {
-            string voltageDropFormulaExpression = @"
+            var factor = DistributionBoard is ThreePhaseDistributionBoard ? "&radic;3" : "2";
+            string voltageDropFormulaExpression = $@"
                 <math>
                     <mrow>
                         <mi>VD</mi>
                         <mo>=</mo>
                         <mrow>
-                            <mn>2</mn>
+                            <mn>{factor}</mn>
                             <mo>&times;</mo>
                             <mi>Ampere Load</mi>
                             <mo>&times;</mo>
@@ -770,6 +771,7 @@
                             <mrow>
                                 <mtext>&radic;</mtext>
                                 <msqrt>
+                                    <mtext>(</mtext>
                                     <msup>
                                         <mi>R</mi>
                                         <mn>2</mn>
@@ -779,6 +781,7 @@
                                         <mi>X</mi>
                                         <mn>2</mn>                
                                     </msup>
+                                    <mtext>)</mtext>
                                 </msqrt>
                             </mrow>
 
@@ -810,13 +813,14 @@
                         <mi>VD</mi>
                         <mo>=</mo>
                         <mrow>
-                            <mn>2</mn>
+                            <mn>{factor}</mn>
                             <mo>&times;</mo>
                             <mi>{DistributionBoard.AmpereLoad.Value.ToRoundedString()}</mi>
                             <mo>&times;</mo>
 
                             <mrow>
                                 <mtext>&radic;</mtext>
+                                <mtext>(</mtext>
                                 <msqrt>
                                     <msup>
                                         <mi>{DistributionBoard.R.Value.ToRoundedString()}</mi>
@@ -828,6 +832,7 @@
                                         <mn>2</mn>                
                                     </msup>
                                 </msqrt>
+                                <mtext>)</mtext>
                             </mrow>
 
                             <mo>&times;</mo>
