@@ -25,6 +25,7 @@ public partial class LightingOutletCircuit
             ConductorTypeId = ConductorTypeId,
             GroundingId = GroundingId,
             RacewayType = RacewayType,
+            CorrectedVoltageDrop = CorrectedVoltageDrop,
             VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
             
             IsItemized = IsItemized,

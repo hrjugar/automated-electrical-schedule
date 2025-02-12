@@ -138,6 +138,8 @@ public partial class ThreePhaseDistributionBoard
             BreakerConductorTypeId = BreakerConductorTypeId,
             BreakerGroundingId = BreakerGroundingId,
             BreakerRacewayType = BreakerRacewayType,
+            CorrectedVoltageDrop = CorrectedVoltageDrop,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
 
             ThreePhaseConfiguration = ThreePhaseConfiguration
         };

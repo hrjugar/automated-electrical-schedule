@@ -23,6 +23,11 @@
                         Adjust Conductor Size
                     </button>
                 </div>
+                
+                @if (!ElectricalComponent.CanCorrectVoltageDropWithConductorSize)
+                {
+                    <p class="error">The "Adjusted Conductor Size" button was disabled due to unavailability of a larger size that can correct the voltage drop.</p>
+                }
             </div>
 
             <div class="modal-footer modal-footer-btns">

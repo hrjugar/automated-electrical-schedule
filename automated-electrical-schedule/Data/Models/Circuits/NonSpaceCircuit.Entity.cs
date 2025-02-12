@@ -29,6 +29,9 @@ public abstract partial class NonSpaceCircuit : Circuit, IElectricalComponent
     [Range(0d, double.PositiveInfinity, MinimumIsExclusive = true)]
     public double? WireLength { get; set; }
     
+    [Column("corrected_voltage_drop")]
+    public double? CorrectedVoltageDrop { get; set; }
+    
     [Column("voltage_drop_correction_conductor_size")]
     public double? VoltageDropCorrectionConductorSize { get; set; }
 }

@@ -187,6 +187,7 @@ public abstract partial class NonSpaceCircuit
             );
         
         if (newVoltageDropCorrectionConductorSize.HasError) return;
+        CorrectedVoltageDrop = VoltageDrop.Value;
         VoltageDropCorrectionConductorSize = newVoltageDropCorrectionConductorSize.Value;
     }
     
@@ -203,6 +204,7 @@ public abstract partial class NonSpaceCircuit
             )
         )
         {
+            CorrectedVoltageDrop = null;
             VoltageDropCorrectionConductorSize = null;
         }
 
@@ -218,8 +220,9 @@ public abstract partial class NonSpaceCircuit
             Voltage
         );
 
-        if (!newVoltageDrop.HasError && newVoltageDrop.Value is not null && newVoltageDrop.Value < 0.03)
+        if (!newVoltageDrop.HasError && newVoltageDrop.Value is not null && !newVoltageDrop.Value.Value.IsRoughlyEqualTo(CorrectedVoltageDrop!.Value))
         {
+            CorrectedVoltageDrop = null;
             VoltageDropCorrectionConductorSize = null;
         }
     }

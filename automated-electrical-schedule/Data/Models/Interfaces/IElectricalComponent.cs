@@ -14,6 +14,7 @@ public interface IElectricalComponent
     public string GroundingId { get; set; }
     public int SetCount { get; set; }
     public double? WireLength { get; set; }
+    public double? CorrectedVoltageDrop { get; set; }
     public double? VoltageDropCorrectionConductorSize { get; set; }
     
     public CalculationResult<double> AmpereLoad { get; }

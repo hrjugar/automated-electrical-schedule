@@ -82,7 +82,9 @@ public partial class SinglePhaseDistributionBoard
             BreakerSetCount = BreakerSetCount,
             BreakerConductorTypeId = BreakerConductorTypeId,
             BreakerGroundingId = BreakerGroundingId,
-            BreakerRacewayType = BreakerRacewayType
+            BreakerRacewayType = BreakerRacewayType,
+            CorrectedVoltageDrop = CorrectedVoltageDrop,
+            VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
         };
     }
 }

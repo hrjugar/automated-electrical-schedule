@@ -1,5 +1,11 @@
 .voltage-drop-correction-modal {
     .modal-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        
         .correction-btns {
             display: flex;
             flex-direction: row;
