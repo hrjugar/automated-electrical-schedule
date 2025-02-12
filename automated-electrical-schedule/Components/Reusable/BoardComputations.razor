@@ -527,7 +527,7 @@
         
         <div class="computation-subgroup">
             <h4>Overall Total</h4>
-            <p>Total VA (S) = @(DistributionBoard.VoltAmpere.ToRoundedString()) VA</p>
+            <p>Total VA (S) = @(DistributionBoard.VoltAmpereWithDemandFactor.ToRoundedString()) VA</p>
             
             @* @if (DistributionBoard.Phase == BoardPhase.ThreePhase) *@
             @* { *@
@@ -588,7 +588,7 @@
                                 <mo>=</mo>
                                 <mfrac>
                                     <mrow>
-                                        <mn>{DistributionBoard.VoltAmpere.ToRoundedString()}</mn>
+                                        <mn>{DistributionBoard.VoltAmpereWithDemandFactor.ToRoundedString()}</mn>
                                         <mi>VA</mi>
                                     </mrow>
                                     
@@ -615,7 +615,7 @@
                                 <mo>=</mo>
                                 <mfrac>
                                     <mrow>
-                                        <mn>{DistributionBoard.VoltAmpere.ToRoundedString()}</mn>
+                                        <mn>{DistributionBoard.VoltAmpereWithDemandFactor.ToRoundedString()}</mn>
                                         <mi>VA</mi>
                                     </mrow>
                                     

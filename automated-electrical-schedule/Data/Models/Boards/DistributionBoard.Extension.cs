@@ -218,9 +218,27 @@ public abstract partial class DistributionBoard
             .Select(mc => mc.AmpereLoad.Value)
             .DefaultIfEmpty(0)
             .Max();
-        
-    
+
+
     public double VoltAmpere
+    {
+        get
+        {
+            return
+                Circuits
+                    .OfType<SpareCircuit>()
+                    .Sum(s => s.VoltAmpere) +
+                Circuits
+                    .OfType<NonSpareCircuit>()
+                    .Select(c => c.VoltAmpere)
+                    .Sum() +
+                SubDistributionBoards
+                    .Select(b => b.VoltAmpere)
+                    .Sum();
+        }
+    }
+    
+    public double VoltAmpereWithDemandFactor
     {
         get
         {
@@ -370,7 +388,7 @@ public abstract partial class DistributionBoard
         get
         {
             var denominator = Phase == BoardPhase.ThreePhase ? (int) Voltage * Math.Sqrt(3) : (int) Voltage;
-            return CalculationResult<double>.Success(VoltAmpere / denominator);
+            return CalculationResult<double>.Success(VoltAmpereWithDemandFactor / denominator);
         }
     }
 
@@ -592,7 +610,7 @@ public abstract partial class DistributionBoard
             var voltage = ParentDistributionBoard is null ? 13800 : (int)ParentDistributionBoard.Voltage;
             var denominatorMultiplier = Phase == BoardPhase.ThreePhase ? Math.Sqrt(3) : 1;
 
-            return VoltAmpere / (denominatorMultiplier * voltage);
+            return VoltAmpereWithDemandFactor / (denominatorMultiplier * voltage);
         }
     }
     public double TransformerPrimaryProtectionMultiplier =>
@@ -614,7 +632,7 @@ public abstract partial class DistributionBoard
         {
             var denominatorMultiplier = Phase == BoardPhase.ThreePhase ? Math.Sqrt(3) : 1;
 
-            return VoltAmpere / (denominatorMultiplier * (int)Voltage);
+            return VoltAmpereWithDemandFactor / (denominatorMultiplier * (int)Voltage);
         }
     }
     

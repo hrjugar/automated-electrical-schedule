@@ -22,7 +22,7 @@ else
             <div class="header-controls">
                 @if (((IElectricalComponent)_distributionBoard).HasHighVoltageDrop)
                 {
-                    <button class="btn-text btn-primary" @onclick="OpenVoltageDropCorrectionModal">
+                    <button class="btn-text btn-destructive" @onclick="OpenVoltageDropCorrectionModal">
                         Correct Voltage Drop
                     </button>
                 }            

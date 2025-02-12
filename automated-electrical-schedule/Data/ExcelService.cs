@@ -1423,7 +1423,7 @@ public class ExcelService
         compSheet.InitCompCell("Overall Total", colI, row, 20, true, true);
         row += 1;
 
-        var vaText = $"Total VA (S) = {board.VoltAmpere.ToRoundedString()}";
+        var vaText = $"Total VA (S) = {board.VoltAmpereWithDemandFactor.ToRoundedString()}";
         compSheet.InitCompCell(vaText, colI, row);
         row += 1;
 
@@ -1433,7 +1433,7 @@ public class ExcelService
         compSheet.InitCompCell(currFormulaText, colI, row, 16);
         row += 1;
         
-        var currRange = compSheet.GetRange(colI, row).RichText.Add($"I = ({board.VoltAmpere.ToRoundedString()})/({multiplierText} \u00d7 {(int)board.Voltage})");
+        var currRange = compSheet.GetRange(colI, row).RichText.Add($"I = ({board.VoltAmpereWithDemandFactor.ToRoundedString()})/({multiplierText} \u00d7 {(int)board.Voltage})");
         currRange.Size = 16;
         
         var currResultRange = compSheet.GetRange(colI, row).RichText.Add($" = {board.Current.Value.ToRoundedString()}");
