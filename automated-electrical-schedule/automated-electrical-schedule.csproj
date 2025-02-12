@@ -38,6 +38,10 @@
         <HotReloadEnabled>true</HotReloadEnabled>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <NoWarn>NU1605</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiFont Include="wwwroot\Heebo.ttf"/>
