@@ -328,7 +328,7 @@ public class ExcelService
                     {
                         row += 1;
                         colI = 1;
-                        scheduleSheet.InitSchedRange(fixture.Description, colI, row, null, null, false);
+                        scheduleSheet.InitSchedRange($"{fixture.Description} ({fixture.Wattage.ToRoundedString()} Watts)", colI, row, null, null, false);
                         scheduleSheet.GetRange(colI, row).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                         scheduleSheet.GetRange(colI, row).Style.Font.Italic = true;
                         colI += 1;

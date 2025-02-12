@@ -203,7 +203,7 @@
                             @foreach (var fixture in fixtureCircuit.Fixtures)
                             {
                                 <tr>
-                                    <td class="subitem-desc">@fixture.Description</td>
+                                    <td class="subitem-desc">@fixture.Description (@fixture.Wattage.ToRoundedString() Watts)</td>
                                     <td>@fixture.Quantity</td>
                                     <td></td>
                                     <td></td>
