@@ -20,10 +20,15 @@ public partial class MotorOutletCircuit
         CircuitProtection.InverseTimeBreaker
     ];
 
-    public override CalculationResult<double> VoltAmpere => 
-        AmpereLoad.HasError
-            ? CalculationResult<double>.Failure(AmpereLoad.ErrorType)
-            : CalculationResult<double>.Success(Voltage * AmpereLoad.Value);
+    public override CalculationResult<double> VoltAmpere
+    {
+        get
+        {
+            if (AmpereLoad.HasError) return CalculationResult<double>.Failure(AmpereLoad.ErrorType);
+            var factor = LineToLineVoltage == LineToLineVoltage.Abc ? Math.Sqrt(3) : 1;
+            return CalculationResult<double>.Success(Voltage * AmpereLoad.Value * factor);
+        }
+    }
 
     public override CalculationResult<double> AmpereLoad => ParentDistributionBoard.Phase == BoardPhase.SinglePhase ||
                                                             MotorType == MotorType.SinglePhaseMotor

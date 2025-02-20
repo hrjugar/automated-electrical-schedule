@@ -58,13 +58,13 @@
     {
         <div class="circuit-preview-value">
             <label>Volt Amps</label>
-            <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : nonSpareCircuit.VoltAmpere.Value.ToRoundedString())</p>
+            <p>@(nonSpareCircuit.VoltAmpere.HasError ? nonSpareCircuit.VoltAmpere.ErrorMessage : $"{nonSpareCircuit.VoltAmpere.Value.ToRoundedString()}VA")</p>
         </div>
     }
 
     <div class="circuit-preview-value">
         <label>Ampere Load</label>
-        <p class="@(Circuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(Circuit.AmpereLoad.HasError ? Circuit.AmpereLoad.ErrorMessage : Circuit.AmpereLoad.Value.ToRoundedString())</p>
+        <p class="@(Circuit.AmpereLoad.HasError || isAmpereLoadExceeding ? "item-error" : "")">@(Circuit.AmpereLoad.HasError ? Circuit.AmpereLoad.ErrorMessage : $"{Circuit.AmpereLoad.Value.ToRoundedString()}A")</p>
         @if (isAmpereLoadExceeding)
         {
         <p class="item-error item-sub">*As per PEC Part 1 2017 2.10.2.6 (D) p.45, it cannot be greater than 50 A</p>
@@ -77,7 +77,7 @@
         @if (convenienceCircuit != null && convenienceCircuit.HasExceedingAmpereTrip)
         {
             <div class="circuit-preview-value-row item-error">
-                <p>@(Circuit.AmpereTrip)</p>
+                <p>@(Circuit.AmpereTrip.HasError ? Circuit.AmpereTrip.ErrorMessage : $"{Circuit.AmpereTrip.Value}AT")</p>
                 <InfoButton>
                     <div class="info-tooltip-error-content">
                         <div class="info-tooltip-error-content-group">
@@ -101,23 +101,23 @@
         }
         else
         {
-            <p class="@(Circuit.AmpereTrip.HasError ? "item-error" : "")">@(Circuit.AmpereTrip)</p>
+            <p class="@(Circuit.AmpereTrip.HasError ? "item-error" : "")">@(Circuit.AmpereTrip.HasError ? Circuit.AmpereTrip.ErrorMessage : $"{Circuit.AmpereTrip.Value}AT")</p>
         }
     </div>
 
     <div class="circuit-preview-value">
         <label>Ampere Frame</label>
-        <p class="@(Circuit.AmpereFrame.HasError ? "item-error" : "")">@(Circuit.AmpereFrame)</p>
+        <p class="@(Circuit.AmpereFrame.HasError ? "item-error" : "")">@(Circuit.AmpereFrame.HasError ? Circuit.AmpereFrame.ErrorMessage: $"{Circuit.AmpereFrame.Value}AF")</p>
     </div>
 
     <div class="circuit-preview-value">
         <label>R</label>
-        <p class="@(Circuit.R.HasError ? "item-error" : "")">@(Circuit.R.HasError ? Circuit.R.ErrorMessage : Circuit.R.Value.ToRoundedString())</p>
+        <p class="@(Circuit.R.HasError ? "item-error" : "")">@(Circuit.R.HasError ? Circuit.R.ErrorMessage : $"{Circuit.R.Value.ToRoundedString()}Ω")</p>
     </div>
 
     <div class="circuit-preview-value">
         <label>X</label>
-        <p class="@(Circuit.X.HasError ? "item-error" : "")">@(Circuit.X.HasError ? Circuit.X.ErrorMessage : Circuit.X.Value.ToRoundedString())</p>
+        <p class="@(Circuit.X.HasError ? "item-error" : "")">@(Circuit.X.HasError ? Circuit.X.ErrorMessage : $"{Circuit.X.Value.ToRoundedString()}Ω")</p>
     </div>
 
     <div class="circuit-preview-value">
@@ -156,17 +156,17 @@
 
     <div class="circuit-preview-value">
         <label>Conductor Size</label>
-        <p class="@(Circuit.ConductorSize.HasError ? "item-error" : "")">@(Circuit.ConductorSize)</p>
+        <p class="@(Circuit.ConductorSize.HasError ? "item-error" : "")">@(Circuit.ConductorSize.HasError ? Circuit.ConductorSize.ErrorMessage : $"{Circuit.ConductorSize.Value} mm\u00b2")</p>
     </div>
 
     <div class="circuit-preview-value">
         <label>Ground Size</label>
-        <p class="@(Circuit.GroundingSize.HasError ? "item-error" : "")">@(Circuit.GroundingSize)</p>
+        <p class="@(Circuit.GroundingSize.HasError ? "item-error" : "")">@(Circuit.GroundingSize.HasError ? Circuit.GroundingSize.ErrorMessage : $"{Circuit.GroundingSize.Value} mm\u00b2")</p>
     </div>
 
     <div class="circuit-preview-value">
         <label>Raceway Size</label>
-        <p class="@(Circuit.RacewaySize.HasError ? "item-error" : "")">@(Circuit.RacewaySize)</p>
+        <p class="@(Circuit.RacewaySize.HasError ? "item-error" : "")">@(Circuit.RacewaySize.HasError ? Circuit.RacewaySize.ErrorMessage : $"{Circuit.RacewaySize.Value} mm ø")</p>
     </div>
 </div>
 
