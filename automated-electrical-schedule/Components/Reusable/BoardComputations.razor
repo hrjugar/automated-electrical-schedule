@@ -697,6 +697,7 @@
                 
                 @if (DistributionBoard.VoltageDropCorrectionConductorSize is null)
                 {
+                    <strong>Number of Sets = @(DistributionBoard.SetCount)</strong>
                     <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
                 }
                 else
@@ -704,6 +705,7 @@
                     <p>• Conductor = Use @(DistributionBoard.TemperatureAffectedConductorTextDisplay)</p>
                     
                     <h6>With Voltage Drop Correction</h6>
+                    <strong>Number of Sets = @(DistributionBoard.SetCount)</strong>
                     <strong>Conductor = Use @(DistributionBoard.ConductorTextDisplay)</strong>
                 }
                 
@@ -862,8 +864,9 @@
             ";
             
             <div class="computation-subgroup">
-                <div class="math-expression">@((MarkupString) voltageDropFormulaExpression)</div>
-                <div class="math-expression">@((MarkupString) voltageDropExpression)</div>
+                <strong>Number of Sets: @(DistributionBoard.SetCount)</strong>
+                <div class="math-expression">@((MarkupString)voltageDropFormulaExpression)</div>
+                <div class="math-expression">@((MarkupString)voltageDropExpression)</div>
             </div>
             
         }

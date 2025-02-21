@@ -26,20 +26,22 @@ public class ExcelService
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         
         using var package = new ExcelPackage();
-        
+
+        int sheetNum = 1;
         foreach (var board in DistributionBoards)
         {
-            _createScheduleSheet(package, board);
-            _createComputationsSheet(package, board);
+            _createScheduleSheet(package, sheetNum, board);
+            _createComputationsSheet(package, sheetNum + 1, board);
+            sheetNum += 2;
         }
         
         using var stream = new MemoryStream(package.GetAsByteArray());
         await FileSaver.SaveAsync("Schedule of Loads.xlsx", stream);
     }
 
-    private void _createScheduleSheet(ExcelPackage? package, DistributionBoard board)
+    private void _createScheduleSheet(ExcelPackage? package, int sheetNumber, DistributionBoard board)
     {
-        var scheduleSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - SOL");
+        var scheduleSheet = package!.Workbook.Worksheets.Add($"Sheet{sheetNumber}");
         scheduleSheet.Cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
         scheduleSheet.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
         
@@ -581,9 +583,9 @@ public class ExcelService
         scheduleSheet.Columns.AutoFit();
     }
 
-    private void _createComputationsSheet(ExcelPackage? package, DistributionBoard board)
+    private void _createComputationsSheet(ExcelPackage? package, int sheetNumber, DistributionBoard board)
     {
-        var compSheet = package!.Workbook.Worksheets.Add($"{board.BoardName} - Com");
+        var compSheet = package!.Workbook.Worksheets.Add($"Sheet{sheetNumber}");
         var threePhaseBoard = board as ThreePhaseDistributionBoard;
         
         // PROJECT & BOARD DESCRIPTION -------------------------------------
@@ -1510,9 +1512,13 @@ public class ExcelService
                 row += 1;
 
                 var conductorText = $"Conductor = Use {board.ConductorTextDisplay}";
+                var setsText = $"Number of Sets = {board.SetCount}";
                 
                 if (board.VoltageDropCorrectionConductorSize is null)
                 {
+                    compSheet.InitCompCell(setsText, colI, row, null, true);
+                    row += 1;
+                    
                     compSheet.InitCompCell(conductorText, colI, row, null, true);
                 }
                 else
@@ -1523,6 +1529,9 @@ public class ExcelService
                     row += 1;
                     
                     compSheet.InitCompCell("With Voltage Drop Correction", colI, row);
+                    row += 1;
+                    
+                    compSheet.InitCompCell(setsText, colI, row, null, true);
                     row += 1;
                     
                     compSheet.InitCompCell(conductorText, colI, row, null, true);
@@ -1587,6 +1596,10 @@ public class ExcelService
         }
         else
         {
+            var setsText = $"Number of Sets = {board.SetCount}";
+            compSheet.InitCompCell(setsText, colI, row, null, true);
+            row += 1;
+            
             var factorText = threePhaseBoard is not null ? "\u221a3" : "2";
             var vdFormulaText =
                 $"VD = {factorText} \u00d7 Ampere Load \u00d7 \u221a(R\u00b2 + X\u00b2) \u00d7 (Length/(305 \u00d7 No. of Sets)) \u00f7 (100%/Voltage)";
