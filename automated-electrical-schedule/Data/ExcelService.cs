@@ -1461,7 +1461,7 @@ public class ExcelService
             row += 1;
 
             var circuitProtectionText =
-                $"• Circuit Protection = Use {board.AmpereTrip}AT; Use {board.AmpereFrame}AF";
+                $"• Circuit Protection = Use {board.AmpereTrip} Ampere Trip, {board.AmpereFrame} Ampere Frame, {board.Pole}-Pole, {board.CircuitProtection.GetDisplayName()}";
             compSheet.InitCompCell(circuitProtectionText, colI, row, null, true);
         }
         else

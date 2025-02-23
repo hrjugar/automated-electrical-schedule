@@ -664,7 +664,7 @@
             @if (DistributionBoard.HasNestedCircuits)
             {
                 <p>Overall Total = @(DistributionBoard.Current.Value.ToRoundedString())A + (@(DistributionBoard.HighestMotorLoad.ToRoundedString())A × 1.25) = @(DistributionBoard.CircuitProtectionAmpere.ToRoundedString())</p>
-                <strong>• Circuit Protection = Use @(DistributionBoard.AmpereTrip)AT; @(DistributionBoard.AmpereFrame)AF</strong>
+                <strong>• Circuit Protection = Use @(DistributionBoard.AmpereTrip) Ampere Trip, @(DistributionBoard.AmpereFrame) Ampere Frame, @(DistributionBoard.Pole)-Pole, @(DistributionBoard.CircuitProtection.GetDisplayName())</strong>
             }
             else
             {
