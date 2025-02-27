@@ -1607,7 +1607,7 @@ public class ExcelService
             row += 1;
             
             var vdText =
-                $"VD = {factorText} \u00d7 {board.AmpereLoad.Value.ToRoundedString()} \u00d7 \u221a({board.R.Value.ToRoundedString()}² + {board.X.Value.ToRoundedString()}²) \u00d7 ({board.WireLength.Value}/(305 \u00d7 {board.SetCount})) \u00f7 (100%/{(int)board.Voltage}) =";
+                $"VD = {factorText} \u00d7 {board.ConductorAmpere.ToRoundedString()} \u00d7 \u221a({board.R.Value.ToRoundedString()}² + {board.X.Value.ToRoundedString()}²) \u00d7 ({board.WireLength.Value}/(305 \u00d7 {board.SetCount})) \u00f7 (100%/{(int)board.Voltage}) =";
             var vdRange = compSheet.GetRange(colI, row).RichText.Add(vdText);
             vdRange.Size = 16;
             

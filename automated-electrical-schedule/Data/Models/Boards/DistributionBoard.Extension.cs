@@ -429,7 +429,7 @@ public abstract partial class DistributionBoard
             this is ThreePhaseDistributionBoard threePhaseBoard ? threePhaseBoard.LineToLineVoltage : LineToLineVoltage.None,
             R,
             X,
-            AmpereLoad,
+            CalculationResult<double>.Success(ConductorAmpere), 
             WireLength,
             SetCount,
             (int)Voltage
