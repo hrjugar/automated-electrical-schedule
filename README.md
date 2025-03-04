@@ -16,7 +16,6 @@ Simplifies the process of creating an electrical schedule of loads based on the 
 - Convenience
 - Motor
 - Appliance/Equipment
-  - 
 - Spare
 - Space
 
@@ -24,8 +23,6 @@ Simplifies the process of creating an electrical schedule of loads based on the 
 - Single phase
 - Three-phase WYE
 - Three-phase delta
-
-****
 
 ### Utilities
 - Exporting data to Excel
