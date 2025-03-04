@@ -150,7 +150,7 @@
         }
         else
         {
-            <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Circuit.VoltageDrop.Value.ToRoundedString(true))</p>
+            <p class="@(Circuit.VoltageDrop.HasError ? "item-error" : "")">@(Circuit.VoltageDrop.HasError ? Circuit.VoltageDrop.ErrorMessage : Circuit.VoltageDrop.Value.ToRoundedString(true, "N/A"))</p>
         }
     </div>
 

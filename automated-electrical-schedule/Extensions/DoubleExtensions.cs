@@ -29,9 +29,9 @@ public static class DoubleExtensions
         return roundedValue.ToString(CultureInfo.InvariantCulture);
     }
     
-    public static string ToRoundedString(this double? value, bool isPercentage = false)
+    public static string ToRoundedString(this double? value, bool isPercentage = false, string nullPlaceholder = "")
     {
-        if (value is null) return string.Empty;
+        if (value is null) return nullPlaceholder;
         return value.Value.ToRoundedString(isPercentage);
     }
 
