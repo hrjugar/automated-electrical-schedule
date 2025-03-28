@@ -24,6 +24,14 @@ public partial class ApplianceEquipmentOutletCircuit
             return applianceTypes;
         }
     }
+    
+    public override List<CircuitProtection> AllowedCircuitProtections =>
+    [
+        CircuitProtection.MiniatureCircuitBreaker,
+        CircuitProtection.MoldedCaseCircuitBreaker,
+        CircuitProtection.GfciCircuitBreaker
+    ];
+    
     public override CalculationResult<int> AmpereTrip => DataUtils.GetAmpereTrip(
         CalculationResult<double>.Success(AmpereLoad.Value / 0.8), 
         20);
