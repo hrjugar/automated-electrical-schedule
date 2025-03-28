@@ -308,4 +308,16 @@ public static class DemandFactorFormulas
         
         return sum * demandFactor;
     }
+
+    public static double ApplyDemandFactorToGroupedHvacUnits(IEnumerable<MotorOutletCircuit> groupedHvacUnits)
+    {
+        var sum = groupedHvacUnits
+            .Where(u => u.HvacGroupCode is not null)
+            .GroupBy(u => new { u.ParentDistributionBoardId, u.HvacGroupCode })
+            .Sum(g => 
+                g.Sum(u => u.VoltAmpere.Value) * (g.Count() < 4 ? 0.65 : 0.4)
+            );
+
+        return sum;
+    }
 }

@@ -995,6 +995,23 @@ public class ExcelService
 
             var cranesVoltAmpereWithDemandFactor =
                 DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranes);
+
+            var fullLoadHvacUnitsVoltAmpere =
+                board.FilterVoltAmpere<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.FullLoadHvac
+                );
+            
+            var groupedHvacUnitsVoltAmpere = board.FilterVoltAmpere<MotorOutletCircuit>(
+                mc => mc.MotorApplication == MotorApplication.GroupedHvac
+            );
+
+            var groupedHvacUnits =
+                board.FilterNestedCircuits<MotorOutletCircuit>(
+                        mc => mc.MotorApplication == MotorApplication.GroupedHvac)
+                    .ToList();
+            
+            var groupedHvacUnitsVoltAmpereWithDemandFactor =
+                DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnits);
             
 
             if (normalMotorsVoltAmpere > 0)
@@ -1146,9 +1163,98 @@ public class ExcelService
                 compSheet.GetRange(colI, row).Style.WrapText = true;
                 row += 1;
             }
+            
+            if (fullLoadHvacUnitsVoltAmpere > 0)
+            {
+                var childFullLoadHvacUnits =
+                    childMotorOutlets.Where(m => m.MotorApplication == MotorApplication.FullLoadHvac);
+                
+                var subBoardsWithFullLoadHvacUnits =
+                    board
+                        .SubDistributionBoards
+                        .Where(b =>
+                            b.FilterVoltAmpere<MotorOutletCircuit>(
+                                mc => mc.MotorApplication == MotorApplication.FullLoadHvac
+                            ) > 0
+                        );
+
+                row += 1;
+                compSheet.InitCompCell("For Heating or Air Conditioning Units (Full Load)", colI, row, 16, true);
+                row += 1;
+
+                foreach (var unit in childFullLoadHvacUnits)
+                {
+                    var text =
+                        $"- {unit.Description} = {unit.VoltAmpere.Value.ToRoundedString()}VA";
+                    compSheet.InitCompCell(text, colI, row);
+                    row += 1;
+                }
+
+                foreach (var subBoard in subBoardsWithFullLoadHvacUnits)
+                {
+                    var subBoardFullLoadHvacUnitsVoltAmpere = subBoard
+                        .FilterVoltAmpere<MotorOutletCircuit>(
+                            mc => mc.MotorApplication == MotorApplication.FullLoadHvac);
+                    var text =
+                        $"Sub Total ({subBoard.BoardName}) = {subBoardFullLoadHvacUnitsVoltAmpere.ToRoundedString()}VA";
+                    compSheet.InitCompCell(text, colI, row);
+                    row += 1;
+                }
+                
+                var subTotalText = $"Sub Total = {fullLoadHvacUnitsVoltAmpere.ToRoundedString()}VA";
+                compSheet.InitCompCell(subTotalText, colI, row, null, false, true);
+                row += 1;
+                
+                compSheet.InitCompCell("No Demand Factors Applied", colI, row);
+                row += 1;
+            }
+
+            if (groupedHvacUnitsVoltAmpere > 0)
+            {
+                var groupedHvacUnitsWithGrouping =
+                    groupedHvacUnits.GroupBy(u => new { u.ParentDistributionBoardId, u.HvacGroupCode });
+
+                row += 1;
+                compSheet.InitCompCell("For Heating or Air Conditioning Units (with Demand Factor)", colI, row, 16, true);
+                row += 1;
+
+                foreach (var groupedHvacUnitsGroup in groupedHvacUnitsWithGrouping)
+                {
+                    if (!groupedHvacUnitsGroup.Any()) continue;
+                    var firstUnit = groupedHvacUnitsGroup.First();
+                    var boardName = firstUnit.ParentDistributionBoard.BoardName;
+                    var code = firstUnit.HvacGroupCode;
+                    var groupVoltAmpere = groupedHvacUnitsGroup.Sum(u => u.VoltAmpere.Value);
+                    var groupVoltAmpereWithDemandFactor = DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnitsGroup);
+                    
+                    compSheet.InitCompCell($"Board {boardName} - Group {code}", colI, row, null, true);
+                    row += 1;
+                    
+                    foreach (var unit in groupedHvacUnitsGroup)
+                    {
+                        compSheet.InitCompCell($"- {unit.Description} = {unit.VoltAmpere.Value.ToRoundedString()}VA", colI, row);
+                        row += 1;
+                    }
+                    
+                    var subTotalText = $"Sub Total = {groupVoltAmpere.ToRoundedString()}VA";
+                    compSheet.InitCompCell(subTotalText, colI, row, null, false, true);
+                    row += 1;
+
+                    var subTotalDfText =
+                        $"Sub Total with Demand Factor = {groupVoltAmpereWithDemandFactor.ToRoundedString()}VA";
+                    compSheet.InitCompCell(subTotalDfText, colI, row);
+                    row += 2;
+                }
+
+                var referenceText =
+                    "Reference: “Demand Factors for Heating and Air-Conditioning Load”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.4.3, pp. 60, 2017";
+                compSheet.InitCompCell(referenceText, colI, row);
+                compSheet.GetRange(colI, row).Style.WrapText = true;
+                row += 1;
+            }
 
             row += 1;
-            var finalTotalText = $"Final total = {(normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesVoltAmpereWithDemandFactor).ToRoundedString()}VA";
+            var finalTotalText = $"Final total = {(normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesVoltAmpereWithDemandFactor + fullLoadHvacUnitsVoltAmpere + groupedHvacUnitsVoltAmpereWithDemandFactor).ToRoundedString()}VA";
             compSheet.InitCompCell(finalTotalText, colI, row, 14, true);
         }
 
@@ -1437,7 +1543,7 @@ public class ExcelService
         compSheet.InitCompCell(vaText, colI, row);
         row += 1;
 
-        var multiplierText = threePhaseBoard is not null ? "\u221a3" : "2";
+        var multiplierText = threePhaseBoard is not null ? "\u221a3" : "1";
         
         var currFormulaText = $"I = (Total VA)/({multiplierText} \u00d7 {(int)board.Voltage})";
         compSheet.InitCompCell(currFormulaText, colI, row, 16);

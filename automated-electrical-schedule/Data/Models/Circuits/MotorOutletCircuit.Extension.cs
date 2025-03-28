@@ -192,7 +192,9 @@ public partial class MotorOutletCircuit
             VoltageDropCorrectionConductorSize = VoltageDropCorrectionConductorSize,
 
             MotorType = MotorType,
-            Horsepower = Horsepower
+            MotorApplication = MotorApplication,
+            Horsepower = Horsepower,
+            HvacGroupCode = HvacGroupCode
         };
     }
 
@@ -230,11 +232,17 @@ public partial class MotorOutletCircuit
             [
                 MotorApplication.NormalMotor,
                 MotorApplication.ElevatorFeeder,
-                MotorApplication.CranesAndHoist
+                MotorApplication.CranesAndHoist,
+                MotorApplication.FullLoadHvac,
+                MotorApplication.GroupedHvac
             ];
         }
 
-        return [MotorApplication.NormalMotor];
+        return [
+            MotorApplication.NormalMotor, 
+            MotorApplication.FullLoadHvac,
+            MotorApplication.GroupedHvac
+        ];
     }
     
     public static List<string> GetAllowedHorsepowerValuesStatic(MotorType motorType, LineToLineVoltage lineToLineVoltage)

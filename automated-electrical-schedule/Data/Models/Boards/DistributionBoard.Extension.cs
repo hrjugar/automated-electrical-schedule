@@ -269,6 +269,15 @@ public abstract partial class DistributionBoard
                 c => c.MotorApplication == MotorApplication.NormalMotor
             );
 
+            var fullLoadHvacUnits = FilterNestedCircuits<MotorOutletCircuit>(
+                c => c.MotorApplication == MotorApplication.FullLoadHvac
+            );
+
+            var groupedHvacUnits = FilterNestedCircuits<MotorOutletCircuit>(
+                c => c.MotorApplication == MotorApplication.GroupedHvac
+            );
+            
+
             if (BuildingClassification == BuildingClassification.DwellingUnit)
             {
                 current += DemandFactorFormulas.ApplyDemandFactorToDwellingUnitLightingAndConvenienceCircuits(
@@ -311,6 +320,8 @@ public abstract partial class DistributionBoard
             current += DemandFactorFormulas.ApplyDemandFactorToElevatorFeeders(elevatorFeeders);
             current += DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranesAndHoists);
             current += normalMotors.Sum(mc => mc.VoltAmpere.Value);
+            current += fullLoadHvacUnits.Sum(mc => mc.VoltAmpere.Value);
+            current += DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnits);
 
             current += FilterVoltAmpere<SpareCircuit>();
 

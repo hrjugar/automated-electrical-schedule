@@ -268,12 +268,48 @@
             
             var cranesAndHoistsVoltAmpereWithDemandFactor =
                 DemandFactorFormulas.ApplyDemandFactorToCranesAndHoists(cranesAndHoists);
+
+            var fullLoadHvacUnitsVoltAmpere =
+                DistributionBoard.FilterVoltAmpere<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.FullLoadHvac
+                );
+            
+            var fullLoadHvacUnits =
+                _motorCircuits.Where(mc => mc.MotorApplication == MotorApplication.FullLoadHvac);
+            
+            var subBoardsWithFullLoadHvacUnits = 
+                DistributionBoard.SubDistributionBoards.Where(
+                    b => b.FilterVoltAmpere<MotorOutletCircuit>(
+                        mc => mc.MotorApplication == MotorApplication.FullLoadHvac
+                    ) > 0
+                );
+
+            var groupedHvacUnitsVoltAmpere = DistributionBoard.FilterVoltAmpere<MotorOutletCircuit>(
+                mc => mc.MotorApplication == MotorApplication.GroupedHvac
+            );
+
+            var groupedHvacUnits =
+                DistributionBoard.FilterNestedCircuits<MotorOutletCircuit>(
+                    mc => mc.MotorApplication == MotorApplication.GroupedHvac)
+                    .ToList();
+
+            var groupedHvacUnitsWithGrouping =
+                groupedHvacUnits.GroupBy(u => new { u.ParentDistributionBoardId, u.HvacGroupCode });
+            
+            var groupedHvacUnitsVoltAmpereWithDemandFactor =
+                DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnits);
         }
         
         <div class="computation-subgroup">
             <h4>Motor Outlets</h4>
             
-            @if (normalMotorsVoltAmpere > 0 || feedersVoltAmpere > 0 || cranesAndHoistVoltAmpere > 0)
+            @if (
+                normalMotorsVoltAmpere > 0 || 
+                feedersVoltAmpere > 0 || 
+                cranesAndHoistVoltAmpere > 0 ||
+                fullLoadHvacUnitsVoltAmpere > 0 ||
+                groupedHvacUnitsVoltAmpere > 0
+            )
             {
                 @if (normalMotorsVoltAmpere > 0)
                 {
@@ -322,7 +358,52 @@
                     <p>Reference: “Demand Factors for Cranes and Hoist”, Philippine Electrical Code Part 1, Chap. 6.10, no. 6.10.2.4(E), pp. 594, 2017</p>
                 }
                 
-                <h6>Final total = @((normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor).ToRoundedString())</h6>
+                @if (fullLoadHvacUnitsVoltAmpere > 0)
+                {
+                    <h6>For Heating or Air Conditioning Units (with Full Load):</h6>
+                    
+                    @foreach (var unit in fullLoadHvacUnits.Where(u => !u.VoltAmpere.HasError))
+                    {
+                        <p>- @($"{unit.Description} = {unit.VoltAmpere.Value.ToRoundedString()}VA")</p>
+                    }
+                    
+                    @foreach (var subBoard in subBoardsWithFullLoadHvacUnits)
+                    {
+                        var subBoardFullLoadUnit = subBoard.FilterVoltAmpere<MotorOutletCircuit>(mc => mc.MotorApplication == MotorApplication.FullLoadHvac);
+                        <p>- @($"Sub Total ({subBoard.BoardName}) = {subBoardFullLoadUnit.ToRoundedString()}")</p>
+                    }
+                    
+                    <p class="underline">Sub Total = @(fullLoadHvacUnitsVoltAmpere.ToRoundedString())</p>
+                    <p>No Demand Factors</p>
+                }
+                
+                @if (groupedHvacUnitsVoltAmpere > 0)
+                {
+                    <h6>For Heating or Air Conditioning Units (with Demand Factor):</h6>
+                    
+                    @foreach (var groupedHvacUnitsGroup in groupedHvacUnitsWithGrouping)
+                    {
+                        if (!groupedHvacUnitsGroup.Any()) continue;
+                        var firstUnit = groupedHvacUnitsGroup.First();
+                        var boardName = firstUnit.ParentDistributionBoard.BoardName;
+                        var code = firstUnit.HvacGroupCode;
+                        var groupVoltAmpere = groupedHvacUnitsGroup.Sum(u => u.VoltAmpere.Value);
+                        var groupVoltAmpereWithDemandFactor = DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnitsGroup);
+                        
+                        <p>Board <i>@(boardName)</i> - Group Code <i>@(code)</i></p>
+                        @foreach (var unit in groupedHvacUnitsGroup)
+                        {
+                            <p>@($"{unit.Description} = {unit.VoltAmpere.Value.ToRoundedString()}VA")</p>
+                        }
+                        <p class="underline">Sub Total = @(groupVoltAmpere.ToRoundedString())</p>
+                        <p>Sub Total with Demand Factor = @(groupVoltAmpereWithDemandFactor.ToRoundedString())</p>
+                        <p>&nbsp;</p>
+                    }
+                    
+                    <p>Reference: “Demand Factors for Heating and Air-Conditioning Load”, Philippine Electrical Code Part 1, Chap. 2.20, no. 2.20.4.3, pp. 60, 2017</p>
+                }
+                
+                <h6>Final total = @((normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor + fullLoadHvacUnitsVoltAmpere + groupedHvacUnitsVoltAmpereWithDemandFactor).ToRoundedString())</h6>
             }
             else
             {

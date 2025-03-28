@@ -9,6 +9,8 @@ public class DatabaseContext : DbContext
     public DbSet<DistributionBoard> DistributionBoards { get; init; }
     public DbSet<Project> Projects { get; init; }
     public DbSet<Circuit> Circuits { get; init; }
+    
+    public DbSet<MotorOutletCircuit> MotorOutletCircuits { get; init; }
     public DbSet<Fixture> Fixtures { get; init; }
 
     public static string DbPath { get; } = Path.Combine(FileSystem.Current.AppDataDirectory, "aesol.db");

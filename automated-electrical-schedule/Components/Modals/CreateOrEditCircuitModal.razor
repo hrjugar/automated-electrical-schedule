@@ -133,15 +133,30 @@
                                     <ValidationMessage For=@(() => motorOutletCircuit.MotorType)/>
                                 </div>
                                 
-                                <div class="create-or-edit-circuit-modal-field">
-                                    <label class="required">Application</label>
-                                    <InputSelect @bind-Value="motorOutletCircuit.MotorApplication">
-                                        @foreach (var motorApplication in motorOutletCircuit.AllowedMotorApplications)
-                                        {
-                                            <option value="@motorApplication">@motorApplication.GetDisplayName()</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For=@(() => motorOutletCircuit.MotorApplication)/>
+                                <div class="create-or-edit-circuit-modal-field-row">
+                                    <div class="create-or-edit-circuit-modal-field">
+                                        <label class="required">Application</label>
+                                        <InputSelect
+                                            Value="motorOutletCircuit.MotorApplication"
+                                            ValueChanged="@((MotorApplication motorApplication) => UpdateMotorApplication(motorApplication))"
+                                            ValueExpression="@(() => motorOutletCircuit.MotorApplication)"
+                                        >
+                                            @foreach (var motorApplication in motorOutletCircuit.AllowedMotorApplications)
+                                            {
+                                                <option value="@motorApplication">@motorApplication.GetDisplayName()</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For=@(() => motorOutletCircuit.MotorApplication)/>
+                                    </div>
+                                    
+                                    @if (motorOutletCircuit.MotorApplication == MotorApplication.GroupedHvac)
+                                    {
+                                        <div class="create-or-edit-circuit-modal-field">
+                                            <label class="required">Heating/Air Conditioning Unit Group Code</label>
+                                            <InputText class="input-primary" @bind-Value="motorOutletCircuit.HvacGroupCode" placeholder="Group Code" />
+                                            <ValidationMessage For=@(() => motorOutletCircuit.HvacGroupCode) />
+                                        </div>
+                                    }
                                 </div>
 
                                 <div class="create-or-edit-circuit-modal-field">
@@ -519,6 +534,15 @@
             motorOutletCircuit.Horsepower = motorOutletCircuit.AllowedHorsepowerValues[0];
         }
 
+        StateHasChanged();
+    }
+
+    void UpdateMotorApplication(MotorApplication newMotorApplication)
+    {
+        var motorOutletCircuit = _newCircuit as MotorOutletCircuit;
+        motorOutletCircuit!.MotorApplication = newMotorApplication;
+        motorOutletCircuit.HvacGroupCode = null;
+        
         StateHasChanged();
     }
 
