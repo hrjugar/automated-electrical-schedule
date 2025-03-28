@@ -65,7 +65,23 @@ public abstract partial class NonSpaceCircuit
     
     public CalculationResult<int> AmpereFrame => DataUtils.GetAmpereFrame(AmpereTrip);
     
-    public int ConductorWireCount => LineToLineVoltage == LineToLineVoltage.Abc ? 3 : 2;
+    public int ConductorWireCount
+    {
+        get
+        {
+            return ParentDistributionBoard switch
+            {
+                SinglePhaseDistributionBoard => 2,
+                ThreePhaseDistributionBoard threePhaseBoard => threePhaseBoard.ThreePhaseConfiguration switch
+                {
+                    ThreePhaseConfiguration.Delta => 3,
+                    ThreePhaseConfiguration.Wye => 4,
+                    _ => throw new ArgumentOutOfRangeException(nameof(threePhaseBoard.ThreePhaseConfiguration))
+                },
+                _ => throw new ArgumentOutOfRangeException(nameof(ParentDistributionBoard))
+            };
+        }
+    }
     
     public ConductorType? ConductorType => ConductorType.FindByIdOrNull(ConductorTypeId);
     
