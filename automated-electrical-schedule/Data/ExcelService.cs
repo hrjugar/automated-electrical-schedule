@@ -1128,7 +1128,7 @@ public class ExcelService
                 compSheet.InitCompCell(subTotalText, colI, row, null, false, true);
                 row += 1;
                 
-                var subTotalDfText = $"Sub Total with Demand Factor for Elevator Feeders = {cranesVoltAmpereWithDemandFactor.ToRoundedString()}VA";
+                var subTotalDfText = $"Sub Total with Demand Factor for Cranes and Hoists = {cranesVoltAmpereWithDemandFactor.ToRoundedString()}VA";
                 compSheet.InitCompCell(subTotalDfText, colI, row);
                 row += 1;
 

@@ -305,6 +305,7 @@
                     
                     <p class="underline">Sub Total = @(feedersVoltAmpere.ToRoundedString())</p>
                     <p>Sub Total with Demand Factor for Elevator Feeders = @(feedersVoltAmpereWithDemandFactor.ToRoundedString())</p>
+                    <p>Reference: “Demand Factors for Elevators”, Philippine Electrical Code Part 1, Chap. 6.20, no. 6.20.2.4, pp. 600, 2017</p>
                 }
                 
                 @if (cranesAndHoistVoltAmpere > 0)
@@ -318,6 +319,7 @@
                     
                     <p class="underline">Sub Total = @(cranesAndHoistVoltAmpere.ToRoundedString())</p>
                     <p>Sub Total with Demand Factor for Cranes and Hoists = @(cranesAndHoistsVoltAmpereWithDemandFactor.ToRoundedString())</p>
+                    <p>Reference: “Demand Factors for Cranes and Hoist”, Philippine Electrical Code Part 1, Chap. 6.10, no. 6.10.2.4(E), pp. 594, 2017</p>
                 }
                 
                 <h6>Final total = @((normalMotorsVoltAmpere + feedersVoltAmpereWithDemandFactor + cranesAndHoistsVoltAmpereWithDemandFactor).ToRoundedString())</h6>
