@@ -50,9 +50,11 @@ public class ExcelService
         // PROJECT & BOARD DESCRIPTION -------------------------------------
         scheduleSheet.Cells["A1:E1"].Merge = true;
         scheduleSheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        scheduleSheet.Cells["A1"].Style.Font.Size = 20;
         scheduleSheet.Cells["A1"].Value = $"PROJECT NAME: {ProjectName}";
         
         scheduleSheet.Cells["F1:J1"].Merge = true;
+        scheduleSheet.Cells["F1"].Style.Font.Size = 20;
         scheduleSheet.Cells["F1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         var configText = threePhaseBoard is null
             ? ""
@@ -61,10 +63,12 @@ public class ExcelService
             $"SYSTEM: {board.Phase.GetDisplayName()}{configText}";
             
         scheduleSheet.Cells["A2:E2"].Merge = true;
+        scheduleSheet.Cells["A2"].Style.Font.Size = 20;
         scheduleSheet.Cells["A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         scheduleSheet.Cells["A2"].Value = $"DISTRIBUTION BOARD NAME: {board.BoardName}";
             
         scheduleSheet.Cells["F2:J2"].Merge = true;
+        scheduleSheet.Cells["F2"].Style.Font.Size = 20;
         scheduleSheet.Cells["F2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
         scheduleSheet.Cells["F2"].Value = $"VOLTAGE: {(int) board.Voltage} V";
         
@@ -590,9 +594,11 @@ public class ExcelService
         
         // PROJECT & BOARD DESCRIPTION -------------------------------------
         compSheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["A1"].Style.Font.Size = 20;
         compSheet.Cells["A1"].Value = $"PROJECT NAME: {ProjectName}";
         
         compSheet.Cells["B1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["B1"].Style.Font.Size = 20;
         var configText = threePhaseBoard is null
             ? ""
             : " " + threePhaseBoard.ThreePhaseConfiguration.GetDisplayName();
@@ -600,9 +606,11 @@ public class ExcelService
             $"SYSTEM: {board.Phase.GetDisplayName()}{configText}";
             
         compSheet.Cells["A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["A2"].Style.Font.Size = 20;
         compSheet.Cells["A2"].Value = $"DISTRIBUTION BOARD NAME: {board.BoardName}";
             
         compSheet.Cells["B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+        compSheet.Cells["B2"].Style.Font.Size = 20;
         compSheet.Cells["B2"].Value = $"VOLTAGE: {(int) board.Voltage} V";
         
         // COMPUTATIONS ----------------------------------------------------
