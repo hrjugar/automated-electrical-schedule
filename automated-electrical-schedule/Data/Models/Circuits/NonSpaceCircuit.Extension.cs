@@ -69,17 +69,20 @@ public abstract partial class NonSpaceCircuit
     {
         get
         {
-            return ParentDistributionBoard switch
+            if (
+                LineToLineVoltage == LineToLineVoltage.Abc && 
+                ParentDistributionBoard is ThreePhaseDistributionBoard parentThreePhaseBoard
+            )
             {
-                SinglePhaseDistributionBoard => 2,
-                ThreePhaseDistributionBoard threePhaseBoard => threePhaseBoard.ThreePhaseConfiguration switch
+                return parentThreePhaseBoard.ThreePhaseConfiguration switch
                 {
                     ThreePhaseConfiguration.Delta => 3,
                     ThreePhaseConfiguration.Wye => 4,
-                    _ => throw new ArgumentOutOfRangeException(nameof(threePhaseBoard.ThreePhaseConfiguration))
-                },
-                _ => throw new ArgumentOutOfRangeException(nameof(ParentDistributionBoard))
-            };
+                    _ => throw new ArgumentOutOfRangeException(nameof(parentThreePhaseBoard.ThreePhaseConfiguration))
+                };
+            }
+
+            return 2;
         }
     }
     
