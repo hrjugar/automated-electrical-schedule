@@ -294,7 +294,11 @@
                     .ToList();
 
             var groupedHvacUnitsWithGrouping =
-                groupedHvacUnits.GroupBy(u => new { u.ParentDistributionBoardId, u.HvacGroupCode });
+                groupedHvacUnits.GroupBy(u => new
+                {
+                    u.ParentDistributionBoardId, 
+                    GroupCode = u.HvacGroupCode?.ToUpperInvariant() ?? ""
+                });
             
             var groupedHvacUnitsVoltAmpereWithDemandFactor =
                 DemandFactorFormulas.ApplyDemandFactorToGroupedHvacUnits(groupedHvacUnits);

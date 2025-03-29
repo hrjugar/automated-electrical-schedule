@@ -76,7 +76,8 @@ public class HorsepowerValidator : ValidationAttribute
         var hvacGroupHorsepowers = parentDistributionBoardValue
             .FilterNestedCircuits<MotorOutletCircuit>(mc =>
                 mc.MotorApplication == MotorApplication.GroupedHvac &&
-                mc.HvacGroupCode == hvacGroupCodeValue &&
+                mc.HvacGroupCode is not null &&
+                mc.HvacGroupCode.ToUpper().Equals(hvacGroupCodeValue.ToUpper()) &&
                 mc.Id != idValue
             )
             .Select(mc => mc.Horsepower)

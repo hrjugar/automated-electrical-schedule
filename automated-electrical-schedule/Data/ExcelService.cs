@@ -1212,7 +1212,11 @@ public class ExcelService
             if (groupedHvacUnitsVoltAmpere > 0)
             {
                 var groupedHvacUnitsWithGrouping =
-                    groupedHvacUnits.GroupBy(u => new { u.ParentDistributionBoardId, u.HvacGroupCode });
+                    groupedHvacUnits.GroupBy(u => new
+                    {
+                        u.ParentDistributionBoardId, 
+                        GroupCode = u.HvacGroupCode?.ToUpperInvariant() ?? ""
+                    });
 
                 row += 1;
                 compSheet.InitCompCell("For Heating or Air Conditioning Units (with Demand Factor)", colI, row, 16, true);
